@@ -412,6 +412,9 @@ observed range and bearing of the landmark:
 
 <img src="https://latex.codecogs.com/svg.image?\begin{bmatrix}r_t^i&space;\\\phi_t^i\end{bmatrix}&space;" title="https://latex.codecogs.com/svg.image?\begin{bmatrix}r_t^i \\\phi_t^i\end{bmatrix} " />
 
+## ROS Odometery Model
+
+Refs: [1](https://answers.ros.org/question/359950/is-ros-using-velocity-motion-model-or-odometry-motion-model/), [2](https://github.com/ros-planning/navigation/blob/melodic-devel/amcl/src/amcl/sensors/amcl_odom.cpp#L113), [3](https://www.mathworks.com/help/nav/ref/odometrymotionmodel.html#d124e109215)
 
 
 # Estate Estimation
@@ -471,6 +474,14 @@ Refs: [1](https://www.youtube.com/watch?v=hN8dL55rP5I), [2](https://www.mathwork
 ## MPU-9250
 Refs: [1](https://medium.com/@niru5/hands-on-with-rpi-and-mpu9250-part-3-232378fa6dbc)
 
+
+
+# ROS State Estimation
+Refs: [1](https://kapernikov.com/the-ros-robot_localization-package/), [2](https://automaticaddison.com/sensor-fusion-using-the-ros-robot-pose-ekf-package/), [3](http://wiki.ros.org/robot_pose_ekf), [4](https://github.com/ros-planning/robot_pose_ekf/blob/master/include/robot_pose_ekf/odom_estimation.h), [5](https://github.com/ros-planning/robot_pose_ekf/blob/master/src/odom_estimation.cpp), [6]()
+
+# EKF Implementations
+
+Refs: [1](https://github.com/Sina-Baharlou/Pose-Estimation-EKF), [2](https://orocos.org/bfl.html)
 
 # Visual Odometry
 
