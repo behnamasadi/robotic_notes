@@ -1,0 +1,35 @@
+<?xml  version="1.0" ?>
+<robot name="myfirst_robot">
+
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder radius="0.2" length="0.6"/>                
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </visual>
+    </link>
+    <link name="right_leg">
+        <visual>
+            <geometry>
+                <box size="0.6 0.1 0.2"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </visual>
+    </link>
+
+    <joint name="base_to_right_leg" type="fixed">
+        <parent link="base_link"/>
+        <child link="right_leg"/>
+        <origin rpy="0 0 0" xyz="0 1 1"/>
+    </joint>
+
+<!-- 
+    <joint name="base_to_right_leg" type="fixed">
+        <parent link="base_link"/>
+        <child link="right_leg"/>
+        <origin xyz="0 -0.22 0.25"/>    
+    </joint>
+-->
+</robot>
