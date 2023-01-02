@@ -575,3 +575,62 @@ Refs: [1](https://online.stat.psu.edu/stat414/lesson/21/21.1)
 # Hand-Eye Calibration
 Refs: [1](https://support.zivid.com/en/latest/academy/applications/hand-eye.html), [2](https://wiki.ros.org/ensenso_driver/Tutorials/HandEyeCalibration)
 
+
+# Accelerometer
+The accelerometer output has three components but, since the vector magnitude
+must always equal 1g in the absence of linear acceleration, has just two degrees of freedom. The
+accelerometer vector lies on the surface of a sphere with radius 1g. 
+
+We have six different rotation matrix depending on the order of rotation around axis, and in 4 of them we will have to determine 
+<img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta,&space;\psi" title="https://latex.codecogs.com/svg.image?\phi, \theta, \psi" />, however in the following rotation matrix, we have to determine only <img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta" title="https://latex.codecogs.com/svg.image?\phi, \theta" />
+
+
+<img src="https://latex.codecogs.com/svg.image?\begin{bmatrix}&space;G_x\\&space;G_y&space;\\&space;G_z\end{bmatrix}=R_{xyz}\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=R_x(\phi)R_y(\theta)R_z(\psi)\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=\begin{bmatrix}&space;-sin\theta\\&space;cos\theta&space;sin\phi\\cos\theta&space;cos\phi\end{bmatrix}" title="https://latex.codecogs.com/svg.image?\begin{bmatrix} G_x\\ G_y \\ G_z\end{bmatrix}=R_{xyz}\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=R_x(\phi)R_y(\theta)R_z(\psi)\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=\begin{bmatrix} -sin\theta\\ cos\theta sin\phi\\cos\theta cos\phi\end{bmatrix}" />
+
+or 
+
+<img src="https://latex.codecogs.com/svg.image?\begin{bmatrix}&space;G_x\\&space;G_y&space;\\&space;G_z\end{bmatrix}=R_{yxz}\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=R_y(\theta)R_x(\phi)R_z(\psi)\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=\begin{bmatrix}&space;-sin\theta&space;cos\phi&space;\\sin\phi&space;\\cos\theta&space;cos\phi\end{bmatrix}" title="https://latex.codecogs.com/svg.image?\begin{bmatrix} G_x\\ G_y \\ G_z\end{bmatrix}=R_{yxz}\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=R_y(\theta)R_x(\phi)R_z(\psi)\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=\begin{bmatrix} -sin\theta cos\phi \\sin\phi \\cos\theta cos\phi\end{bmatrix}" />
+
+
+The lack of any dependence on the yaw rotation angle <img src="https://latex.codecogs.com/svg.image?&space;\psi" title="https://latex.codecogs.com/svg.image? \psi" /> is easy to understand physically
+since the first rotation is in yaw <img src="https://latex.codecogs.com/svg.image?&space;\psi" title="https://latex.codecogs.com/svg.image? \psi" /> around the smartphone z-axis which is initially aligned with the
+gravitational field and pointing downwards. All accelerometers are completely insensitive to rotations
+about the gravitational field vector and cannot be used to determine such a rotation.
+
+It is conventional therefore to select either the rotation sequence <img src="https://latex.codecogs.com/svg.image?R_{xyz}" title="https://latex.codecogs.com/svg.image?R_{xyz}" /> or <img src="https://latex.codecogs.com/svg.image?R_{yxz}" title="https://latex.codecogs.com/svg.image?R_{yxz}" />
+
+<br/>
+<br/>
+
+
+<img src="https://latex.codecogs.com/svg.image?R_{xyz}" title="https://latex.codecogs.com/svg.image?R_{xyz}" /> will give us:
+
+<img src="https://latex.codecogs.com/svg.image?\frac{G}{||G&space;||}&space;=\begin{bmatrix}&space;-sin\theta\\&space;cos\theta&space;sin\phi\\cos\theta&space;cos\phi\end{bmatrix}" title="https://latex.codecogs.com/svg.image?\frac{G}{||G ||} =\begin{bmatrix} -sin\theta\\ cos\theta sin\phi\\cos\theta cos\phi\end{bmatrix}" />
+
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.image?tan\phi=\frac{G_y}{G_z}" title="https://latex.codecogs.com/svg.image?tan\phi=\frac{G_y}{G_z}" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.image?tan\theta=\frac{-G_x}{&space;\sqrt{&space;G_z^2&space;&plus;&space;G_y^2}}" title="https://latex.codecogs.com/svg.image?tan\theta=\frac{-G_x}{ \sqrt{ G_z^2 + G_y^2}}" />
+<br/>
+<br/>
+
+and <img src="https://latex.codecogs.com/svg.image?R_{yxz}" title="https://latex.codecogs.com/svg.image?R_{yxz}" /> will give us:
+
+<img src="https://latex.codecogs.com/svg.image?tan\theta=\frac{-G_x}{G_z}" title="https://latex.codecogs.com/svg.image?tan\theta=\frac{-G_x}{G_z}" />
+<br/>
+<br/>
+<img src="https://latex.codecogs.com/svg.image?tan\theta=\frac{G_y}{&space;\sqrt{&space;G_z^2&space;&plus;&space;G_x^2}}" title="https://latex.codecogs.com/svg.image?tan\theta=\frac{G_y}{ \sqrt{ G_z^2 + G_x^2}}" />
+
+<br/>
+<br/>
+
+Therefore give different results for the roll and pitch angles from the same accelerometer reading. As mentioned earlier, this is a simple consequence of the fact that rotation matrices do not commute. The order of rotations is important and must always be specified when referring to specific orientation angles.
+
+## Eliminating Duplicate Solutions by Limiting the Roll and Pitch Ranges
+
