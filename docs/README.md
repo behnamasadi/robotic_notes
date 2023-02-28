@@ -592,6 +592,10 @@ We have six different rotation matrix depending on the order of rotation around 
 <img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta,&space;\psi" title="https://latex.codecogs.com/svg.image?\phi, \theta, \psi" />, however in the following rotation matrix, we have to determine only <img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta" title="https://latex.codecogs.com/svg.image?\phi, \theta" />
 
 
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bpmatrix%7D%20cos%28%5Ctheta%29cos%28%5Cpsi%29%20%26%20cos%28%5Ctheta%29sin%28%5Cpsi%29%20%26%20sin%28%5Ctheta%29%5C%5C%20cos%28%5Cpsi%29sin%28%5Ctheta%29sin%28%5Cphi%29-cos%28%5Cphi%29sin%28%5Cpsi%29%26%20cos%28%5Cphi%29cos%28%5Cpsi%29&plus;sin%28%5Ctheta%29sin%28%5Cphi%29sin%28%5Cpsi%29%20%26%20cos%28%5Ctheta%29sin%28%5Cphi%29%20%5C%5C%20cos%28%5Ctheta%29cos%28%5Cpsi%29sin%28%5Ctheta%29%20&plus;sin%28%5Cphi%29sin%28%5Cpsi%29%20%26%20cos%28%5Cphi%29sin%28%5Ctheta%29sin%28%5Cpsi%29%20-cos%28%5Cpsi%29sin%28%5Cphi%29%26%20cos%28%5Ctheta%29cos%28%5Cphi%29%20%5Cend%7Bpmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\begin{pmatrix} cos(\theta)cos(\psi) & cos(\theta)sin(\psi) & sin(\theta)\\ cos(\psi)sin(\theta)sin(\phi)-cos(\phi)sin(\psi)& cos(\phi)cos(\psi)+sin(\theta)sin(\phi)sin(\psi) & cos(\theta)sin(\phi) \\ cos(\theta)cos(\psi)sin(\theta) +sin(\phi)sin(\psi) & cos(\phi)sin(\theta)sin(\psi) -cos(\psi)sin(\phi)& cos(\theta)cos(\phi) \end{pmatrix}" />
+
+
 <img src="https://latex.codecogs.com/svg.image?\begin{bmatrix}&space;G_x\\&space;G_y&space;\\&space;G_z\end{bmatrix}=R_{xyz}\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=R_x(\phi)R_y(\theta)R_z(\psi)\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=\begin{bmatrix}&space;-sin\theta\\&space;cos\theta&space;sin\phi\\cos\theta&space;cos\phi\end{bmatrix}" title="https://latex.codecogs.com/svg.image?\begin{bmatrix} G_x\\ G_y \\ G_z\end{bmatrix}=R_{xyz}\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=R_x(\phi)R_y(\theta)R_z(\psi)\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=\begin{bmatrix} -sin\theta\\ cos\theta sin\phi\\cos\theta cos\phi\end{bmatrix}" />
 
 or 
