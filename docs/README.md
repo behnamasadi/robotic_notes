@@ -581,6 +581,13 @@ The accelerometer output has three components but, since the vector magnitude
 must always equal 1g in the absence of linear acceleration, has just two degrees of freedom. The
 accelerometer vector lies on the surface of a sphere with radius 1g. 
 
+
+<img src="https://latex.codecogs.com/svg.latex?%5C%5C%20R_x%28%5Cphi%29%3D%5Cbegin%7Bpmatrix%7D%201%20%26%200%20%260%20%5C%5C%200%20%26cos%28%5Cphi%29%20%26%20sin%28%5Cphi%29%20%5C%5C%200%20%26%20-sin%28%5Cphi%29%20%26%20cos%28%5Cphi%29%5C%5C%20%5Cend%7Bpmatrix%7D%20%5C%5C%20R_y%28%5Ctheta%29%3D%5Cbegin%7Bpmatrix%7D%20cos%28%5Ctheta%29%20%260%20%26-sin%28%5Ctheta%29%5C%5C%200%26%201%26%200%5C%5C%20sin%28%5Ctheta%29%20%260%20%26cos%28%5Ctheta%29%20%5C%5C%20%5Cend%7Bpmatrix%7D%20%5C%5C%20R_z%28%5Cpsi%29%3D%5Cbegin%7Bpmatrix%7D%20cos%28%5Cpsi%29%20%26%20sin%28%5Cpsi%29%20%260%20%5C%5C%20-sin%28%5Cpsi%29%20%26%20cos%28%5Cpsi%29%20%260%20%5C%5C%200%20%26%200%20%26%201%5C%5C%20%5Cend%7Bpmatrix%7D" alt="\\R_x(\phi)=\begin{pmatrix} 
+1 & 0 &0 \\  0 &cos(\phi)  & sin(\phi) \\ 0 & -sin(\phi) & cos(\phi)\\ \end{pmatrix}\\ R_y(\theta)=\begin{pmatrix}  cos(\theta) &0 &-sin(\theta)\\  0& 1& 0\\ sin(\theta) &0 &cos(\theta) \\ \end{pmatrix} \\ R_z(\psi)=\begin{pmatrix} cos(\psi) & sin(\psi) &0 \\  -sin(\psi) & cos(\psi) &0 \\ 0 & 0 & 1\\ \end{pmatrix}" />
+
+
+
+
 We have six different rotation matrix depending on the order of rotation around axis, and in 4 of them we will have to determine 
 <img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta,&space;\psi" title="https://latex.codecogs.com/svg.image?\phi, \theta, \psi" />, however in the following rotation matrix, we have to determine only <img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta" title="https://latex.codecogs.com/svg.image?\phi, \theta" />
 
