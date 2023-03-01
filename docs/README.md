@@ -577,9 +577,31 @@ Refs: [1](https://support.zivid.com/en/latest/academy/applications/hand-eye.html
 
 
 # Accelerometer
-The accelerometer output has three components but, since the vector magnitude
-must always equal 1g in the absence of linear acceleration, has just two degrees of freedom. The
-accelerometer vector lies on the surface of a sphere with radius 1g. 
+
+
+Accelerometer sensors measure the difference between any linear acceleration in the accelerometer’s reference frame and can be used to determine the accelerometer pitch and roll orientation angles.
+the accelerometer will give us <img src="https://latex.codecogs.com/svg.latex?G_p" alt="https://latex.codecogs.com/svg.latex?G_p" />
+and we are looking for <img src="https://latex.codecogs.com/svg.latex?R" alt="https://latex.codecogs.com/svg.latex?R" /> 
+that relate gravity to out measurement to extract roll and pitch.
+
+
+**Since the gravity express as <img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bbmatrix%7D%200%5C%5C%200%5C%5C%201%20%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\begin{bmatrix} 0\\  0\\  1 \end{bmatrix}" /> it means that the `Z` axis of  world coordinate frame is up, East, North, Up (ENU), used in geography (z is up and x is in the direction of move, y is pointing left)**
+
+
+```
+          ▲ z
+          |    ▲
+          |   / x
+          |  /
+y         | /
+◀---------|/
+```
+
+
+<img src="https://latex.codecogs.com/svg.latex?G_p%3D%5Cbegin%7Bbmatrix%7D%20G_%7Bpx%7D%20%5C%5C%20G_%7Bpy%7D%20%5C%5C%20G_%7Bpz%7D%20%5Cend%7Bbmatrix%7D%3DRg%3DR%5Cbegin%7Bbmatrix%7D%200%20%5C%5C%200%20%5C%5C%201%20%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?G_p=\begin{bmatrix} G_{px} \\ G_{py} \\  G_{pz} \end{bmatrix}=Rg=R\begin{bmatrix} 0 \\ 0 \\  1 \end{bmatrix}" />
+
+
+
 
 
 <img src="https://latex.codecogs.com/svg.latex?%5C%5C%20R_x%28%5Cphi%29%3D%5Cbegin%7Bpmatrix%7D%201%20%26%200%20%260%20%5C%5C%200%20%26cos%28%5Cphi%29%20%26%20sin%28%5Cphi%29%20%5C%5C%200%20%26%20-sin%28%5Cphi%29%20%26%20cos%28%5Cphi%29%5C%5C%20%5Cend%7Bpmatrix%7D%20%5C%5C%20R_y%28%5Ctheta%29%3D%5Cbegin%7Bpmatrix%7D%20cos%28%5Ctheta%29%20%260%20%26-sin%28%5Ctheta%29%5C%5C%200%26%201%26%200%5C%5C%20sin%28%5Ctheta%29%20%260%20%26cos%28%5Ctheta%29%20%5C%5C%20%5Cend%7Bpmatrix%7D%20%5C%5C%20R_z%28%5Cpsi%29%3D%5Cbegin%7Bpmatrix%7D%20cos%28%5Cpsi%29%20%26%20sin%28%5Cpsi%29%20%260%20%5C%5C%20-sin%28%5Cpsi%29%20%26%20cos%28%5Cpsi%29%20%260%20%5C%5C%200%20%26%200%20%26%201%5C%5C%20%5Cend%7Bpmatrix%7D" alt="\\R_x(\phi)=\begin{pmatrix} 
@@ -588,13 +610,51 @@ accelerometer vector lies on the surface of a sphere with radius 1g.
 
 
 
-We have six different rotation matrix depending on the order of rotation around axis, and in 4 of them we will have to determine 
-<img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta,&space;\psi" title="https://latex.codecogs.com/svg.image?\phi, \theta, \psi" />, however in the following rotation matrix, we have to determine only <img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta" title="https://latex.codecogs.com/svg.image?\phi, \theta" />
+We have six different rotation matrix depending on the order of rotation around axis:
+
+<img src="https://latex.codecogs.com/svg.latex?R_%7Bxyz%7D%2CR_%7Bxzy%7D%2CR_%7Byxz%7D%2CR_%7Byzx%7D%2CR_%7Bzyx%7D%2CR_%7Bzxy%7D%2C" alt="https://latex.codecogs.com/svg.latex?R_{xyz},R_{xzy},R_{yxz},R_{yzx},R_{zyx},R_{zxy}" /> and in 4 of them we will have to determine 
+<img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta,&space;\psi" title="https://latex.codecogs.com/svg.image?\phi, \theta, \psi" />, 
+
+<br/>
+
+For instance in 
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?R_zR_yR_x%5Cbegin%7Bbmatrix%7D%200%5C%5C%200%5C%5C%201%20%5Cend%7Bbmatrix%7D%20%3D%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%26%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20&plus;%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%26%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%5C%5C-%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%26%20-%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20&plus;%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%26%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20&plus;%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%26%20-%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%26%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D%5Cbegin%7Bbmatrix%7D%200%5C%5C%200%5C%5C%201%20%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?R_zR_yR_x\begin{bmatrix} 0\\ 0\\  1 \end{bmatrix} =\displaystyle \left[\begin{matrix}\cos{\left(\psi \right)} \cos{\left(\theta \right)} & \sin{\left(\phi \right)} \sin{\left(\theta \right)} \cos{\left(\psi \right)} + \sin{\left(\psi \right)} \cos{\left(\phi \right)} & \sin{\left(\phi \right)} \sin{\left(\psi \right)} - \sin{\left(\theta \right)} \cos{\left(\phi \right)} \cos{\left(\psi \right)}\\- \sin{\left(\psi \right)} \cos{\left(\theta \right)} & - \sin{\left(\phi \right)} \sin{\left(\psi \right)} \sin{\left(\theta \right)} + \cos{\left(\phi \right)} \cos{\left(\psi \right)} & \sin{\left(\phi \right)} \cos{\left(\psi \right)} + \sin{\left(\psi \right)} \sin{\left(\theta \right)} \cos{\left(\phi \right)}\\\sin{\left(\theta \right)} & - \sin{\left(\phi \right)} \cos{\left(\theta \right)} & \cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]\begin{bmatrix} 0\\ 0\\  1 \end{bmatrix} "/>
+
+
+<br/>
+<br/>
 
 
 
-<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bpmatrix%7D%20cos%28%5Ctheta%29cos%28%5Cpsi%29%20%26%20cos%28%5Ctheta%29sin%28%5Cpsi%29%20%26%20sin%28%5Ctheta%29%5C%5C%20cos%28%5Cpsi%29sin%28%5Ctheta%29sin%28%5Cphi%29-cos%28%5Cphi%29sin%28%5Cpsi%29%26%20cos%28%5Cphi%29cos%28%5Cpsi%29&plus;sin%28%5Ctheta%29sin%28%5Cphi%29sin%28%5Cpsi%29%20%26%20cos%28%5Ctheta%29sin%28%5Cphi%29%20%5C%5C%20cos%28%5Ctheta%29cos%28%5Cpsi%29sin%28%5Ctheta%29%20&plus;sin%28%5Cphi%29sin%28%5Cpsi%29%20%26%20cos%28%5Cphi%29sin%28%5Ctheta%29sin%28%5Cpsi%29%20-cos%28%5Cpsi%29sin%28%5Cphi%29%26%20cos%28%5Ctheta%29cos%28%5Cphi%29%20%5Cend%7Bpmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\begin{pmatrix} cos(\theta)cos(\psi) & cos(\theta)sin(\psi) & sin(\theta)\\ cos(\psi)sin(\theta)sin(\phi)-cos(\phi)sin(\psi)& cos(\phi)cos(\psi)+sin(\theta)sin(\phi)sin(\psi) & cos(\theta)sin(\phi) \\ cos(\theta)cos(\psi)sin(\theta) +sin(\phi)sin(\psi) & cos(\phi)sin(\theta)sin(\psi) -cos(\psi)sin(\phi)& cos(\theta)cos(\phi) \end{pmatrix}" />
+<img src="https://latex.codecogs.com/svg.latex?%3D%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20&plus;%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}\sin{\left(\phi \right)} \sin{\left(\psi \right)} - \sin{\left(\theta \right)} \cos{\left(\phi \right)} \cos{\left(\psi \right)}\\\sin{\left(\phi \right)} \cos{\left(\psi \right)} + \sin{\left(\psi \right)} \sin{\left(\theta \right)} \cos{\left(\phi \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
 
+<br/>
+<br/>
+However in the following rotation matrix, we have to determine only <img src="https://latex.codecogs.com/svg.image?\phi,&space;\theta" title="https://latex.codecogs.com/svg.image?\phi, \theta" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?R_%7Bxyz%7D%5Cbegin%7Bbmatrix%7D0%5C%5C%200%5C%5C%201%5Cend%7Bbmatrix%7D%3D%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%26%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%26%20-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20-%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%26%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20&plus;%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%26%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20&plus;%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%26%20-%20%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20&plus;%20%5Csin%7B%5Cleft%28%5Cpsi%20%5Cright%29%7D%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%26%20%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D%5Cbegin%7Bbmatrix%7D%200%5C%5C%200%5C%5C%201%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?R_{xyz}\begin{bmatrix}0\\ 0\\ 1\end{bmatrix}=\displaystyle \left[\begin{matrix}\cos{\left(\psi \right)} \cos{\left(\theta \right)} & \sin{\left(\psi \right)} \cos{\left(\theta \right)} & - \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \sin{\left(\theta \right)} \cos{\left(\psi \right)} - \sin{\left(\psi \right)} \cos{\left(\phi \right)} & \sin{\left(\phi \right)} \sin{\left(\psi \right)} \sin{\left(\theta \right)} + \cos{\left(\phi \right)} \cos{\left(\psi \right)} & \sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\sin{\left(\phi \right)} \sin{\left(\psi \right)} + \sin{\left(\theta \right)} \cos{\left(\phi \right)} \cos{\left(\psi \right)} & - \sin{\left(\phi \right)} \cos{\left(\psi \right)} + \sin{\left(\psi \right)} \sin{\left(\theta \right)} \cos{\left(\phi \right)} & \cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]\begin{bmatrix} 0\\  0\\  1\end{bmatrix}" />
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?=%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D
+" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}- \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
+
+
+
+<br/>
+<br/>
+
+Therefore if we write R as <img src="https://latex.codecogs.com/svg.latex?R_%7Bxyz%7D%20%5Ctext%7B%20or%20%7D%20R_%7Byxz%7D" alt="https://latex.codecogs.com/svg.latex?R_{xyz} \text{ or }  R_{yxz}"/>:
+
+
+<br/>
+<br/>
 
 <img src="https://latex.codecogs.com/svg.image?\begin{bmatrix}&space;G_x\\&space;G_y&space;\\&space;G_z\end{bmatrix}=R_{xyz}\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=R_x(\phi)R_y(\theta)R_z(\psi)\begin{bmatrix}&space;0\\&space;0\\1\end{bmatrix}=\begin{bmatrix}&space;-sin\theta\\&space;cos\theta&space;sin\phi\\cos\theta&space;cos\phi\end{bmatrix}" title="https://latex.codecogs.com/svg.image?\begin{bmatrix} G_x\\ G_y \\ G_z\end{bmatrix}=R_{xyz}\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=R_x(\phi)R_y(\theta)R_z(\psi)\begin{bmatrix} 0\\ 0\\1\end{bmatrix}=\begin{bmatrix} -sin\theta\\ cos\theta sin\phi\\cos\theta cos\phi\end{bmatrix}" />
 
@@ -613,6 +673,7 @@ It is conventional therefore to select either the rotation sequence <img src="ht
 <br/>
 <br/>
 
+## Solving R xyz for the Pitch and Roll Angles
 
 <img src="https://latex.codecogs.com/svg.image?R_{xyz}" title="https://latex.codecogs.com/svg.image?R_{xyz}" /> will give us:
 
@@ -631,7 +692,13 @@ It is conventional therefore to select either the rotation sequence <img src="ht
 <br/>
 <br/>
 
-and <img src="https://latex.codecogs.com/svg.image?R_{yxz}" title="https://latex.codecogs.com/svg.image?R_{yxz}" /> will give us:
+
+## Solving R yxz for the Pitch and Roll Angles
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.image?R_{yxz}" title="https://latex.codecogs.com/svg.image?R_{yxz}" /> will give us:
 
 <img src="https://latex.codecogs.com/svg.image?tan\theta=\frac{-G_x}{G_z}" title="https://latex.codecogs.com/svg.image?tan\theta=\frac{-G_x}{G_z}" />
 <br/>
@@ -641,7 +708,52 @@ and <img src="https://latex.codecogs.com/svg.image?R_{yxz}" title="https://latex
 <br/>
 <br/>
 
-Therefore give different results for the roll and pitch angles from the same accelerometer reading. As mentioned earlier, this is a simple consequence of the fact that rotation matrices do not commute. The order of rotations is important and must always be specified when referring to specific orientation angles.
+**The order of rotations is important and must always be specified when referring to specific orientation angles.**
+
+Refs: [1](https://www.nxp.com/files-static/sensors/doc/app_note/AN3461.pdf)
+
+# Accelerometer Model
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bbmatrix%7D%20a_x%20%5C%5C%20a_y%5C%5C%20a_z%20%5Cend%7Bbmatrix%7D%3D%20%5Cunderbrace%7B%5Cfrac%7Bdv%7D%7Bdt%7D%7D_%7B%5Ctext%7Blinear%7D%7D%20&plus;%20%5Cunderbrace%7B%5Comega_b%20%5Ctimes%20%5Cnu%7D_%7B%5Ctext%7Btranslation%2C%20rotation%7D%7D%20-%5Cunderbrace%7BR%5Cbegin%7Bbmatrix%7D0%5C%5C%200%5C%5C%20g%20%5Cend%7Bbmatrix%7D%7D_%7B%5Ctext%7Bgravity%7D%7D%20&plus;%20%5Cunderbrace%7B%5Cbeta%28t%29%7D_%7B%5Ctext%7Bbias%7D%7D%20&plus;%20%5Cunderbrace%7B%20%5Cmu%28t%29%7D_%7B%5Ctext%7Bnoise%7D%7D" alt="https://latex.codecogs.com/svg.latex?\begin{bmatrix} a_x \\  a_y\\  a_z \end{bmatrix}= \underbrace{\frac{dv}{dt}}_{\text{linear}} +  \underbrace{\omega_b \times \nu}_{\text{translation, rotation}}  -\underbrace{R\begin{bmatrix}0\\ 0\\  g \end{bmatrix}}_{\text{gravity}}  + \underbrace{\beta(t)}_{\text{bias}} + \underbrace{ \mu(t)}_{\text{noise}}" />
+
+# Gyroscope Model
+
+<img src="https://latex.codecogs.com/svg.latex?%5Comega%3D%5Comega_%7Btrue%7D%20&plus;%20%5Cunderbrace%7B%5Cbeta%28t%29%7D_%7B%5Ctext%7Bbias%7D%7D%20&plus;%20%5Cunderbrace%7B%20%5Cmu%28t%29%7D_%7B%5Ctext%7Bnoise%7D%7D" alt="https://latex.codecogs.com/svg.latex?\omega=\omega_{true}  + \underbrace{\beta(t)}_{\text{bias}} + \underbrace{ \mu(t)}_{\text{noise}} " />
+
+
+# Relationship Between Euler-Angle Rates and Body-Axis Rates
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bbmatrix%7D%20%5Cdot%7B%5Cphi%7D%20%5C%5C%20%5Cdot%7B%5Ctheta%7D%5C%5C%20%5Cdot%7B%5Cpsi%7D%20%5Cend%7Bbmatrix%7D%3D%5Cbegin%7Bbmatrix%7D%201%20%26%20sin%28%5Cphi%29tan%28%5Ctheta%29%20%26%20cos%28%5Cphi%29%5Ctan%28%5Ctheta%29%20%5C%5C%200%20%26%20cos%28%5Cphi%29%20%26%20-sin%28%5Cphi%29%5C%5C%200%20%26%20sin%28%5Cphi%29sec%28%5Ctheta%29%20%26%20cos%28%5Cphi%29sec%28%5Ctheta%29%20%5Cend%7Bbmatrix%7D%5Cbegin%7Bbmatrix%7D%20p%5C%5C%20q%5C%5C%20r%20%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\begin{bmatrix}
+\dot{\phi} \\ 
+\dot{\theta}\\ 
+\dot{\psi}
+\end{bmatrix}=\begin{bmatrix}
+1 & sin(\phi)tan(\theta) & cos(\phi)\tan(\theta) \\ 
+0 & cos(\phi) & -sin(\phi)\\ 
+0 & sin(\phi)sec(\theta) & cos(\phi)sec(\theta) 
+\end{bmatrix}\begin{bmatrix}
+p\\ 
+q\\ 
+r
+\end{bmatrix}" />
+<br/>
+<br/>
+# Complementary Filter
+
+Accelerometer gives estimate in non accelerating conditions (they have problem when they are in acceleration motion) and Gyroscope gives estimate of short period of times (bias drift)
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cunderbrace%7B%5Chat%7B%5Cphi%7D_%7Bn&plus;1%7D%20%7D_%7B%5Ctext%7Bcurrent%20angle%20estimate%7D%7D%20%3D%5Cunderbrace%7B%5Chat%7B%5Cphi%7D_%7Bacc%2Cn%7D%20%7D_%7B%5Ctext%7Bcalculated%20from%20accelerometer%7D%7D.%5Calpha%20&plus;%281-%5Calpha%29%5B%5Cunderbrace%7B%5Chat%7B%5Cphi%7D_%7Bn%7D%20%7D_%7B%5Ctext%7Bprevious%20angle%20estimate%7D%7D%20&plus;%20%5Cunderbrace%7BT.%5Cdot%7B%5Cphi%7D_%7Bgyro%2Cn%7D%20%7D_%7B%5Ctext%7Bchanges%20in%20angle%7D%7D%20%5D" alt="https://latex.codecogs.com/svg.latex?\underbrace{\hat{\phi}_{n+1}  }_{\text{current angle estimate}} =\underbrace{\hat{\phi}_{acc,n}  }_{\text{calculated from accelerometer}}.\alpha +(1-\alpha)[\underbrace{\hat{\phi}_{n}  }_{\text{previous angle estimate}} + \underbrace{T.\dot{\phi}_{gyro,n}  }_{\text{changes in angle}} ]"/>
+
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cunderbrace%7B%5Chat%7B%5Ctheta%7D_%7Bn&plus;1%7D%20%7D_%7B%5Ctext%7Bcurrent%20angle%20estimate%7D%7D%20%3D%5Cunderbrace%7B%5Chat%7B%5Ctheta%7D_%7Bacc%2Cn%7D%20%7D_%7B%5Ctext%7Bcalculated%20from%20accelerometer%7D%7D.%5Calpha%20&plus;%281-%5Calpha%29%5B%5Cunderbrace%7B%5Chat%7B%5Ctheta%7D_%7Bn%7D%20%7D_%7B%5Ctext%7Bprevious%20angle%20estimate%7D%7D%20&plus;%20%5Cunderbrace%7BT.%5Cdot%7B%5Ctheta%7D_%7Bgyro%2Cn%7D%20%7D_%7B%5Ctext%7Bchanges%20in%20angle%7D%7D%20%5D" alt="https://latex.codecogs.com/svg.latex?\underbrace{\hat{\theta}_{n+1}  }_{\text{current angle estimate}} =\underbrace{\hat{\theta}_{acc,n}  }_{\text{calculated from accelerometer}}.\alpha +(1-\alpha)[\underbrace{\hat{\theta}_{n}  }_{\text{previous angle estimate}} + \underbrace{T.\dot{\theta}_{gyro,n}  }_{\text{changes in angle}} ]" />
+
+
+<br/>
+<br/>
 
 ## Eliminating Duplicate Solutions by Limiting the Roll and Pitch Ranges
 
