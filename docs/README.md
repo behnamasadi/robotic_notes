@@ -642,8 +642,7 @@ However in the following rotation matrix, we have to determine only <img src="ht
 
 
 
-<img src="https://latex.codecogs.com/svg.latex?=%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D
-" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}- \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
+<img src="https://latex.codecogs.com/svg.latex?=%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}- \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
 
 
 
