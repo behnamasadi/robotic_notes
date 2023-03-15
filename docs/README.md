@@ -471,6 +471,9 @@ Refs: [1](https://www.youtube.com/watch?v=hN8dL55rP5I), [2](https://www.mathwork
 
 # IMU
 
+## IMU Noise Model
+
+Refs: [1](https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model)
 ## MPU-9250
 Refs: [1](https://medium.com/@niru5/hands-on-with-rpi-and-mpu9250-part-3-232378fa6dbc)
 
