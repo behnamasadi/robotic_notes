@@ -9,6 +9,9 @@ Apriltag coordinate:
 How to measure:
 <img src="images/apriltag_distance_measure.png" />
 
+<br/>
+<img src="images/apriltag_size_space.png" />
+
 
 # Generating Tag
 You need `ant` build system, the easiest way is to use the following container:
@@ -39,7 +42,7 @@ python3 tag_to_svg.py tagStandard52h13/tag52_13_00007.png tag52_13_00007.svg --s
 <img src="images/apriltag_ros_io_diagram.png" />
 
 
-Refs: [1](http://wiki.ros.org/apriltag_ros)
+Refs: [1](http://wiki.ros.org/apriltag_ros), [2](http://wiki.ros.org/apriltag_ros/Tutorials/Detection%20in%20a%20video%20stream)
 
 
 

@@ -1,4 +1,39 @@
-# Accelerometer
+# 1. Global References
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5Cmathbf%7Bg%7D%20%26%3D%26%20%5Cleft%5C%7B%20%5Cbegin%7Barray%7D%7Bll%7D%20%5Cbegin%7Bbmatrix%7D0%20%26%200%20%26%20-1%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BNED%7D%20%5C%5C%20%5Cbegin%7Bbmatrix%7D0%20%26%200%20%26%201%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BENU%7D%20%5Cend%7Barray%7D%20%5Cright.%5C%5C%20%26%26%20%5C%5C%20%5Cmathbf%7Br%7D%20%26%3D%26%20%5Cleft%5C%7B%20%5Cbegin%7Barray%7D%7Bll%7D%20%5Cfrac%7B1%7D%7B%5Csqrt%7B%5Ccos%5E2%5Ctheta&plus;%5Csin%5E2%5Ctheta%7D%7D%5Cbegin%7Bbmatrix%7D%5Ccos%5Ctheta%20%26%200%20%26%20%5Csin%5Ctheta%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BNED%7D%20%5C%5C%20%5Cfrac%7B1%7D%7B%5Csqrt%7B%5Ccos%5E2%5Ctheta&plus;%5Csin%5E2%5Ctheta%7D%7D%5Cbegin%7Bbmatrix%7D0%20%26%20%5Ccos%5Ctheta%20%26%20-%5Csin%5Ctheta%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BENU%7D%20%5Cend%7Barray%7D%20%5Cright.%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl}
+\mathbf{g} &=&
+\left\{
+\begin{array}{ll}
+    \begin{bmatrix}0 & 0 & -1\end{bmatrix}^T & \mathrm{if}\; \mathrm{NED} \\
+    \begin{bmatrix}0 & 0 & 1\end{bmatrix}^T & \mathrm{if}\; \mathrm{ENU}
+\end{array}
+\right.\\ && \\
+\mathbf{r} &=&
+\left\{
+\begin{array}{ll}
+    \frac{1}{\sqrt{\cos^2\theta+\sin^2\theta}}\begin{bmatrix}\cos\theta & 0 & \sin\theta\end{bmatrix}^T & \mathrm{if}\; \mathrm{NED} \\
+    \frac{1}{\sqrt{\cos^2\theta+\sin^2\theta}}\begin{bmatrix}0 & \cos\theta & -\sin\theta\end{bmatrix}^T & \mathrm{if}\; \mathrm{ENU}
+\end{array}
+\right.
+\end{array}" />
+
+
+
+# 2. Accelerometer Model
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bbmatrix%7D%20a_x%20%5C%5C%20a_y%5C%5C%20a_z%20%5Cend%7Bbmatrix%7D%3D%20%5Cunderbrace%7B%5Cfrac%7Bdv%7D%7Bdt%7D%7D_%7B%5Ctext%7Blinear%7D%7D%20&plus;%20%5Cunderbrace%7B%5Comega_b%20%5Ctimes%20%5Cnu%7D_%7B%5Ctext%7Btranslation%2C%20rotation%7D%7D%20-%5Cunderbrace%7BR%5Cbegin%7Bbmatrix%7D0%5C%5C%200%5C%5C%20g%20%5Cend%7Bbmatrix%7D%7D_%7B%5Ctext%7Bgravity%7D%7D%20&plus;%20%5Cunderbrace%7B%5Cbeta%28t%29%7D_%7B%5Ctext%7Bbias%7D%7D%20&plus;%20%5Cunderbrace%7B%20%5Cmu%28t%29%7D_%7B%5Ctext%7Bnoise%7D%7D" alt="https://latex.codecogs.com/svg.latex?\begin{bmatrix} a_x \\  a_y\\  a_z \end{bmatrix}= \underbrace{\frac{dv}{dt}}_{\text{linear}} +  \underbrace{\omega_b \times \nu}_{\text{translation, rotation}}  -\underbrace{R\begin{bmatrix}0\\ 0\\  g \end{bmatrix}}_{\text{gravity}}  + \underbrace{\beta(t)}_{\text{bias}} + \underbrace{ \mu(t)}_{\text{noise}}" />
+
+# 3. Gyroscope Model
+
+<img src="https://latex.codecogs.com/svg.latex?%5Comega%3D%5Comega_%7Btrue%7D%20&plus;%20%5Cunderbrace%7B%5Cbeta%28t%29%7D_%7B%5Ctext%7Bbias%7D%7D%20&plus;%20%5Cunderbrace%7B%20%5Cmu%28t%29%7D_%7B%5Ctext%7Bnoise%7D%7D" alt="https://latex.codecogs.com/svg.latex?\omega=\omega_{true}  + \underbrace{\beta(t)}_{\text{bias}} + \underbrace{ \mu(t)}_{\text{noise}} " />
+
+
+
+
+
+# 4. Attitude from gravity (Tilt)
+
 
 
 Accelerometer sensors measure the difference between any linear acceleration in the accelerometer’s reference frame and can be used to determine the accelerometer pitch and roll orientation angles.
@@ -64,8 +99,7 @@ However in the following rotation matrix, we have to determine only <img src="ht
 
 
 
-<img src="https://latex.codecogs.com/svg.latex?=%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D
-" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}- \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
+<img src="https://latex.codecogs.com/svg.latex?=%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}- \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
 
 
 
@@ -95,7 +129,11 @@ It is conventional therefore to select either the rotation sequence <img src="ht
 <br/>
 <br/>
 
-## Solving R xyz for the Pitch and Roll Angles
+
+Refs: [1](https://ahrs.readthedocs.io/en/latest/filters/tilt.html)
+
+
+## 4.1. Solving R xyz for the Pitch and Roll Angles
 
 <img src="https://latex.codecogs.com/svg.image?R_{xyz}" title="https://latex.codecogs.com/svg.image?R_{xyz}" /> will give us:
 
@@ -115,7 +153,7 @@ It is conventional therefore to select either the rotation sequence <img src="ht
 <br/>
 
 
-## Solving R yxz for the Pitch and Roll Angles
+## 4.2 Solving R yxz for the Pitch and Roll Angles
 
 <br/>
 <br/>
@@ -134,14 +172,83 @@ It is conventional therefore to select either the rotation sequence <img src="ht
 
 Refs: [1](https://www.nxp.com/files-static/sensors/doc/app_note/AN3461.pdf)
 
-# Accelerometer Model
 
 
-<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bbmatrix%7D%20a_x%20%5C%5C%20a_y%5C%5C%20a_z%20%5Cend%7Bbmatrix%7D%3D%20%5Cunderbrace%7B%5Cfrac%7Bdv%7D%7Bdt%7D%7D_%7B%5Ctext%7Blinear%7D%7D%20&plus;%20%5Cunderbrace%7B%5Comega_b%20%5Ctimes%20%5Cnu%7D_%7B%5Ctext%7Btranslation%2C%20rotation%7D%7D%20-%5Cunderbrace%7BR%5Cbegin%7Bbmatrix%7D0%5C%5C%200%5C%5C%20g%20%5Cend%7Bbmatrix%7D%7D_%7B%5Ctext%7Bgravity%7D%7D%20&plus;%20%5Cunderbrace%7B%5Cbeta%28t%29%7D_%7B%5Ctext%7Bbias%7D%7D%20&plus;%20%5Cunderbrace%7B%20%5Cmu%28t%29%7D_%7B%5Ctext%7Bnoise%7D%7D" alt="https://latex.codecogs.com/svg.latex?\begin{bmatrix} a_x \\  a_y\\  a_z \end{bmatrix}= \underbrace{\frac{dv}{dt}}_{\text{linear}} +  \underbrace{\omega_b \times \nu}_{\text{translation, rotation}}  -\underbrace{R\begin{bmatrix}0\\ 0\\  g \end{bmatrix}}_{\text{gravity}}  + \underbrace{\beta(t)}_{\text{bias}} + \underbrace{ \mu(t)}_{\text{noise}}" />
+# Expressing IMU reading with Quaternion
 
-# Gyroscope Model
+The IMU (local sensor) frame is labeled as <img src="https://latex.codecogs.com/svg.latex?L" alt="https://latex.codecogs.com/svg.latex?L" /> , and the global (Earth) frame as <img src="https://latex.codecogs.com/svg.latex?G" alt="https://latex.codecogs.com/svg.latex?G" /> . The measured acceleration, <img src="https://latex.codecogs.com/svg.latex?%5EL%5Cmathbf%7Ba%7D" alt="https://latex.codecogs.com/svg.latex?^L\mathbf{a}" /> , and the true Earth gravitational acceleration, <img src="https://latex.codecogs.com/svg.latex?%5EG%5Cmathbf%7Bg%7D" alt="https://latex.codecogs.com/svg.latex?^G\mathbf{g}" /> , are defined as unit vectors:
 
-<img src="https://latex.codecogs.com/svg.latex?%5Comega%3D%5Comega_%7Btrue%7D%20&plus;%20%5Cunderbrace%7B%5Cbeta%28t%29%7D_%7B%5Ctext%7Bbias%7D%7D%20&plus;%20%5Cunderbrace%7B%20%5Cmu%28t%29%7D_%7B%5Ctext%7Bnoise%7D%7D" alt="https://latex.codecogs.com/svg.latex?\omega=\omega_{true}  + \underbrace{\beta(t)}_{\text{bias}} + \underbrace{ \mu(t)}_{\text{noise}} " />
+
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5EL%5Cmathbf%7Ba%7D%20%26%3D%26%20%5Cbegin%7Bbmatrix%7Da_x%20%26%20a_y%20%26%20a_z%5Cend%7Bbmatrix%7D%5ET%20%5C%5C%20%26%26%20%5C%5C%20%5EG%5Cmathbf%7Bg%7D%20%26%3D%26%20%5Cbegin%7Bbmatrix%7D0%20%26%200%20%26%201%5Cend%7Bbmatrix%7D%5ET%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl} ^L\mathbf{a} &=& \begin{bmatrix}a_x & a_y & a_z\end{bmatrix}^T \\ && \\ ^G\mathbf{g} &=& \begin{bmatrix}0 & 0 & 1\end{bmatrix}^T \end{array}" />
+
+The gyroscopes measure the angular velocity (are not normalized unlike the other sensors), and are usually expressed in radians per second.
+
+<img src="https://latex.codecogs.com/svg.latex?%5EL%5Cmathbf%7B%5Comega%7D%20%3D%20%5Cbegin%7Bbmatrix%7D%5Comega_x%20%26%20%5Comega_y%20%26%20%5Comega_z%5Cend%7Bbmatrix%7D%5ET" alt="https://latex.codecogs.com/svg.latex?^L\mathbf{\omega} = \begin{bmatrix}\omega_x & \omega_y & \omega_z\end{bmatrix}^T" />
+
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%5EL_G%5Cmathbf%7Bq%7D" alt="https://latex.codecogs.com/svg.latex?^L_G\mathbf{q}" />:
+relats the global frame <img src="https://latex.codecogs.com/svg.latex?G" alt="https://latex.codecogs.com/svg.latex?G" /> to the local frame <img src="https://latex.codecogs.com/svg.latex?L" alt="https://latex.codecogs.com/svg.latex?L" /> through the inverse orientation which rotates the measured quantities <img src="https://latex.codecogs.com/svg.latex?%5EL%5Cmathbf%7Ba%7D" alt="https://latex.codecogs.com/svg.latex?^L\mathbf{a}" />
+  into the reference quantities <img src="https://latex.codecogs.com/svg.latex?%5EG%5Cmathbf%7Bg%7D" alt="https://latex.codecogs.com/svg.latex?^G\mathbf{g}" />:
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5Cmathbf%7BR%7D%5ET%28%5EL_G%5Cmathbf%7Bq%7D%29%5C%2C%5EL%5Cmathbf%7Ba%7D%20%26%3D%26%20%5C%2C%5EG%5Cmathbf%7Bg%7D%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl} \mathbf{R}^T(^L_G\mathbf{q})\,^L\mathbf{a} &=& \,^G\mathbf{g} \end{array} " /> 
+
+<br/>
+
+# 5. Quaternion from Accelerometer
+
+<br/>
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5Cmathbf%7BR%7D%28%5EL_G%5Cmathbf%7Bq%7D%29%5C%2C%5EG%5Cmathbf%7Bg%7D%20%26%3D%26%20%5C%2C%20%5EL%5Cmathbf%7Ba%7D%20%5C%5C%20%5Cmathbf%7BR%7D%28%5Cmathbf%7Bq%7D_%5Cmathrm%7Bacc%7D%29%20%5Cbegin%7Bbmatrix%7D0%20%5C%5C%200%20%5C%5C%201%5Cend%7Bbmatrix%7D%20%26%3D%26%20%5Cbegin%7Bbmatrix%7Da_x%20%5C%5C%20a_y%20%5C%5C%20a_z%5Cend%7Bbmatrix%7D%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl}
+\mathbf{R}(^L_G\mathbf{q})\,^G\mathbf{g} &=& \, ^L\mathbf{a} \\
+\mathbf{R}(\mathbf{q}_\mathrm{acc})
+\begin{bmatrix}0 \\ 0 \\ 1\end{bmatrix} &=&
+\begin{bmatrix}a_x \\ a_y \\ a_z\end{bmatrix}
+\end{array}" />
+
+
+The alignment of the gravity vector from global frame into local frame can be achieved by infinite rotations with definite roll and pitch angles and arbitrary yaw. To restrict the solutions to a finite number <img src="https://latex.codecogs.com/svg.latex?q_%7Bz%5Cmathrm%7Bacc%7D%7D%3D0" alt="https://latex.codecogs.com/svg.latex?q_{z\mathrm{acc}}=0" /> 
+ is chosen.
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# 6. Quaternion Integration
+## 6.1. Numerical Solution
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bq%7D_%7Bt&plus;1%7D%20%3D%20%5CBigg%5B%5Cmathbf%7BI%7D_4%20&plus;%20%5Cfrac%7B1%7D%7B2%7D%5Cboldsymbol%5COmega%28%5Cboldsymbol%5Comega%29%5CDelta%20t%5CBigg%5D%5Cmathbf%7Bq%7D_t" alt="https://latex.codecogs.com/svg.latex?\mathbf{q}_{t+1} = \Bigg[\mathbf{I}_4 + \frac{1}{2}\boldsymbol\Omega(\boldsymbol\omega)\Delta t\Bigg]\mathbf{q}_t
+"  />
+
+
+## 6.2. Closed-form Solution
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bq%7D_%7Bt&plus;1%7D%20%3D%20%5CBigg%5B%20%5Ccos%5CBig%28%5Cfrac%7B%5C%7C%5Cboldsymbol%5Comega%5C%7C%5CDelta%20t%7D%7B2%7D%5CBig%29%5Cmathbf%7BI%7D_4%20&plus;%20%5Cfrac%7B1%7D%7B%5C%7C%5Cboldsymbol%5Comega%5C%7C%7D%5Csin%5CBig%28%5Cfrac%7B%5C%7C%5Cboldsymbol%5Comega%5C%7C%5CDelta%20t%7D%7B2%7D%5CBig%29%5Cboldsymbol%5COmega%28%5Cboldsymbol%5Comega%29%20%5CBigg%5D%5Cmathbf%7Bq%7D_t" alt="https://latex.codecogs.com/svg.latex?\mathbf{q}_{t+1} =
+\Bigg[
+\cos\Big(\frac{\|\boldsymbol\omega\|\Delta t}{2}\Big)\mathbf{I}_4 +
+\frac{1}{\|\boldsymbol\omega\|}\sin\Big(\frac{\|\boldsymbol\omega\|\Delta t}{2}\Big)\boldsymbol\Omega(\boldsymbol\omega)
+\Bigg]\mathbf{q}_t
+" />
+
+
+# 7.1 Quaternion Derivative
+
+An orientation is described by <img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bq%7D%20%28t&plus;%5CDelta%20t%29" alt="https://latex.codecogs.com/svg.latex?\mathbf{q} (t+\Delta t)" />  at a time <img src="https://latex.codecogs.com/svg.latex?t&plus;%5CDelta%20t" alt="https://latex.codecogs.com/svg.latex?t+\Delta t" />t . This is after a rotation change <img src="https://latex.codecogs.com/svg.latex?%5CDelta%20q" alt="https://latex.codecogs.com/svg.latex?\Delta q" />  during <img src="https://latex.codecogs.com/svg.latex?%5CDelta%20t" alt="https://latex.codecogs.com/svg.latex?\Delta t" />  seconds is performed on the local frame 
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cdot%7B%5Cmathbf%7Bq%7D%7D%20%3D%20%5Cfrac%7B1%7D%7B2%7D%5Cboldsymbol%5COmega%28%5Cboldsymbol%5Comega%29%5Cmathbf%7Bq%7D" alt="https://latex.codecogs.com/svg.latex?\dot{\mathbf{q}} = \frac{1}{2}\boldsymbol\Omega(\boldsymbol\omega)\mathbf{q}" />
+<img src="" alt="" />
+
+<img src="" alt="" />
 
 
 # Relationship Between Euler-Angle Rates and Body-Axis Rates
@@ -177,53 +284,6 @@ Accelerometer gives estimate in non accelerating conditions (they have problem w
 <br/>
 <br/>
 
-# Expressing IMU reading with Quaternion
-
-The IMU (local sensor) frame is labeled as <img src="https://latex.codecogs.com/svg.latex?L" alt="https://latex.codecogs.com/svg.latex?L" /> , and the global (Earth) frame as <img src="https://latex.codecogs.com/svg.latex?G" alt="https://latex.codecogs.com/svg.latex?G" /> . The measured acceleration, <img src="https://latex.codecogs.com/svg.latex?%5EL%5Cmathbf%7Ba%7D" alt="https://latex.codecogs.com/svg.latex?^L\mathbf{a}" /> , and the true Earth gravitational acceleration, <img src="https://latex.codecogs.com/svg.latex?%5EG%5Cmathbf%7Bg%7D" alt="https://latex.codecogs.com/svg.latex?^G\mathbf{g}" /> , are defined as unit vectors:
-
-
-
-
-
-<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5EL%5Cmathbf%7Ba%7D%20%26%3D%26%20%5Cbegin%7Bbmatrix%7Da_x%20%26%20a_y%20%26%20a_z%5Cend%7Bbmatrix%7D%5ET%20%5C%5C%20%26%26%20%5C%5C%20%5EG%5Cmathbf%7Bg%7D%20%26%3D%26%20%5Cbegin%7Bbmatrix%7D0%20%26%200%20%26%201%5Cend%7Bbmatrix%7D%5ET%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl} ^L\mathbf{a} &=& \begin{bmatrix}a_x & a_y & a_z\end{bmatrix}^T \\ && \\ ^G\mathbf{g} &=& \begin{bmatrix}0 & 0 & 1\end{bmatrix}^T \end{array}" />
-
-The gyroscopes measure the angular velocity (are not normalized unlike the other sensors), and are usually expressed in radians per second.
-
-<img src="https://latex.codecogs.com/svg.latex?%5EL%5Cmathbf%7B%5Comega%7D%20%3D%20%5Cbegin%7Bbmatrix%7D%5Comega_x%20%26%20%5Comega_y%20%26%20%5Comega_z%5Cend%7Bbmatrix%7D%5ET" alt="https://latex.codecogs.com/svg.latex?^L\mathbf{\omega} = \begin{bmatrix}\omega_x & \omega_y & \omega_z\end{bmatrix}^T" />
-
-
-<br/>
-<br/>
-
-<img src="https://latex.codecogs.com/svg.latex?%5EL_G%5Cmathbf%7Bq%7D" alt="https://latex.codecogs.com/svg.latex?^L_G\mathbf{q}" />:
-relats the global frame <img src="https://latex.codecogs.com/svg.latex?G" alt="https://latex.codecogs.com/svg.latex?G" /> to the local frame <img src="https://latex.codecogs.com/svg.latex?L" alt="https://latex.codecogs.com/svg.latex?L" /> through the inverse orientation which rotates the measured quantities <img src="https://latex.codecogs.com/svg.latex?%5EL%5Cmathbf%7Ba%7D" alt="https://latex.codecogs.com/svg.latex?^L\mathbf{a}" />
-  into the reference quantities <img src="https://latex.codecogs.com/svg.latex?%5EG%5Cmathbf%7Bg%7D" alt="https://latex.codecogs.com/svg.latex?^G\mathbf{g}" />:
-
-
-
-<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5Cmathbf%7BR%7D%5ET%28%5EL_G%5Cmathbf%7Bq%7D%29%5C%2C%5EL%5Cmathbf%7Ba%7D%20%26%3D%26%20%5C%2C%5EG%5Cmathbf%7Bg%7D%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl} \mathbf{R}^T(^L_G\mathbf{q})\,^L\mathbf{a} &=& \,^G\mathbf{g} \end{array} " /> 
-
-<br/>
-
-# Quaternion from Accelerometer
-
-<br/>
-
-
-<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5Cmathbf%7BR%7D%28%5EL_G%5Cmathbf%7Bq%7D%29%5C%2C%5EG%5Cmathbf%7Bg%7D%20%26%3D%26%20%5C%2C%20%5EL%5Cmathbf%7Ba%7D%20%5C%5C%20%5Cmathbf%7BR%7D%28%5Cmathbf%7Bq%7D_%5Cmathrm%7Bacc%7D%29%20%5Cbegin%7Bbmatrix%7D0%20%5C%5C%200%20%5C%5C%201%5Cend%7Bbmatrix%7D%20%26%3D%26%20%5Cbegin%7Bbmatrix%7Da_x%20%5C%5C%20a_y%20%5C%5C%20a_z%5Cend%7Bbmatrix%7D%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl}
-\mathbf{R}(^L_G\mathbf{q})\,^G\mathbf{g} &=& \, ^L\mathbf{a} \\
-\mathbf{R}(\mathbf{q}_\mathrm{acc})
-\begin{bmatrix}0 \\ 0 \\ 1\end{bmatrix} &=&
-\begin{bmatrix}a_x \\ a_y \\ a_z\end{bmatrix}
-\end{array}" />
-
-
-The alignment of the gravity vector from global frame into local frame can be achieved by infinite rotations with definite roll and pitch angles and arbitrary yaw. To restrict the solutions to a finite number <img src="https://latex.codecogs.com/svg.latex?q_%7Bz%5Cmathrm%7Bacc%7D%7D%3D0" alt="https://latex.codecogs.com/svg.latex?q_{z\mathrm{acc}}=0" /> 
- is chosen.
-
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 
 
 
@@ -234,11 +294,11 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 # Accelerometer-Based Correction
 
 
-# Global References
 
 
 
-# Attitude from angular rate
+
+# Attitude from angular rate (Attitude propagation)
 A quaternion is updated via **integration** of angular rate measurements of a gyroscope. 
 
 matrix exponential:
@@ -290,40 +350,90 @@ This exponential map is formerly defined as:
 
 
 
-# Quaternion Derivative
-
-An orientation is described by <img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bq%7D%20%28t&plus;%5CDelta%20t%29" alt="https://latex.codecogs.com/svg.latex?\mathbf{q} (t+\Delta t)" />  at a time <img src="https://latex.codecogs.com/svg.latex?t&plus;%5CDelta%20t" alt="https://latex.codecogs.com/svg.latex?t+\Delta t" />t . This is after a rotation change <img src="https://latex.codecogs.com/svg.latex?%5CDelta%20q" alt="https://latex.codecogs.com/svg.latex?\Delta q" />  during <img src="https://latex.codecogs.com/svg.latex?%5CDelta%20t" alt="https://latex.codecogs.com/svg.latex?\Delta t" />  seconds is performed on the local frame 
 
 
 
 
+# IMU Integration
 
-# Global References
-
-<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Barray%7D%7Brcl%7D%20%5Cmathbf%7Bg%7D%20%26%3D%26%20%5Cleft%5C%7B%20%5Cbegin%7Barray%7D%7Bll%7D%20%5Cbegin%7Bbmatrix%7D0%20%26%200%20%26%20-1%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BNED%7D%20%5C%5C%20%5Cbegin%7Bbmatrix%7D0%20%26%200%20%26%201%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BENU%7D%20%5Cend%7Barray%7D%20%5Cright.%5C%5C%20%26%26%20%5C%5C%20%5Cmathbf%7Br%7D%20%26%3D%26%20%5Cleft%5C%7B%20%5Cbegin%7Barray%7D%7Bll%7D%20%5Cfrac%7B1%7D%7B%5Csqrt%7B%5Ccos%5E2%5Ctheta&plus;%5Csin%5E2%5Ctheta%7D%7D%5Cbegin%7Bbmatrix%7D%5Ccos%5Ctheta%20%26%200%20%26%20%5Csin%5Ctheta%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BNED%7D%20%5C%5C%20%5Cfrac%7B1%7D%7B%5Csqrt%7B%5Ccos%5E2%5Ctheta&plus;%5Csin%5E2%5Ctheta%7D%7D%5Cbegin%7Bbmatrix%7D0%20%26%20%5Ccos%5Ctheta%20%26%20-%5Csin%5Ctheta%5Cend%7Bbmatrix%7D%5ET%20%26%20%5Cmathrm%7Bif%7D%5C%3B%20%5Cmathrm%7BENU%7D%20%5Cend%7Barray%7D%20%5Cright.%20%5Cend%7Barray%7D" alt="https://latex.codecogs.com/svg.latex?\begin{array}{rcl}
-\mathbf{g} &=&
-\left\{
-\begin{array}{ll}
-    \begin{bmatrix}0 & 0 & -1\end{bmatrix}^T & \mathrm{if}\; \mathrm{NED} \\
-    \begin{bmatrix}0 & 0 & 1\end{bmatrix}^T & \mathrm{if}\; \mathrm{ENU}
-\end{array}
-\right.\\ && \\
-\mathbf{r} &=&
-\left\{
-\begin{array}{ll}
-    \frac{1}{\sqrt{\cos^2\theta+\sin^2\theta}}\begin{bmatrix}\cos\theta & 0 & \sin\theta\end{bmatrix}^T & \mathrm{if}\; \mathrm{NED} \\
-    \frac{1}{\sqrt{\cos^2\theta+\sin^2\theta}}\begin{bmatrix}0 & \cos\theta & -\sin\theta\end{bmatrix}^T & \mathrm{if}\; \mathrm{ENU}
-\end{array}
-\right.
-\end{array}" />
-<img src="" alt="" />
-<img src="" alt="" />
-
-<img src="" alt="" />
+Refs: [1](https://rpg.ifi.uzh.ch/docs/teaching/2018/13_visual_inertial_fusion_advanced.pdf), [2](http://mars.cs.umn.edu/tr/Stergios_VINS_Tutorial_IROS19.pdf)
 
 
+# Noise Spectral Density
+Noise density refers to the amount of random or unwanted electrical energy that exists within a particular frequency range of a signal. It is usually measured in units of volts per square root of hertz (V/√Hz) or watts per hertz (W/Hz), and it is typically used to describe the level of noise in electronic systems.
+
+In practical terms, noise density is a measure of how much noise is present in a specific frequency band of a signal. For example, if you have a signal that operates at 1 GHz and has a noise density of 10 nV/√Hz, it means that within a 1 Hz bandwidth around the center frequency of 1 GHz, there is 10 nV of noise present.
+
+# Signal-to-noise Ratio
+The signal-to-noise ratio (SNR) is a measure of the strength of a signal compared to the level of background noise present in the signal. It is expressed as a ratio of the power of the signal to the power of the noise, often measured in decibels (dB).
+
+A high SNR indicates that the signal is stronger relative to the noise, while a low SNR indicates that the signal is weaker and harder to distinguish from the noise.
+In digital image processing, a high SNR means that the image has a high level of detail and is free from visual noise, while a low SNR can result in grainy or blurred images.
+
+To improve the SNR, various techniques can be used such as increasing the signal power, reducing noise sources, using noise filtering or suppression methods, and improving the signal detection or processing algorithms.
+
+
+# Random Walk
+
+
+# Angle Random Walk 
+
+# Velocity Random Walk
+
+# Allan Variance curve
+
+Allan variance plot (also known as the two-sample variance plot or the Hadamard variance plot) is a graphical tool used in signal processing to analyze the stability of a signal over time
+
+The Allan deviation measures the fluctuations of a signal between two time intervals, and the integration time is the length of the time interval over which the fluctuations are averaged.
+By analyzing the slope of the plot, one can determine the dominant sources of noise in the signal and estimate the noise power spectral density.
+
+In general, a flat line on an Allan variance plot indicates white noise, while a slope of -1/2 indicates flicker noise, and a slope of -1 indicates random walk noise. These noise types are commonly found in electronic systems, such as oscillators and clocks, and the Allan variance plot can help engineers optimize the design of these systems for their intended applications.
+
+## Variance
+
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Coperatorname%20%7BVar%7D%20%28X%29%3D%7B%5Cfrac%20%7B1%7D%7Bn%7D%7D%5Csum%20_%7Bi%3D1%7D%5E%7Bn%7D%28x_%7Bi%7D-%5Cmu%20%29%5E%7B2%7D%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \operatorname {Var} (X)={\frac {1}{n}}\sum _{i=1}^{n}(x_{i}-\mu )^{2}}" />
+
+<br/>
+<br/>
+
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Cmu%20%3D%7B%5Cfrac%20%7B1%7D%7Bn%7D%7D%5Csum%20_%7Bi%3D1%7D%5E%7Bn%7Dx_%7Bi%7D.%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \mu ={\frac {1}{n}}\sum _{i=1}^{n}x_{i}.}" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%5Coperatorname%20%7BVar%7D%20%28X%29%3D%7B%5Cfrac%20%7B1%7D%7Bn%5E%7B2%7D%7D%7D%5Csum%20_%7Bi%3D1%7D%5E%7Bn%7D%5Csum%20_%7Bj%3D1%7D%5E%7Bn%7D%7B%5Cfrac%20%7B1%7D%7B2%7D%7D%28x_%7Bi%7D-x_%7Bj%7D%29%5E%7B2%7D%3D%7B%5Cfrac%20%7B1%7D%7Bn%5E%7B2%7D%7D%7D%5Csum%20_%7Bi%7D%5Csum%20_%7Bj%3Ei%7D%28x_%7Bi%7D-x_%7Bj%7D%29%5E%7B2%7D." alt="https://latex.codecogs.com/svg.latex?\operatorname {Var} (X)={\frac {1}{n^{2}}}\sum _{i=1}^{n}\sum _{j=1}^{n}{\frac {1}{2}}(x_{i}-x_{j})^{2}={\frac {1}{n^{2}}}\sum _{i}\sum _{j>i}(x_{i}-x_{j})^{2}." />
+
+
+## M-sample variance
 
 
 
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28M%2CT%2C%5Ctau%20%29%3D%7B%5Cfrac%20%7B1%7D%7BM-1%7D%7D%5Cleft%5C%7B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%7B%5Cbar%20%7By%7D%7D_%7Bi%7D%5E%7B2%7D-%7B%5Cfrac%20%7B1%7D%7BM%7D%7D%5Cleft%5B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%7B%5Cbar%20%7By%7D%7D_%7Bi%7D%5Cright%5D%5E%7B2%7D%5Cright%5C%7D%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(M,T,\tau )={\frac {1}{M-1}}\left\{\sum _{i=0}^{M-1}{\bar {y}}_{i}^{2}-{\frac {1}{M}}\left[\sum _{i=0}^{M-1}{\bar {y}}_{i}\right]^{2}\right\},}" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28M%2CT%2C%5Ctau%20%29%3D%7B%5Cfrac%20%7B1%7D%7BM-1%7D%7D%5Cleft%5C%7B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%5Cleft%5B%7B%5Cfrac%20%7Bx%28iT&plus;%5Ctau%20%29-x%28iT%29%7D%7B%5Ctau%20%7D%7D%5Cright%5D%5E%7B2%7D-%7B%5Cfrac%20%7B1%7D%7BM%7D%7D%5Cleft%5B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%7B%5Cfrac%20%7Bx%28iT&plus;%5Ctau%20%29-x%28iT%29%7D%7B%5Ctau%20%7D%7D%5Cright%5D%5E%7B2%7D%5Cright%5C%7D%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(M,T,\tau )={\frac {1}{M-1}}\left\{\sum _{i=0}^{M-1}\left[{\frac {x(iT+\tau )-x(iT)}{\tau }}\right]^{2}-{\frac {1}{M}}\left[\sum _{i=0}^{M-1}{\frac {x(iT+\tau )-x(iT)}{\tau }}\right]^{2}\right\},}" />
+
+
+<br/>
+<br/>
+
+Gyro noise Allan variance is calculated by measuring the difference in rotation or angular velocity measurements taken at different times, and then averaging those differences over different time intervals. The result is a plot of the Allan deviation versus the averaging time, 
+
+The Allan deviation is defined as the square root of the variance of the difference between two rotation or angular velocity measurements taken at time intervals `τ` apart, divided by the mean value of the measurements. It is often expressed in units of degrees per hour or radians per second.
+
+
+
+## Allan Variance
+
+The Allan variance is defined as:
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28%5Ctau%20%29%3D%5Cleft%5Clangle%20%5Csigma%20_%7By%7D%5E%7B2%7D%282%2C%5Ctau%20%2C%5Ctau%20%29%5Cright%5Crangle%20%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(\tau )=\left\langle \sigma _{y}^{2}(2,\tau ,\tau )\right\rangle ,}" />
+
+
+# Autoregressive model
 
 
