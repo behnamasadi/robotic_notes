@@ -9,6 +9,9 @@ Apriltag coordinate:
 How to measure:
 <img src="images/apriltag_distance_measure.png" />
 
+<br/>
+<img src="images/apriltag_size_space.png" />
+
 
 # Generating Tag
 You need `ant` build system, the easiest way is to use the following container:
