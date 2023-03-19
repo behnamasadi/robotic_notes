@@ -99,8 +99,7 @@ However in the following rotation matrix, we have to determine only <img src="ht
 
 
 
-<img src="https://latex.codecogs.com/svg.latex?=%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D
-" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}- \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
+<img src="https://latex.codecogs.com/svg.latex?=%5Cdisplaystyle%20%5Cleft%5B%5Cbegin%7Bmatrix%7D-%20%5Csin%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Csin%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5C%5C%5Ccos%7B%5Cleft%28%5Cphi%20%5Cright%29%7D%20%5Ccos%7B%5Cleft%28%5Ctheta%20%5Cright%29%7D%5Cend%7Bmatrix%7D%5Cright%5D" alt="https://latex.codecogs.com/svg.latex?=\displaystyle \left[\begin{matrix}- \sin{\left(\theta \right)}\\\sin{\left(\phi \right)} \cos{\left(\theta \right)}\\\cos{\left(\phi \right)} \cos{\left(\theta \right)}\end{matrix}\right]" />
 
 
 
@@ -432,8 +431,7 @@ The Allan deviation is defined as the square root of the variance of the differe
 
 The Allan variance is defined as:
 
-<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28%5Ctau%20%29%3D%5Cleft%5Clangle%20%5Csigma%20_%7By%7D%5E%7B2%7D%282%2C%5Ctau%20%2C%5Ctau%20%29%5Cright%5Crangle%20%2C%7D
-" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(\tau )=\left\langle \sigma _{y}^{2}(2,\tau ,\tau )\right\rangle ,}" />
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28%5Ctau%20%29%3D%5Cleft%5Clangle%20%5Csigma%20_%7By%7D%5E%7B2%7D%282%2C%5Ctau%20%2C%5Ctau%20%29%5Cright%5Crangle%20%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(\tau )=\left\langle \sigma _{y}^{2}(2,\tau ,\tau )\right\rangle ,}" />
 
 
 # Autoregressive model
