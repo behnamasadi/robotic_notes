@@ -360,3 +360,82 @@ This exponential map is formerly defined as:
 Refs: [1](https://rpg.ifi.uzh.ch/docs/teaching/2018/13_visual_inertial_fusion_advanced.pdf), [2](http://mars.cs.umn.edu/tr/Stergios_VINS_Tutorial_IROS19.pdf)
 
 
+# Noise Spectral Density
+Noise density refers to the amount of random or unwanted electrical energy that exists within a particular frequency range of a signal. It is usually measured in units of volts per square root of hertz (V/√Hz) or watts per hertz (W/Hz), and it is typically used to describe the level of noise in electronic systems.
+
+In practical terms, noise density is a measure of how much noise is present in a specific frequency band of a signal. For example, if you have a signal that operates at 1 GHz and has a noise density of 10 nV/√Hz, it means that within a 1 Hz bandwidth around the center frequency of 1 GHz, there is 10 nV of noise present.
+
+# Signal-to-noise Ratio
+The signal-to-noise ratio (SNR) is a measure of the strength of a signal compared to the level of background noise present in the signal. It is expressed as a ratio of the power of the signal to the power of the noise, often measured in decibels (dB).
+
+A high SNR indicates that the signal is stronger relative to the noise, while a low SNR indicates that the signal is weaker and harder to distinguish from the noise.
+In digital image processing, a high SNR means that the image has a high level of detail and is free from visual noise, while a low SNR can result in grainy or blurred images.
+
+To improve the SNR, various techniques can be used such as increasing the signal power, reducing noise sources, using noise filtering or suppression methods, and improving the signal detection or processing algorithms.
+
+
+# Random Walk
+
+
+# Angle Random Walk 
+
+# Velocity Random Walk
+
+# Allan Variance curve
+
+Allan variance plot (also known as the two-sample variance plot or the Hadamard variance plot) is a graphical tool used in signal processing to analyze the stability of a signal over time
+
+The Allan deviation measures the fluctuations of a signal between two time intervals, and the integration time is the length of the time interval over which the fluctuations are averaged.
+By analyzing the slope of the plot, one can determine the dominant sources of noise in the signal and estimate the noise power spectral density.
+
+In general, a flat line on an Allan variance plot indicates white noise, while a slope of -1/2 indicates flicker noise, and a slope of -1 indicates random walk noise. These noise types are commonly found in electronic systems, such as oscillators and clocks, and the Allan variance plot can help engineers optimize the design of these systems for their intended applications.
+
+## Variance
+
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Coperatorname%20%7BVar%7D%20%28X%29%3D%7B%5Cfrac%20%7B1%7D%7Bn%7D%7D%5Csum%20_%7Bi%3D1%7D%5E%7Bn%7D%28x_%7Bi%7D-%5Cmu%20%29%5E%7B2%7D%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \operatorname {Var} (X)={\frac {1}{n}}\sum _{i=1}^{n}(x_{i}-\mu )^{2}}" />
+
+<br/>
+<br/>
+
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Cmu%20%3D%7B%5Cfrac%20%7B1%7D%7Bn%7D%7D%5Csum%20_%7Bi%3D1%7D%5E%7Bn%7Dx_%7Bi%7D.%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \mu ={\frac {1}{n}}\sum _{i=1}^{n}x_{i}.}" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%5Coperatorname%20%7BVar%7D%20%28X%29%3D%7B%5Cfrac%20%7B1%7D%7Bn%5E%7B2%7D%7D%7D%5Csum%20_%7Bi%3D1%7D%5E%7Bn%7D%5Csum%20_%7Bj%3D1%7D%5E%7Bn%7D%7B%5Cfrac%20%7B1%7D%7B2%7D%7D%28x_%7Bi%7D-x_%7Bj%7D%29%5E%7B2%7D%3D%7B%5Cfrac%20%7B1%7D%7Bn%5E%7B2%7D%7D%7D%5Csum%20_%7Bi%7D%5Csum%20_%7Bj%3Ei%7D%28x_%7Bi%7D-x_%7Bj%7D%29%5E%7B2%7D." alt="https://latex.codecogs.com/svg.latex?\operatorname {Var} (X)={\frac {1}{n^{2}}}\sum _{i=1}^{n}\sum _{j=1}^{n}{\frac {1}{2}}(x_{i}-x_{j})^{2}={\frac {1}{n^{2}}}\sum _{i}\sum _{j>i}(x_{i}-x_{j})^{2}." />
+
+
+## M-sample variance
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28M%2CT%2C%5Ctau%20%29%3D%7B%5Cfrac%20%7B1%7D%7BM-1%7D%7D%5Cleft%5C%7B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%7B%5Cbar%20%7By%7D%7D_%7Bi%7D%5E%7B2%7D-%7B%5Cfrac%20%7B1%7D%7BM%7D%7D%5Cleft%5B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%7B%5Cbar%20%7By%7D%7D_%7Bi%7D%5Cright%5D%5E%7B2%7D%5Cright%5C%7D%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(M,T,\tau )={\frac {1}{M-1}}\left\{\sum _{i=0}^{M-1}{\bar {y}}_{i}^{2}-{\frac {1}{M}}\left[\sum _{i=0}^{M-1}{\bar {y}}_{i}\right]^{2}\right\},}" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28M%2CT%2C%5Ctau%20%29%3D%7B%5Cfrac%20%7B1%7D%7BM-1%7D%7D%5Cleft%5C%7B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%5Cleft%5B%7B%5Cfrac%20%7Bx%28iT&plus;%5Ctau%20%29-x%28iT%29%7D%7B%5Ctau%20%7D%7D%5Cright%5D%5E%7B2%7D-%7B%5Cfrac%20%7B1%7D%7BM%7D%7D%5Cleft%5B%5Csum%20_%7Bi%3D0%7D%5E%7BM-1%7D%7B%5Cfrac%20%7Bx%28iT&plus;%5Ctau%20%29-x%28iT%29%7D%7B%5Ctau%20%7D%7D%5Cright%5D%5E%7B2%7D%5Cright%5C%7D%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(M,T,\tau )={\frac {1}{M-1}}\left\{\sum _{i=0}^{M-1}\left[{\frac {x(iT+\tau )-x(iT)}{\tau }}\right]^{2}-{\frac {1}{M}}\left[\sum _{i=0}^{M-1}{\frac {x(iT+\tau )-x(iT)}{\tau }}\right]^{2}\right\},}" />
+
+
+<br/>
+<br/>
+
+Gyro noise Allan variance is calculated by measuring the difference in rotation or angular velocity measurements taken at different times, and then averaging those differences over different time intervals. The result is a plot of the Allan deviation versus the averaging time, 
+
+The Allan deviation is defined as the square root of the variance of the difference between two rotation or angular velocity measurements taken at time intervals `τ` apart, divided by the mean value of the measurements. It is often expressed in units of degrees per hour or radians per second.
+
+
+
+## Allan Variance
+
+The Allan variance is defined as:
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%5Csigma%20_%7By%7D%5E%7B2%7D%28%5Ctau%20%29%3D%5Cleft%5Clangle%20%5Csigma%20_%7By%7D%5E%7B2%7D%282%2C%5Ctau%20%2C%5Ctau%20%29%5Cright%5Crangle%20%2C%7D
+" alt="https://latex.codecogs.com/svg.latex?{\displaystyle \sigma _{y}^{2}(\tau )=\left\langle \sigma _{y}^{2}(2,\tau ,\tau )\right\rangle ,}" />
+
+
+# Autoregressive model
+
+
