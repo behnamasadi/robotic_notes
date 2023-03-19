@@ -585,3 +585,18 @@ Refs: [1](https://support.zivid.com/en/latest/academy/applications/hand-eye.html
 
 ## Eliminating Duplicate Solutions by Limiting the Roll and Pitch Ranges
 
+
+
+# Quaternion estimator algorithm (QUEST)
+Refs: [1](https://en.wikipedia.org/wiki/Quaternion_estimator_algorithm), [2](https://ahrs.readthedocs.io/en/latest/filters/quest.html)
+
+
+# Wahba's problem
+Refs [1](https://en.wikipedia.org/wiki/Wahba%27s_problem)
+
+
+# Angular Velocity Vector Transformation
+
+Refs: [1](https://physics.stackexchange.com/questions/429081/rotational-kinematics-and-angular-velocity-vector-transformation)
+
+
