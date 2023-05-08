@@ -587,6 +587,8 @@ Refs: [1](https://support.zivid.com/en/latest/academy/applications/hand-eye.html
 # Quaternion estimator algorithm (QUEST)
 Refs: [1](https://en.wikipedia.org/wiki/Quaternion_estimator_algorithm), [2](https://ahrs.readthedocs.io/en/latest/filters/quest.html)
 
+# Closed-form solution of absolute orientation using unit quaternions
+Refs: [1](https://web.stanford.edu/class/cs273/refs/Absolute-OPT.pdf)
 
 # Wahba's problem
 Refs [1](https://en.wikipedia.org/wiki/Wahba%27s_problem)
