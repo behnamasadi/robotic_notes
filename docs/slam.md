@@ -1,3 +1,6 @@
+simple_2d_slam
+Refs: [1](https://github.com/goldbattle/simple_2d_slam)
+
 - Robust Pose-graph Optimization
 Refs: [1](https://www.youtube.com/watch?v=zOr9HreMthY)
 
@@ -12,6 +15,11 @@ Refs: [1](https://github.com/alishobeiri/Monocular-Video-Odometery)
 
 - modern-slam-tutorial-python
 Refs: [1](https://github.com/gisbi-kim/modern-slam-tutorial-python)
+
+- Monocular-Video-Odometery
+Refs: [1](https://github.com/alishobeiri/Monocular-Video-Odometery/blob/master/monovideoodometery.py)
+
+
 
 - SLAM Loop Closure
 In Simultaneous Localization and Mapping (SLAM), a closure is an observation that is made about the environment that closes a loop in the estimated trajectory of the robot. When a closure is detected, the system can correct for accumulated drift in the estimated position of the robot and improve the accuracy of the map.
