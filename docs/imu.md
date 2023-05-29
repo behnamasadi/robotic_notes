@@ -436,4 +436,6 @@ The Allan variance is defined as:
 
 # Autoregressive model
 
+# Madgwick Orientation Filter
 
+Refs: [1](https://ahrs.readthedocs.io/en/latest/filters/madgwick.html)
