@@ -56,34 +56,34 @@ By definition, we call two spaces to be topologically equivalent or of the same 
 
  
 
-C-space of same dimension can have different topology, examples:
+C-space of the same dimension can have different topologies, examples:
 
 - Point on a plane -> Plane
 - C-space of spherical pendulum ->  Sphere
 - 2R robot -> torus
 
 
-Topology of C-Space is independent of representation of space!
+The topology of C-Space is independent of the representation of space!
 
 
 ## Different way to represent C-space
 
 ### Explicit
 1) Explicit: Points on a plane (or generally N-Dimensional Euclidean Space)
-If the space is flat like a line or plane o generally n dimensional euclidean  space  we typically choose origin and coordinate axis and then use coordinate to represent the point
-velocity is time derivative of those points
+If the space is flat like a line or plane o generally n-dimensional euclidean  space  we typically choose the origin and coordinate axis and then use coordinate to represent the point
+velocity is the time derivative of those points
 
 
 	choose 1 arbitrary point in the space and two orthogonal axis
 
 ### Implicit
-2) Implicit: If the space is curved like sphere we can use explicit or implicit representation. (surface of a sphere for instance )
+2) Implicit: If the space is curved like a sphere we can use explicit or implicit representation. (surface of a sphere for instance )
 
-I ) Explicit particularization with min number of coordinate: latitude, longitude
-problems: representation have poor behavior at some points, for instance if you travel with constant speed around equator your equator/ poles
-your longitude change very slow/ rapid and no upper bound as you close to poles
-north pole is the singularity of representation
-Also the the moment you step over north pole your longitude will change by 180 degree
+I ) Explicit particularization with min number of coordinates: latitude, longitude
+problems: representation has poor behavior at some points, for instance, if you travel with constant speed around the equator your equator/ poles
+your longitude change very slowly/rapidly and no upper bound as you close to the poles
+the north pole is the singularity of representation
+Also the the moment you step over the north pole your longitude will change by 180 degrees
 
 
 Latitude: angle between the equatorial plane and the straight line that passes through that point and the center of the Earth
@@ -91,23 +91,27 @@ The North Pole is 90° N; the South Pole is 90° S
 
 longitude: angle east or west of a reference meridian to another meridian that passes through that point
 
-North pole is called the singularity of the representation.
+The north pole is called the singularity of the representation.
 
 II ) Implicit subject to constraint x^2 + y^2 + z^2 = 1
 
 
-The singularity free implicit representation we use is called rotation matrix. The derivative is not velocity
+The singularity-free implicit representation we use is called the rotation matrix. The derivative is not velocity
 
-configuration constrain and velocity constraint
+configuration constraints and velocity constraint
 
 
   
 
-The representation of c-space doesn't change the underlying space itself therefor the topology of the space is independent of its representation of it space.
+The representation of c-space doesn't change the underlying space itself therefore the topology of the space is independent of its representation of it space.
 
 
 Refs: [1](http://hades.mech.northwestern.edu/index.php/Modern_Robotics), [2](https://github.com/NxRLab/ModernRobotics)
 
+# Representing Robot Pose
+<img src="images/representing_robot_pose1.png" />
+
+Refs: [1](https://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly)
 # 1. Names
 ## 1.1 Graph Resource Names
 Graph Resource Names provide a hierarchical naming structure that is used for all resources in a ROS Computation Graph, such as:
