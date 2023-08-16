@@ -17,9 +17,16 @@ Refs: [1](https://github.com/alishobeiri/Monocular-Video-Odometery)
 Refs: [1](https://github.com/gisbi-kim/modern-slam-tutorial-python)
 
 - Monocular-Video-Odometery
-Refs: [1](https://github.com/alishobeiri/Monocular-Video-Odometery/blob/master/monovideoodometery.py)
+Refs: [1](https://github.com/alishobeiri/Monocular-Video-Odometery/blob/master/monovideoodometery.py)  
 
+- GTSAM: Georgia Tech Smoothing and Mapping Library  
+Refs [1](https://gtsam.org/), [2](https://github.com/borglab/gtsam)
 
+- DBoW2: library for indexing and converting images into a bag-of-word representation  
+Refs: [1](https://github.com/dorian3d/DBoW2)
+
+- iSAM: Incremental Smoothing and Mapping  
+Refs: [1](https://openslam-org.github.io/iSAM)
 
 - SLAM Loop Closure
 In Simultaneous Localization and Mapping (SLAM), a closure is an observation that is made about the environment that closes a loop in the estimated trajectory of the robot. When a closure is detected, the system can correct for accumulated drift in the estimated position of the robot and improve the accuracy of the map.
@@ -107,8 +114,8 @@ Alternative representation for Gaussians
 
 <br/>
 
-# g2o Format
-
+# g2o 
+g2o is a C++ framework for optimizing graph-based nonlinear error functions
 ```
 git clone https://github.com/gabime/spdlog.git
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/home/behnam/usr -DSPDLOG_BUILD_SHARED=ON
@@ -126,6 +133,16 @@ cmake --build build
 cmake --install build
 ```
 
+## g2o-python
+
+
+```
+pip install -U g2o-python
+```
+Refs: [1](https://github.com/miquelmassot/g2o-python)
+
+
+## File Format SLAM 2D
 
 In a graph-based optimization problem, you typically have a set of variables (also known as nodes) and constraints (also known as edges) between these variables. The g2o format provides a way to express these variables and constraints in a text-based file.
 
@@ -143,15 +160,30 @@ Examples:
 ### 2D Robot Pose
 
 `VERTEX_SE2 i x y theta`
+
 `VERTEX_SE2 4 0.641008 -0.011200 -0.007444`
 
 ### 2D Landmarks / Features
 
 `VERTEX_XY i x y`
 
+### Edges / Constraints
+
+`TAG ID_SET MEASUREMENT INFORMATION_MATRIX`
+
+The odometry of a robot connects subsequent vertices with a **relative transformation** which specifies how the robot moved according to its measurements. For a compact documentation we employ the following helper function.
+
+`EDGE_SE2 i j x y theta info(x, y, theta)`
+
+Where <img src="https://latex.codecogs.com/svg.latex?z_%7Bij%7D%20%3D%20%5Bx%2C%20y%2C%20%5Ctheta%5D%5ET" alt="https://latex.codecogs.com/svg.latex?z_{ij} = [x, y, \theta]^T" /> is the measurement moving from <img src="https://latex.codecogs.com/svg.latex?x_i" alt="https://latex.codecogs.com/svg.latex?x_i" />  to <img src="https://latex.codecogs.com/svg.latex?x_j" alt="https://latex.codecogs.com/svg.latex?x_j" />, i.e. <img src="https://latex.codecogs.com/svg.latex?x_j%20%3D%20x_i%20%5Coplus%20z_ij" alt="https://latex.codecogs.com/svg.latex?x_j = x_i \oplus z_ij" />
 
 
 
+`EDGE_SE2 24 25 0.645593 0.014612 0.008602 11.156105 -3.207460 0.000000 239.760661 0.000000 2457.538661`
+
+
+
+## File Format SLAM 3D
 
 ### 3D Robot Pose
 
@@ -164,19 +196,7 @@ Examples:
 
 `VERTEX_TRACKXYZ i x y z`
 
-## Edges / Constraints
-
-`TAG ID_SET MEASUREMENT INFORMATION_MATRIX`
-
-The odometry of a robot connects subsequent vertices with a relative transformation which specifies how the robot moved according to its measurements. For a compact documentation we employ the following helper function.
-
-`EDGE_SE2 i j x y theta info(x, y, theta)`
-
-Where <img src="https://latex.codecogs.com/svg.latex?z_%7Bij%7D%20%3D%20%5Bx%2C%20y%2C%20%5Ctheta%5D%5ET" alt="https://latex.codecogs.com/svg.latex?z_{ij} = [x, y, \theta]^T" /> is the measurement moving from <img src="https://latex.codecogs.com/svg.latex?x_i" alt="https://latex.codecogs.com/svg.latex?x_i" />  to <img src="https://latex.codecogs.com/svg.latex?x_j" alt="https://latex.codecogs.com/svg.latex?x_j" />, i.e. <img src="https://latex.codecogs.com/svg.latex?x_j%20%3D%20x_i%20%5Coplus%20z_ij" alt="https://latex.codecogs.com/svg.latex?x_j = x_i \oplus z_ij" />
-
-
-
-`EDGE_SE2 24 25 0.645593 0.014612 0.008602 11.156105 -3.207460 0.000000 239.760661 0.000000 2457.538661`
+### Edges / Constraints
 
 
 `EDGE_SE3:QUAT 0 1 0 0 0 0 0 0 0 1 0 0 0 0.1 0 0 0 0.1 0 0.1 0.1 0.1 0.1`

@@ -788,7 +788,7 @@ R^T & -R^Tp \\
 0 & 1
 \end{bmatrix}\in SE(3)" />
 
-Refs: [1](https://www.seas.upenn.edu/~meam620/notes/RigidBodyMotion3.pdf) 
+Refs: [1](https://www.seas.upenn.edu/~meam620/notes/RigidBodyMotion3.pdf), [2](https://www.youtube.com/watch?v=NHXAnvv4mM8&list=PLdMorpQLjeXmbFaVku4JdjmQByHHqTd1F&index=13)
 
 # Dynamic Bayesian network
 
