@@ -109,7 +109,7 @@ The representation of c-space doesn't change the underlying space itself therefo
 Refs: [1](http://hades.mech.northwestern.edu/index.php/Modern_Robotics), [2](https://github.com/NxRLab/ModernRobotics)
 
 # Representing Robot Pose
-<img src="images/representing_robot_pose1.png" />
+<img src="images/representing_robot_pose1.png" width="50%" height="50%" />
 
 Refs: [1](https://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly)
 # 1. Names
