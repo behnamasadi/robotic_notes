@@ -360,25 +360,12 @@ Refs: [1](https://rpg.ifi.uzh.ch/docs/teaching/2018/13_visual_inertial_fusion_ad
 
 
 # Noise Spectral Density
-Noise density refers to the amount of random or unwanted electrical energy that exists within a particular frequency range of a signal. It is usually measured in units of volts per square root of hertz (V/√Hz) or watts per hertz (W/Hz), and it is typically used to describe the level of noise in electronic systems.
 
-In practical terms, noise density is a measure of how much noise is present in a specific frequency band of a signal. For example, if you have a signal that operates at 1 GHz and has a noise density of 10 nV/√Hz, it means that within a 1 Hz bandwidth around the center frequency of 1 GHz, there is 10 nV of noise present.
 
 # Signal-to-noise Ratio
-The signal-to-noise ratio (SNR) is a measure of the strength of a signal compared to the level of background noise present in the signal. It is expressed as a ratio of the power of the signal to the power of the noise, often measured in decibels (dB).
-
-A high SNR indicates that the signal is stronger relative to the noise, while a low SNR indicates that the signal is weaker and harder to distinguish from the noise.
-In digital image processing, a high SNR means that the image has a high level of detail and is free from visual noise, while a low SNR can result in grainy or blurred images.
-
-To improve the SNR, various techniques can be used such as increasing the signal power, reducing noise sources, using noise filtering or suppression methods, and improving the signal detection or processing algorithms.
 
 
-# Random Walk
 
-
-# Angle Random Walk 
-
-# Velocity Random Walk
 
 # Allan Variance curve
 
@@ -439,3 +426,8 @@ The Allan variance is defined as:
 # Madgwick Orientation Filter
 
 Refs: [1](https://ahrs.readthedocs.io/en/latest/filters/madgwick.html)
+
+
+# Simulating IMU Measurements
+Refs [1](https://ch.mathworks.com/help/fusion/ug/introduction-to-simulating-imu-measurements.html), [2](https://ch.mathworks.com/help/nav/ref/imu.html)
+
