@@ -431,3 +431,9 @@ Refs: [1](https://ahrs.readthedocs.io/en/latest/filters/madgwick.html)
 # Simulating IMU Measurements
 Refs [1](https://ch.mathworks.com/help/fusion/ug/introduction-to-simulating-imu-measurements.html), [2](https://ch.mathworks.com/help/nav/ref/imu.html)
 
+
+# IMU Propagation Derivations
+
+Refs: [1](https://docs.openvins.com/propagation.html)
+
+
