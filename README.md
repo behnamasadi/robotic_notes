@@ -67,6 +67,8 @@
   * [Allan Variance](docs/imu.md#allan-variance)
 - [Autoregressive model](docs/imu.md#autoregressive-model)
 - [Madgwick Orientation Filter](docs/imu.md#madgwick-orientation-filter)
+- [Simulating IMU Measurements](docs/imu.md#simulating-imu-measurements)
+- [IMU Propagation Derivations](https://docs.openvins.com/propagation.html)
 
 # Kalibr
 
