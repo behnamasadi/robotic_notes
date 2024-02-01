@@ -38,36 +38,35 @@
 
 
 # IMU
-- [1. Global References](#1-global-references)
-- [2. Accelerometer Model](#2-accelerometer-model)
-- [3. Gyroscope Model](#3-gyroscope-model)
-- [4. Attitude from gravity (Tilt)](#4-attitude-from-gravity--tilt-)
-  * [4.1. Solving R xyz for the Pitch and Roll Angles](#41-solving-r-xyz-for-the-pitch-and-roll-angles)
-  * [4.2 Solving R yxz for the Pitch and Roll Angles](#42-solving-r-yxz-for-the-pitch-and-roll-angles)
-- [Expressing IMU reading with Quaternion](#expressing-imu-reading-with-quaternion)
-- [5. Quaternion from Accelerometer](#5-quaternion-from-accelerometer)
-- [6. Quaternion Integration](#6-quaternion-integration)
-  * [6.1. Numerical Solution](#61-numerical-solution)
-  * [6.2. Closed-form Solution](#62-closed-form-solution)
-- [7.1 Quaternion Derivative](#71-quaternion-derivative)
-- [Relationship Between Euler-Angle Rates and Body-Axis Rates](#relationship-between-euler-angle-rates-and-body-axis-rates)
-- [Complementary Filter](#complementary-filter)
-- [Quaternion-Based Complementary Filter](#quaternion-based-complementary-filter)
-- [Accelerometer-Based Correction](#accelerometer-based-correction)
-- [Attitude from angular rate (Attitude propagation)](#attitude-from-angular-rate--attitude-propagation-)
-- [IMU Integration](#imu-integration)
-- [Noise Spectral Density](#noise-spectral-density)
-- [Signal-to-noise Ratio](#signal-to-noise-ratio)
-- [Allan Variance curve](#allan-variance-curve)
-  * [Variance](#variance)
-  * [M-sample variance](#m-sample-variance)
-  * [Allan Variance](#allan-variance)
-- [Autoregressive model](#autoregressive-model)
-- [Madgwick Orientation Filter](#madgwick-orientation-filter)
-- [Mahony Orientation Filter](#mahony-orientation-filter)
-- [Simulating IMU Measurements](#simulating-imu-measurements)
-- [IMU Propagation Derivations](#imu-propagation-derivations)
-
+- [1. Global References](docs/imu.md#1-global-references)
+- [2. Accelerometer Model](docs/imu.md#2-accelerometer-model)
+- [3. Gyroscope Model](docs/imu.md#3-gyroscope-model)
+- [4. Attitude from gravity (Tilt)](docs/imu.md#4-attitude-from-gravity--tilt-)
+  * [4.1. Solving R xyz for the Pitch and Roll Angles](docs/imu.md#41-solving-r-xyz-for-the-pitch-and-roll-angles)
+  * [4.2 Solving R yxz for the Pitch and Roll Angles](docs/imu.md#42-solving-r-yxz-for-the-pitch-and-roll-angles)
+- [Expressing IMU reading with Quaternion](docs/imu.md#expressing-imu-reading-with-quaternion)
+- [5. Quaternion from Accelerometer](docs/imu.md#5-quaternion-from-accelerometer)
+- [6. Quaternion Integration](docs/imu.md#6-quaternion-integration)
+  * [6.1. Numerical Solution](docs/imu.md#61-numerical-solution)
+  * [6.2. Closed-form Solution](docs/imu.md#62-closed-form-solution)
+- [7.1 Quaternion Derivative](docs/imu.md#71-quaternion-derivative)
+- [Relationship Between Euler-Angle Rates and Body-Axis Rates](docs/imu.md#relationship-between-euler-angle-rates-and-body-axis-rates)
+- [Complementary Filter](docs/imu.md#complementary-filter)
+- [Quaternion-Based Complementary Filter](docs/imu.md#quaternion-based-complementary-filter)
+- [Accelerometer-Based Correction](docs/imu.md#accelerometer-based-correction)
+- [Attitude from angular rate (Attitude propagation)](docs/imu.md#attitude-from-angular-rate--attitude-propagation-)
+- [IMU Integration](docs/imu.md#imu-integration)
+- [Noise Spectral Density](docs/imu.md#noise-spectral-density)
+- [Signal-to-noise Ratio](docs/imu.md#signal-to-noise-ratio)
+- [Allan Variance curve](docs/imu.md#allan-variance-curve)
+  * [Variance](docs/imu.md#variance)
+  * [M-sample variance](docs/imu.md#m-sample-variance)
+  * [Allan Variance](docs/imu.md#allan-variance)
+- [Autoregressive model](docs/imu.md#autoregressive-model)
+- [Madgwick Orientation Filter](docs/imu.md#madgwick-orientation-filter)
+- [Mahony Orientation Filter](docs/imu.md#mahony-orientation-filter)
+- [Simulating IMU Measurements](docs/imu.md#simulating-imu-measurements)
+- [IMU Propagation Derivations](docs/imu.md#imu-propagation-derivations)
 
 # Kalibr
 
@@ -104,4 +103,18 @@
 
 # Joystick
 - [Joystick](docs/joystick.md)
+
+# Geometry Transformation
+- [Homogeneous Transformations](docs/geometry_transformation.md#homogeneous-transformations)
+- [Translation, Scaling, and Rotations Matrices](docs/geometry_transformation.md#translation--scaling--and-rotations-matrices)
+- [Euler Angles](docs/geometry_transformation.md#euler-angles)
+- [Quaternions](docs/geometry_transformation.md#quaternions)
+
+
+
+
+
+
+
+
 

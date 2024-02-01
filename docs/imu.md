@@ -490,15 +490,15 @@ with
 <br/>
 <br/>
 
-<img src="https://latex.codecogs.com/svg.latex?\sigma_{g_d}=\sigma_g\frac{1}{\sqrt{\Delta t}}"  alt="https://latex.codecogs.com/svg.latex?\sigma_{g_d}=\sigma_g\frac{1}{\sqrt{\Delta t}}"/>
+<img src="https://latex.codecogs.com/svg.latex?\sigma_{g_d}=\sigma_g\frac{1}{\sqrt{\Delta%20t}}"  alt="https://latex.codecogs.com/svg.latex?\sigma_{g_d}=\sigma_g\frac{1}{\sqrt{\Delta t}}"/>
 
-where <img src="https://latex.codecogs.com/svg.latex?\Delta t"  alt="https://latex.codecogs.com/svg.latex?\Delta t"/> is the sampling time. This is identical to the discrete-time implementation within Kalibr.
+where <img src="https://latex.codecogs.com/svg.latex?\Delta%20t"  alt="https://latex.codecogs.com/svg.latex?\Delta t"/> is the sampling time. This is identical to the discrete-time implementation within Kalibr.
 
 _Note_: This assumes that the noise was filtered with an ideal low-pass filter that filters noise above
 <br/>
 <br/>
 
- <img src="https://latex.codecogs.com/svg.latex?f=\frac{1}{2\Delta t}"  alt="https://latex.codecogs.com/svg.latex?f=\frac{1}{2\Delta t}"/>
+ <img src="https://latex.codecogs.com/svg.latex?f=\frac{1}{2\Delta%20t}"  alt="https://latex.codecogs.com/svg.latex?f=\frac{1}{2\Delta t}"/>
  
 <br/>
 <br/>
