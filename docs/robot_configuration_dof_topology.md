@@ -136,10 +136,6 @@ cos(\theta) & sin(\theta) \\
 sin(\theta) & -cos(\theta)
 \end{bmatrix}" />
 
-
-
-
-
 ## SO(3)
 <img src="https://latex.codecogs.com/svg.latex?SO%283%29" alt="https://latex.codecogs.com/svg.latex?SO(3)" />: set of all 3x3 real matrices satisfying:
 - <img src="https://latex.codecogs.com/svg.latex?R%5ETR%3DI" alt="https://latex.codecogs.com/svg.latex?R^TR=I" />
@@ -154,12 +150,6 @@ cos(\theta) & sin(\theta) & r_x\\
 sin(\theta) & -cos(\theta) & r_y \\
 0 & 0 & 1
 \end{bmatrix}" />
-
-
-
-
-
- 
 
 
 ## SE(3)
@@ -186,5 +176,6 @@ R^T & -R^Tp \\
 0 & 1
 \end{bmatrix}\in SE(3)" />
 
-Refs: [1](https://www.seas.upenn.edu/~meam620/notes/RigidBodyMotion3.pdf) 
+Refs: [1](https://www.seas.upenn.edu/~meam620/notes/RigidBodyMotion3.pdf), [2](https://www.youtube.com/watch?v=NHXAnvv4mM8&list=PLdMorpQLjeXmbFaVku4JdjmQByHHqTd1F&index=13)
+
 

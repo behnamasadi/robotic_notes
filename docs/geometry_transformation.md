@@ -1313,3 +1313,35 @@ similarly for twist we have:
 # Conversion between different representations
 
 Full list of conversion [here](http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm) 
+
+
+
+# Representing Robot Pose
+<img src="images/representing_robot_pose1.png" width="50%" height="50%" />
+
+Refs: [1](https://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly)
+
+
+
+## Eliminating Duplicate Solutions by Limiting the Roll and Pitch Ranges
+
+
+
+# Quaternion estimator algorithm (QUEST)
+Refs: [1](https://en.wikipedia.org/wiki/Quaternion_estimator_algorithm), [2](https://ahrs.readthedocs.io/en/latest/filters/quest.html)
+
+# Closed-form solution of absolute orientation using unit quaternions
+Refs: [1](https://web.stanford.edu/class/cs273/refs/Absolute-OPT.pdf)
+
+# Wahba's problem
+Refs [1](https://en.wikipedia.org/wiki/Wahba%27s_problem)
+
+
+# Angular Velocity Vector Transformation
+
+Refs: [1](https://physics.stackexchange.com/questions/429081/rotational-kinematics-and-angular-velocity-vector-transformation)
+
+
+
+
+
