@@ -26,7 +26,7 @@ Any **Graph Resource Names** within a node can be remapped when it is launched a
  syntax is `name:=new_name`
  
  
-This will remap teh topic chat to chatter 
+This will remap the topic chat to chatter 
 ```
 rosrun tutorials talker  chat:=/chatter
 ```
@@ -221,7 +221,7 @@ Refs: [1](https://kapernikov.com/the-ros-robot_localization-package/), [2](https
 Refs: [1](https://github.com/Sina-Baharlou/Pose-Estimation-EKF), [2](https://orocos.org/bfl.html)
 
 
-# Filter Filter
+# Filtering ROS bag
 To extract a part of a ROS bag:
 ```
 rosbag filter example.bag sliced.bag "t.secs >= 1702474496 and t.secs <= 1702474660"
