@@ -221,8 +221,11 @@ Refs: [1](https://kapernikov.com/the-ros-robot_localization-package/), [2](https
 Refs: [1](https://github.com/Sina-Baharlou/Pose-Estimation-EKF), [2](https://orocos.org/bfl.html)
 
 
-
-
+# Filter Filter
+To extract a part of a ROS bag:
+```
+rosbag filter example.bag sliced.bag "t.secs >= 1702474496 and t.secs <= 1702474660"
+```
 
 
 
