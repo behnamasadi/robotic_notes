@@ -181,3 +181,33 @@
 
 
 
+# [SLAM](#)
+[SLAM](docs/slam/slam.md)  
+[Kinematics of Differential Drive Robots and Wheel odometry](docs/slam/differential_drive_robots_kinematics.md)  
+[Graph SLAM](docs/slam/graph_slam.md)  
+[g2o](docs/slam/g2o.md)  
+[NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
+[Factor Graph](docs/slam/factor_graph.md)  
+[GTSAM](docs/slam/GTSAM.md)  
+[Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)  
+[Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
+[A visual introduction to Gaussian Belief Propagation](https://gaussianbp.github.io/)  
+[Lidar and IMU ](docs/slam/lidar_and_imu.md)  
+[IMU Propagation Derivations](https://docs.openvins.com/propagation.html)  
+[Open Keyframe-based Visual-Inertial SLAM](https://github.com/ethz-asl/okvis)  
+[HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
+[Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
+[kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)
+
+# Learning-based SLAM 
+[Gaussian Splatting](docs/slam/gaussian_splatting.md)  
+[GANeRF](https://github.com/barbararoessle/ganerf)  
+[DSAC*](https://github.com/vislearn/dsacstar)  
+[Tracking Any Point (TAP)](https://github.com/google-deepmind/tapnet)  
+[image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)
+[Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)
+[https://github.com/cvg/Hierarchical-Localization](https://github.com/cvg/Hierarchical-Localization)
+[instant-ngp](docs/slam/instant_ngp.md)
+
+
+
