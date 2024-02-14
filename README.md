@@ -6,11 +6,10 @@
 # Differential Drive Robots and Wheel odometry
 
 - [Kinematics of Differential Drive Robots and Wheel odometry](docs/differential_drive_robots_and_wheel_odometry.md#kinematics-of-differential-drive-robots-and-wheel-odometry)
-- [1. Velocity-based (dead reckoning)](docs/differential_drive_robots_and_wheel_odometry.md#1-velocity-based--dead-reckoning-)
-  * [1.1 Forward Kinematics for Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#11-forward-kinematics-for-differential-drive-robots)
-  * [1.2.  Inverse Kinematics of Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#12--inverse-kinematics-of-differential-drive-robots)
-- [2. Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
-- [DiffBot Differential Drive Mobile Robot](docs/differential_drive_robots_and_wheel_odometry.md#diffbot-differential-drive-mobile-robot)
+- [Velocity-based (dead reckoning)](docs/differential_drive_robots_and_wheel_odometry.md#1-velocity-based--dead-reckoning-)
+  - [Forward Kinematics for Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#11-forward-kinematics-for-differential-drive-robots)
+  - [Inverse Kinematics of Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#12--inverse-kinematics-of-differential-drive-robots)
+  - [Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
 
 
 # Geometry Transformation
@@ -182,16 +181,13 @@
 
 
 # [SLAM](#)
+[Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)  
+[Factor graph vs pose graph](docs/slam/factor_graph_vs_pose_graph.md)  
 [SLAM](docs/slam/slam.md)  
-[Kinematics of Differential Drive Robots and Wheel odometry](docs/slam/differential_drive_robots_kinematics.md)  
 [Graph SLAM](docs/slam/graph_slam.md)  
 [g2o](docs/slam/g2o.md)  
-[NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
-[Factor Graph](docs/slam/factor_graph.md)  
 [GTSAM](docs/slam/GTSAM.md)  
-[Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)  
 [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
-[A visual introduction to Gaussian Belief Propagation](https://gaussianbp.github.io/)  
 [Lidar and IMU ](docs/slam/lidar_and_imu.md)  
 [IMU Propagation Derivations](https://docs.openvins.com/propagation.html)  
 [Open Keyframe-based Visual-Inertial SLAM](https://github.com/ethz-asl/okvis)  
@@ -199,7 +195,7 @@
 [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
 [kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)
 
-# Learning-based SLAM 
+# Deep Learning based SLAM 
 [Gaussian Splatting](docs/slam/gaussian_splatting.md)  
 [GANeRF](https://github.com/barbararoessle/ganerf)  
 [DSAC*](https://github.com/vislearn/dsacstar)  
@@ -208,6 +204,7 @@
 [Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)
 [https://github.com/cvg/Hierarchical-Localization](https://github.com/cvg/Hierarchical-Localization)
 [instant-ngp](docs/slam/instant_ngp.md)
+[NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
 
 
 
