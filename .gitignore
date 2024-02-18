@@ -1,5 +1,6 @@
 data/kitti/05/image_0/*
 data/kitti/05/image_1/*
+data/kitti/out.mp4
 */__pycache__/*
 .vscode/*
 *.autosave
