@@ -1,18 +1,39 @@
 # GraphSLAM
 
 
-1. <img src="https://latex.codecogs.com/svg.latex?%5E%7Bi%7D_jR%3D%5E%7Bw%7D_iR%5ET%20%7B%5E%7Bw%7D_%7Bj%7DR%7D" alt="https://latex.codecogs.com/svg.latex?{^{w}_{j}R}" />
 
-2. <img src="https://latex.codecogs.com/svg.latex?%5E%7Bi%7D_jP%3D%5E%7Bw%7D_iR%5ET%20%28%20%7B%5E%7Bw%7D_%7Bj%7DP%7D%20-%7B%5E%7Bw%7D_%7Bi%7DP%7D%20%29" alt="https://latex.codecogs.com/svg.latex?^{i}_jP=^{w}_iR^T (  {^{w}_{j}P} -{^{w}_{i}P} ) " />
+ <img src="https://latex.codecogs.com/svg.latex?%7B%5E%7Bi%7D_%7Bj%7DX%7D%3D%28%7B%5E%7Bw%7D_%7Bi%7DT%20%5E%7B-1%7D%7D%20%29%5Ctimes%20%28%20%7B%5E%7Bw%7D_%7Bj%7DX%7D%29" alt="https://latex.codecogs.com/svg.latex?{^{i}_{j}X}=({^{w}_{i}T ^{-1}} )\times ( {^{w}_{j}X})" />
+
+<br/>
+<br/>
+
+ <img src="https://latex.codecogs.com/svg.latex?%7B%5E%7Bi%7D_%7Bj%7DX%7D%3D%20%5Cbegin%7Bbmatrix%7D%20%7B%5E%7Bw%7D_%7Bi%7DR%7D%5ET%20%26%20-%7B%5E%7Bw%7D_%7Bi%7DR%7D%5ET%20%5Ctimes%20%28%7B%5E%7Bw%7D_%7Bi%7DP%7D%29%20%5C%5C%200%20%26%201%20%5Cend%7Bbmatrix%7D%20%5Ctimes%20%28%20%7B%5E%7Bw%7D_%7Bj%7DX%7D%29" alt="https://latex.codecogs.com/svg.latex?{^{i}_{j}X}= \begin{bmatrix}
+{^{w}_{i}R}^T &   -{^{w}_{i}R}^T \times ({^{w}_{i}P})  \\ 
+0 & 1  
+\end{bmatrix} \times ( {^{w}_{j}X})" />
+
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5E%7Bi%7D_%7Bj%7DR%7D%3D%28%7B%5E%7Bw%7D_%7Bi%7DR%20%5ET%7D%20%29%5Ctimes%20%28%20%7B%5E%7Bw%7D_%7Bj%7DR%7D%29" alt="https://latex.codecogs.com/svg.latex?{^{i}_{j}R}=({^{w}_{i}R ^T} )\times ( {^{w}_{j}R})" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%5E%7Bi%7D_jP%3D%5E%7Bw%7D_iR%5ET%20%28%20%7B%5E%7Bw%7D_%7Bj%7DP%7D%20-%7B%5E%7Bw%7D_%7Bi%7DP%7D%20%29" alt="https://latex.codecogs.com/svg.latex?^{i}_jP=^{w}_iR^T (  {^{w}_{j}P} -{^{w}_{i}P} ) " />
 
 which gives us: 
-- <img src="https://latex.codecogs.com/svg.latex?%5E%7Bi%7D_j%20%5Ctheta%20%3D%5E%7Bw%7D_j%5Ctheta%20-%7B%5E%7Bw%7D_%7Bi%7D%5Ctheta%7D" alt="https://latex.codecogs.com/svg.latex?^{i}_j \theta =^{w}_j\theta -{^{w}_{i}\theta}" />
 
 
 
+<img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bbmatrix%7D%20%5E%7Bi%7D_j%20x%20%5C%5C%20%5E%7Bi%7D_j%20y%20%5Cend%7Bbmatrix%7D%3D%5Cbegin%7Bbmatrix%7D%20cos%28i%5Ew%20%5Ctheta%20%29%20%26%20sin%28i%5Ew%20%5Ctheta%20%29%20%5C%5C%20-sin%28i%5Ew%20%5Ctheta%20%29%20%26%20cos%28i%5Ew%20%5Ctheta%29%20%5Cend%7Bbmatrix%7D%20%5Cbegin%7Bbmatrix%7D%20%5E%7Bw%7D_jx%20-%20%5E%7Bw%7D_ix%20%5C%5C%20%5E%7Bw%7D_jy%20-%20%5E%7Bw%7D_iy%20%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\begin{bmatrix} ^{i}_j x \\  ^{i}_j y \end{bmatrix}=\begin{bmatrix} cos(i^w \theta ) & sin(i^w \theta ) \\ -sin(i^w \theta ) & cos(i^w \theta) \end{bmatrix} \begin{bmatrix} ^{w}_jx - ^{w}_ix \\  ^{w}_jy - ^{w}_iy \end{bmatrix}" />
+
+<br/>
+<br/>
 
 
-- <img src="https://latex.codecogs.com/svg.latex?%5Cbegin%7Bbmatrix%7D%20%5E%7Bi%7D_j%20x%20%5C%5C%20%5E%7Bi%7D_j%20y%20%5Cend%7Bbmatrix%7D%3D%5Cbegin%7Bbmatrix%7D%20cos%28%5Ctheta1%29%20%26%20sin%28%5Ctheta1%29%20%5C%5C%20-sin%28%5Ctheta1%29%20%26%20cos%28%5Ctheta1%29%20%5Cend%7Bbmatrix%7D%20%5Cbegin%7Bbmatrix%7D%20%5E%7Bw%7D_jx%20-%20%5E%7Bw%7D_ix%20%5C%5C%20%5E%7Bw%7D_jy%20-%20%5E%7Bw%7D_iy%20%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\begin{bmatrix} ^{i}_j x \\  ^{i}_j y \end{bmatrix}=\begin{bmatrix} cos(\theta1) & sin(\theta1) \\ -sin(\theta1) & cos(\theta1) \end{bmatrix} \begin{bmatrix} ^{w}_jx - ^{w}_ix \\  ^{w}_jy - ^{w}_iy \end{bmatrix}" />
+<img src="https://latex.codecogs.com/svg.latex?%5E%7Bi%7D_j%20%5Ctheta%20%3D%5E%7Bw%7D_j%5Ctheta%20-%7B%5E%7Bw%7D_%7Bi%7D%5Ctheta%7D" alt="https://latex.codecogs.com/svg.latex?^{i}_j \theta =^{w}_j\theta -{^{w}_{i}\theta}" />
 
 
 our state is:
@@ -75,6 +96,41 @@ our error function is:
 
 
 
+Install the python packages:
 
-Refs: [1](https://python-graphslam.readthedocs.io/en/stable/)
+```
+conda install -c conda-forge opencv
+pip install graphslam
+conda install conda-forge::gtsam
+conda install conda-forge::matplotlib
+conda install conda-forge::plotly
+```
+
+git submodule update --init
+
+
+
+To create a symlink at `destination` which references the original file `<original-ref>`, use:
+
+ln -s <original-ref> <destination>
+
+
+ln -s ~/workspace/robotic_notes/scripts ~/anaconda3/envs/robotic_notes/
+
+
+
+Refs: [1](https://python-graphslam.readthedocs.io/en/stable/), [2](https://github.com/goldbattle/simple_2d_slam)
+
+
+
+
+
+download g2o examples from [here](https://lucacarlone.mit.edu/datasets/)
+
+
+
+
+
+
+
 

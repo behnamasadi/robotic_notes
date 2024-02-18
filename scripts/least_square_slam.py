@@ -1,6 +1,3 @@
-# export PATH="/home/$USER/usr/bin:$PATH"
-# export LD_LIBRARY_PATH="/home/$USER/usr/lib:$LD_LIBRARY_PATH"
-
 # ref: https://github.com/goldbattle/simple_2d_slam/
 
 import g2o_file_reader
@@ -55,7 +52,7 @@ def update_node(node, dx):
 
 # g2o_file = os.path.abspath("./data/slam/input_INTEL_g2o.g2o")
 # g2o_file = os.path.abspath("./data/slam/input_M3500_g2o.g2o")
-g2o_file = os.path.abspath("./data/slam/input_MITb_g2o.g2o")
+g2o_file = os.path.abspath("/home/behnam/workspace/robotic_notes/data/slam/input_MITb_g2o.g2o")
 
 
 nodes, edges = load_2d_g2o(filename=g2o_file)
