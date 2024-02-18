@@ -136,10 +136,30 @@ cos(\theta) & sin(\theta) \\
 sin(\theta) & -cos(\theta)
 \end{bmatrix}" />
 
+
+
+
+
+
 ## SO(3)
-<img src="https://latex.codecogs.com/svg.latex?SO%283%29" alt="https://latex.codecogs.com/svg.latex?SO(3)" />: set of all 3x3 real matrices satisfying:
-- <img src="https://latex.codecogs.com/svg.latex?R%5ETR%3DI" alt="https://latex.codecogs.com/svg.latex?R^TR=I" />
-- <img src="https://latex.codecogs.com/svg.latex?det%28R%29%3D1" alt="https://latex.codecogs.com/svg.latex?det(R)=1" />
+
+<img src="https://latex.codecogs.com/svg.image?SO(3)" title="https://latex.codecogs.com/svg.image?SO(3)" />: special orthogonal group <img src="https://latex.codecogs.com/svg.image?SO(3)" title="https://latex.codecogs.com/svg.image?SO(3)" /> is the 
+set of all <img src="https://latex.codecogs.com/svg.image?3\times3" title="https://latex.codecogs.com/svg.image?3\times3" /> real matrices R satisfying:
+ - <img src="https://latex.codecogs.com/svg.image?R^TR=I" title="https://latex.codecogs.com/svg.image?R^TR=I" />
+ - <img src="https://latex.codecogs.com/svg.image?det&space;R=1" title="https://latex.codecogs.com/svg.image?det R=1" />
+
+
+
+<img src="https://latex.codecogs.com/svg.image?so(3)" title="https://latex.codecogs.com/svg.image?so(3)" />: the set of all 3x3 skew-symmetric real matrices is called <img src="https://latex.codecogs.com/svg.image?so(3)" title="https://latex.codecogs.com/svg.image?so(3)" />
+
+
+<img src="https://latex.codecogs.com/svg.image?{\displaystyle&space;[\mathbf&space;{x}&space;]{=}{\begin{bmatrix}\,\,0&\!-x_{3}&\,\,\,x_{2}\\\,\,\,x_{3}&0&\!-x_{1}\\\!-x_{2}&\,\,x_{1}&\,\,0\end{bmatrix}}}" title="https://latex.codecogs.com/svg.image?{\displaystyle [\mathbf {x} ]{=}{\begin{bmatrix}\,\,0&\!-x_{3}&\,\,\,x_{2}\\\,\,\,x_{3}&0&\!-x_{1}\\\!-x_{2}&\,\,x_{1}&\,\,0\end{bmatrix}}}" />
+
+because:
+
+<img src="https://latex.codecogs.com/svg.image?[x]=-[x]^T" title="https://latex.codecogs.com/svg.image?[x]=-[x]^T" />
+
+
 
 ## SE(2)
 The set of all 3×3 matrices with the structure: 
@@ -176,6 +196,148 @@ R^T & -R^Tp \\
 0 & 1
 \end{bmatrix}\in SE(3)" />
 
+
+<img src="https://latex.codecogs.com/svg.image?SE(3)" title="https://latex.codecogs.com/svg.image?SE(3)" />: the special Euclidean groups <img src="https://latex.codecogs.com/svg.image?SE(3)" title="https://latex.codecogs.com/svg.image?SE(3)" />
+is the set of all <img src="https://latex.codecogs.com/svg.image?4&space;\times&space;4" title="https://latex.codecogs.com/svg.image?4 \times 4" /> real matrices of <img src="https://latex.codecogs.com/svg.image?T&space;" title="https://latex.codecogs.com/svg.image?T " /> f the form:
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.image?T=\begin{bmatrix}&space;R&&space;p&space;\\&space;0&&space;1&space;\\\end{bmatrix}&space;" title="https://latex.codecogs.com/svg.image?T=\begin{bmatrix} R& p \\ 0& 1 \\\end{bmatrix} " />
+
+<br/>
+<br/>
+
+
+<img src="https://latex.codecogs.com/svg.image?R\in&space;SO(3),&space;p\in&space;R^3" title="https://latex.codecogs.com/svg.image?R\in SO(3), p\in R^3" />
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.image?T^{-1=}\begin{bmatrix}&space;R^T&&space;-pR^T&space;\\&space;0&&space;1&space;\\\end{bmatrix}" title="https://latex.codecogs.com/svg.image?T^{-1=}\begin{bmatrix} R^T& -pR^T \\ 0& 1 \\\end{bmatrix}" />
+
+
 Refs: [1](https://www.seas.upenn.edu/~meam620/notes/RigidBodyMotion3.pdf), [2](https://www.youtube.com/watch?v=NHXAnvv4mM8&list=PLdMorpQLjeXmbFaVku4JdjmQByHHqTd1F&index=13)
+
+
+
+
+
+<img src="https://latex.codecogs.com/svg.image?&space;\hat{\omega_s}&space;" title="https://latex.codecogs.com/svg.image? \hat{\omega_s} " /> is a unit vector, if we rotate a frame around it at the rate of <img src="https://latex.codecogs.com/svg.image?\dot{\theta}&space;" title="https://latex.codecogs.com/svg.image?\dot{\theta} " />, the angular velocity is <img src="https://latex.codecogs.com/svg.image?\omega_s" title="https://latex.codecogs.com/svg.image?\omega_s" /> expresses in frame <img src="https://latex.codecogs.com/svg.image?s" title="https://latex.codecogs.com/svg.image?s" />
+
+<br/>
+<br/>
+
+
+<img src="https://latex.codecogs.com/svg.image?\dot{R_{sb}}&space;=[\omega_s]R_{sb}" title="https://latex.codecogs.com/svg.image?\dot{R_{sb}} =[\omega_s]R_{sb}" />
+<br/>
+<br/>
+<img src="images/angulare_velocity_2.jpg" width="350" height="200" />
+<br/>
+<br/>
+
+Full configuration <img src="https://latex.codecogs.com/svg.image?T" title="https://latex.codecogs.com/svg.image?T" />
+
+
+
+4. <img src="https://latex.codecogs.com/svg.image?se(3)" title="https://latex.codecogs.com/svg.image?se(3)" />: the set of all <img src="https://latex.codecogs.com/svg.image?4&space;\times&space;4" title="https://latex.codecogs.com/svg.image?4 \times 4" /> real matrices with a <img src="https://latex.codecogs.com/svg.image?3&space;\times&space;3" title="https://latex.codecogs.com/svg.image?3 \times 3" /> <img src="https://latex.codecogs.com/svg.image?so(3)" title="https://latex.codecogs.com/svg.image?so(3)" /> matrix at top left and four zeros in the bottom row is classed <img src="https://latex.codecogs.com/svg.image?se(3)" title="https://latex.codecogs.com/svg.image?se(3)" />
+
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.image?\dot{T_{sb}}T_{sb}^{-1}=\begin{bmatrix}&space;[\omega_s]&space;&&space;v_s&space;\\&space;0&&space;&space;0\\\end{bmatrix}&space;=[\nu_s]\in&space;se(3)" title="https://latex.codecogs.com/svg.image?\dot{T_{sb}}T_{sb}^{-1}=\begin{bmatrix} [\omega_s] & v_s \\ 0& 0\\\end{bmatrix} =[\nu_s]\in se(3)" />
+
+
+
+
+# Angular Velocity
+
+
+
+
+
+
+
+<img src="https://latex.codecogs.com/svg.image?\omega=\frac{\theta}{t}" title="https://latex.codecogs.com/svg.image?\omega=\frac{\theta}{t}" />
+
+# Linear Velocity 
+
+
+<img src="https://latex.codecogs.com/svg.image?v=\frac{s}{t}=\frac{r\theta}{t}&space;&space;&space;=r\omega" title="https://latex.codecogs.com/svg.image?v=\frac{s}{t}=\frac{r\theta}{t} =r\omega" />
+
+<br/>
+<br/>
+
+<img src="images/linear_velocity.png" />
+
+# Screw
+screw is axis
+
+<img src="https://latex.codecogs.com/svg.image?s=\begin{bmatrix}s_{\omega}&space;\\s_{v}\end{bmatrix}=\begin{bmatrix}\text{angulare&space;velocity&space;when&space;}\dot{\theta}=1&space;&space;\\\text{linear&space;velocity&space;of&space;the&space;origin&space;when&space;}\dot{\theta}=1&space;\end{bmatrix}&space;" title="https://latex.codecogs.com/svg.image?s=\begin{bmatrix}s_{\omega} \\s_{v}\end{bmatrix}=\begin{bmatrix}\text{angulare velocity when }\dot{\theta}=1 \\\text{linear velocity of the origin when }\dot{\theta}=1 \end{bmatrix} " />
+
+The linear velocity of origins is combination of two terms:
+- <img src="https://latex.codecogs.com/svg.image?h\hat{s}" title="https://latex.codecogs.com/svg.image?h\hat{s}" /> which coming from linear move
+
+- <img src="https://latex.codecogs.com/svg.image?-\hat{s}\times&space;q" title="https://latex.codecogs.com/svg.image?-\hat{s}\times q" />
+
+<video width="640" height="480" controls>
+  <source src="vidoes/rotation_translation.mp4" type="video/mp4">
+</video>
+
+
+<img src="images/screw_1.jpg" width="400" height="200"/>
+
+<br/>
+<br/>
+
+
+
+
+# Twist
+twist is full representation of linear and angular velocity:
+
+<img src="https://latex.codecogs.com/svg.image?\nu=\begin{bmatrix}\omega&space;\\&space;v\end{bmatrix}_{6\times1}=s\dot\theta" title="https://latex.codecogs.com/svg.image?\nu=\begin{bmatrix}\omega \\ v\end{bmatrix}_{6\times1}=s\dot\theta" />
+
+
+<br/>
+<br/>
+
+The <img src="https://latex.codecogs.com/svg.image?6\times&space;6" title="https://latex.codecogs.com/svg.image?6\times 6" /> adjoint representation of a transformation matrix 
+
+
+<img src="https://latex.codecogs.com/svg.image?T=\begin{bmatrix}R&space;&&space;p&space;\\0&space;&&space;1&space;\\\end{bmatrix}" title="https://latex.codecogs.com/svg.image?T=\begin{bmatrix}R & p \\0 & 1 \\\end{bmatrix}" /> is <img src="https://latex.codecogs.com/svg.image?\begin{bmatrix}Ad_T\end{bmatrix}=\begin{bmatrix}R&space;&&space;0&space;\\&space;[p]R&space;&&space;R&space;\\\end{bmatrix}\in&space;\mathbb{R}^{6\times6}" title="https://latex.codecogs.com/svg.image?\begin{bmatrix}Ad_T\end{bmatrix}=\begin{bmatrix}R & 0 \\ [p]R & R \\\end{bmatrix}\in \mathbb{R}^{6\times6}" />
+
+which enable us the subscribe cancaltion 
+
+<img src="https://latex.codecogs.com/svg.image?\nu_a=[Ad_T_{ab}]\nu_{b}" title="https://latex.codecogs.com/svg.image?\nu_a=[Ad_T_{ab}]\nu_{b}" />
+for chaining the frame of reference
+
+<br/>
+<br/>
+
+
+
+
+For angular velocity we had:
+<br/>
+<br/>
+<img src="https://latex.codecogs.com/svg.image?\dot{R_{sb}}&space;=[\omega_s]R_{sb}" title="https://latex.codecogs.com/svg.image?\dot{R_{sb}} =[\omega_s]R_{sb}" />
+
+
+
+
+<img src="https://latex.codecogs.com/svg.image?\dot{R_{sb}}R_{sb}^{-1}&space;=[\omega_s]\in&space;so(3)" title="https://latex.codecogs.com/svg.image?\dot{R_{sb}}R_{sb}^{-1} =[\omega_s]\in so(3)" />
+<br/>
+<br/>
+similarly for twist we have:
+
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.image?\dot{T_{sb}}T_{sb}^{-1}=\begin{bmatrix}&space;[\omega_s]&space;&&space;v_s&space;\\&space;0&&space;&space;0\\\end{bmatrix}&space;=[\nu_s]\in&space;se(3)" title="https://latex.codecogs.com/svg.image?\dot{T_{sb}}T_{sb}^{-1}=\begin{bmatrix} [\omega_s] & v_s \\ 0& 0\\\end{bmatrix} =[\nu_s]\in se(3)" />
+
+
 
 
