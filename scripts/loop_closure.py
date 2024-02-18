@@ -1,2 +1,0 @@
-import g2o
-
