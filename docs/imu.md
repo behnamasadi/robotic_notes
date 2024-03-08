@@ -32,7 +32,30 @@
 
 
 
-# 4. Attitude from gravity (Tilt)
+# 4. Attitude Estimators
+
+
+In attitude estimation, two prevalent approaches are utilized:
+
+1. **Instantaneous estimation**:  This method is most effective when the system is **quasi-static state**, and hence, it is often referred to as **Static Attitude Determination**.
+
+2. **Recursive estimation**: Incorporates the system's dynamics to understand and forecast the system's behavior. By factoring in the system kinematics, this approach is known as **Dynamic Attitude Determination**. 
+Dynamic estimators mainly use angular motions to compute the attitude. These displacements are normally measured by gyroscopes
+
+
+
+
+
+
+Refs: [1](https://ahrs.readthedocs.io/en/latest/filters.html#attitude-estimators)
+
+
+
+
+
+
+
+## 4.1 Attitude from gravity (Tilt)
 
 
 
@@ -133,7 +156,62 @@ It is conventional therefore to select either the rotation sequence <img src="ht
 Refs: [1](https://ahrs.readthedocs.io/en/latest/filters/tilt.html)
 
 
-## 4.1. Solving R xyz for the Pitch and Roll Angles
+## 4.2 Attitude from angular rate (Attitude propagation)
+A quaternion is updated via **integration** of angular rate measurements of a gyroscope. 
+
+matrix exponential:
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?e%5E%5Cmathbf%7BX%7D%20%3D%20%5Csum_%7Bk%3D0%7D%5E%5Cinfty%20%5Cfrac%7B1%7D%7Bk%21%7D%20%5Cmathbf%7BX%7D%5Ek" alt="https://latex.codecogs.com/svg.latex?e^\mathbf{X} = \sum_{k=0}^\infty \frac{1}{k!} \mathbf{X}^k" />
+
+
+Euler's formula:
+
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20e%5E%7Bix%7D%3D%5Ccos%20x&plus;i%5Csin%20x%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle e^{ix}=\cos x+i\sin x,}" />
+
+proof of Euler's formula using Taylor series:
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20f%28a%29&plus;%7B%5Cfrac%20%7Bf%27%28a%29%7D%7B1%21%7D%7D%28x-a%29&plus;%7B%5Cfrac%20%7Bf%27%27%28a%29%7D%7B2%21%7D%7D%28x-a%29%5E%7B2%7D&plus;%7B%5Cfrac%20%7Bf%27%27%27%28a%29%7D%7B3%21%7D%7D%28x-a%29%5E%7B3%7D&plus;%5Ccdots%20%2C%7D" alt="{\displaystyle f(a)+{\frac {f'(a)}{1!}}(x-a)+{\frac {f''(a)}{2!}}(x-a)^{2}+{\frac {f'''(a)}{3!}}(x-a)^{3}+\cdots ,}" />
+
+if we write it for around point zero (a=0):
+
+<br/>
+<br/>
+
+<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%7B%5Cbegin%7Baligned%7De%5E%7Bix%7D%26%3D1&plus;ix&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B2%7D%7D%7B2%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B3%7D%7D%7B3%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B4%7D%7D%7B4%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B5%7D%7D%7B5%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B6%7D%7D%7B6%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B7%7D%7D%7B7%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B8%7D%7D%7B8%21%7D%7D&plus;%5Ccdots%20%5C%5C%5B8pt%5D%26%3D1&plus;ix-%7B%5Cfrac%20%7Bx%5E%7B2%7D%7D%7B2%21%7D%7D-%7B%5Cfrac%20%7Bix%5E%7B3%7D%7D%7B3%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B4%7D%7D%7B4%21%7D%7D&plus;%7B%5Cfrac%20%7Bix%5E%7B5%7D%7D%7B5%21%7D%7D-%7B%5Cfrac%20%7Bx%5E%7B6%7D%7D%7B6%21%7D%7D-%7B%5Cfrac%20%7Bix%5E%7B7%7D%7D%7B7%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B8%7D%7D%7B8%21%7D%7D&plus;%5Ccdots%20%5C%5C%5B8pt%5D%26%3D%5Cleft%281-%7B%5Cfrac%20%7Bx%5E%7B2%7D%7D%7B2%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B4%7D%7D%7B4%21%7D%7D-%7B%5Cfrac%20%7Bx%5E%7B6%7D%7D%7B6%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B8%7D%7D%7B8%21%7D%7D-%5Ccdots%20%5Cright%29&plus;i%5Cleft%28x-%7B%5Cfrac%20%7Bx%5E%7B3%7D%7D%7B3%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B5%7D%7D%7B5%21%7D%7D-%7B%5Cfrac%20%7Bx%5E%7B7%7D%7D%7B7%21%7D%7D&plus;%5Ccdots%20%5Cright%29%5C%5C%5B8pt%5D%26%3D%5Ccos%20x&plus;i%5Csin%20x%2C%5Cend%7Baligned%7D%7D%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle {\begin{aligned}e^{ix}&=1+ix+{\frac {(ix)^{2}}{2!}}+{\frac {(ix)^{3}}{3!}}+{\frac {(ix)^{4}}{4!}}+{\frac {(ix)^{5}}{5!}}+{\frac {(ix)^{6}}{6!}}+{\frac {(ix)^{7}}{7!}}+{\frac {(ix)^{8}}{8!}}+\cdots \\[8pt]&=1+ix-{\frac {x^{2}}{2!}}-{\frac {ix^{3}}{3!}}+{\frac {x^{4}}{4!}}+{\frac {ix^{5}}{5!}}-{\frac {x^{6}}{6!}}-{\frac {ix^{7}}{7!}}+{\frac {x^{8}}{8!}}+\cdots \\[8pt]&=\left(1-{\frac {x^{2}}{2!}}+{\frac {x^{4}}{4!}}-{\frac {x^{6}}{6!}}+{\frac {x^{8}}{8!}}-\cdots \right)+i\left(x-{\frac {x^{3}}{3!}}+{\frac {x^{5}}{5!}}-{\frac {x^{7}}{7!}}+\cdots \right)\\[8pt]&=\cos x+i\sin x,\end{aligned}}}" />
+
+
+
+Letting <img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bv%7D%3D%5Cmathbf%7Bu%7D%5Ctheta" alt="https://latex.codecogs.com/svg.latex?\mathbf{v}=\mathbf{u}\theta" />  be the rotation vector, representing a rotation of <img src="https://latex.codecogs.com/svg.latex?%5Ctheta" alt="https://latex.codecogs.com/svg.latex?\theta" />
+ radians around the unitary axis 
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bu%7D%3D%5Cbegin%7Bbmatrix%7Du_x%20%5C%5C%20u_y%20%5C%5C%20u_z%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\mathbf{u}=\begin{bmatrix}u_x \\ u_y \\ u_z\end{bmatrix}" />
+ 
+  
+we can get its exponential series as:
+
+
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?e%5E%5Cmathbf%7Bv%7D%20%3D%20e%5E%7B%5Cmathbf%7Bu%7D%5Ctheta%7D%20%3D%20%5CBig%281%20-%20%5Cfrac%7B%5Ctheta%5E2%7D%7B2%21%7D%20&plus;%20%5Cfrac%7B%5Ctheta%5E4%7D%7B4%21%7D%20&plus;%20%5Ccdots%5CBig%29%20&plus;%20%5CBig%28%5Cmathbf%7Bu%7D%5Ctheta%20-%20%5Cfrac%7B%5Cmathbf%7Bu%7D%5Ctheta%5E3%7D%7B3%21%7D%20&plus;%20%5Cfrac%7B%5Cmathbf%7Bu%7D%5Ctheta%5E5%7D%7B5%21%7D%20&plus;%20%5Ccdots%5CBig%29" alt="https://latex.codecogs.com/svg.latex?e^\mathbf{v} = e^{\mathbf{u}\theta} = \Big(1 - \frac{\theta^2}{2!} + \frac{\theta^4}{4!} + \cdots\Big) + \Big(\mathbf{u}\theta - \frac{\mathbf{u}\theta^3}{3!} + \frac{\mathbf{u}\theta^5}{5!} + \cdots\Big)" />
+
+
+This exponential map is formerly defined as:
+
+
+
+
+<img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bq%7D%20%3D%20e%5E%5Cmathbf%7Bv%7D%20%3D%20%5Cbegin%7Bbmatrix%7D%5Ccos%5Cfrac%7B%5Ctheta%7D%7B2%7D%20%5C%5C%20%5Cmathbf%7Bu%7D%5Csin%5Cfrac%7B%5Ctheta%7D%7B2%7D%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\mathbf{q} = e^\mathbf{v} = \begin{bmatrix}\cos\frac{\theta}{2} \\ \mathbf{u}\sin\frac{\theta}{2}\end{bmatrix}" />
+
+
+
+
+
+
+
+# Solving R xyz for the Pitch and Roll Angles
 
 <img src="https://latex.codecogs.com/svg.image?R_{xyz}" title="https://latex.codecogs.com/svg.image?R_{xyz}" /> will give us:
 
@@ -153,7 +231,7 @@ Refs: [1](https://ahrs.readthedocs.io/en/latest/filters/tilt.html)
 <br/>
 
 
-## 4.2 Solving R yxz for the Pitch and Roll Angles
+# Solving R yxz for the Pitch and Roll Angles
 
 <br/>
 <br/>
@@ -295,57 +373,6 @@ Accelerometer gives estimate in non accelerating conditions (they have problem w
 
 
 
-
-
-
-# Attitude from angular rate (Attitude propagation)
-A quaternion is updated via **integration** of angular rate measurements of a gyroscope. 
-
-matrix exponential:
-<br/>
-
-<img src="https://latex.codecogs.com/svg.latex?e%5E%5Cmathbf%7BX%7D%20%3D%20%5Csum_%7Bk%3D0%7D%5E%5Cinfty%20%5Cfrac%7B1%7D%7Bk%21%7D%20%5Cmathbf%7BX%7D%5Ek" alt="https://latex.codecogs.com/svg.latex?e^\mathbf{X} = \sum_{k=0}^\infty \frac{1}{k!} \mathbf{X}^k" />
-
-
-Euler's formula:
-
-
-<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20e%5E%7Bix%7D%3D%5Ccos%20x&plus;i%5Csin%20x%2C%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle e^{ix}=\cos x+i\sin x,}" />
-
-proof of Euler's formula using Taylor series:
-
-<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20f%28a%29&plus;%7B%5Cfrac%20%7Bf%27%28a%29%7D%7B1%21%7D%7D%28x-a%29&plus;%7B%5Cfrac%20%7Bf%27%27%28a%29%7D%7B2%21%7D%7D%28x-a%29%5E%7B2%7D&plus;%7B%5Cfrac%20%7Bf%27%27%27%28a%29%7D%7B3%21%7D%7D%28x-a%29%5E%7B3%7D&plus;%5Ccdots%20%2C%7D" alt="{\displaystyle f(a)+{\frac {f'(a)}{1!}}(x-a)+{\frac {f''(a)}{2!}}(x-a)^{2}+{\frac {f'''(a)}{3!}}(x-a)^{3}+\cdots ,}" />
-
-if we write it for around point zero (a=0):
-
-<br/>
-<br/>
-
-<img src="https://latex.codecogs.com/svg.latex?%7B%5Cdisplaystyle%20%7B%5Cbegin%7Baligned%7De%5E%7Bix%7D%26%3D1&plus;ix&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B2%7D%7D%7B2%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B3%7D%7D%7B3%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B4%7D%7D%7B4%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B5%7D%7D%7B5%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B6%7D%7D%7B6%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B7%7D%7D%7B7%21%7D%7D&plus;%7B%5Cfrac%20%7B%28ix%29%5E%7B8%7D%7D%7B8%21%7D%7D&plus;%5Ccdots%20%5C%5C%5B8pt%5D%26%3D1&plus;ix-%7B%5Cfrac%20%7Bx%5E%7B2%7D%7D%7B2%21%7D%7D-%7B%5Cfrac%20%7Bix%5E%7B3%7D%7D%7B3%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B4%7D%7D%7B4%21%7D%7D&plus;%7B%5Cfrac%20%7Bix%5E%7B5%7D%7D%7B5%21%7D%7D-%7B%5Cfrac%20%7Bx%5E%7B6%7D%7D%7B6%21%7D%7D-%7B%5Cfrac%20%7Bix%5E%7B7%7D%7D%7B7%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B8%7D%7D%7B8%21%7D%7D&plus;%5Ccdots%20%5C%5C%5B8pt%5D%26%3D%5Cleft%281-%7B%5Cfrac%20%7Bx%5E%7B2%7D%7D%7B2%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B4%7D%7D%7B4%21%7D%7D-%7B%5Cfrac%20%7Bx%5E%7B6%7D%7D%7B6%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B8%7D%7D%7B8%21%7D%7D-%5Ccdots%20%5Cright%29&plus;i%5Cleft%28x-%7B%5Cfrac%20%7Bx%5E%7B3%7D%7D%7B3%21%7D%7D&plus;%7B%5Cfrac%20%7Bx%5E%7B5%7D%7D%7B5%21%7D%7D-%7B%5Cfrac%20%7Bx%5E%7B7%7D%7D%7B7%21%7D%7D&plus;%5Ccdots%20%5Cright%29%5C%5C%5B8pt%5D%26%3D%5Ccos%20x&plus;i%5Csin%20x%2C%5Cend%7Baligned%7D%7D%7D" alt="https://latex.codecogs.com/svg.latex?{\displaystyle {\begin{aligned}e^{ix}&=1+ix+{\frac {(ix)^{2}}{2!}}+{\frac {(ix)^{3}}{3!}}+{\frac {(ix)^{4}}{4!}}+{\frac {(ix)^{5}}{5!}}+{\frac {(ix)^{6}}{6!}}+{\frac {(ix)^{7}}{7!}}+{\frac {(ix)^{8}}{8!}}+\cdots \\[8pt]&=1+ix-{\frac {x^{2}}{2!}}-{\frac {ix^{3}}{3!}}+{\frac {x^{4}}{4!}}+{\frac {ix^{5}}{5!}}-{\frac {x^{6}}{6!}}-{\frac {ix^{7}}{7!}}+{\frac {x^{8}}{8!}}+\cdots \\[8pt]&=\left(1-{\frac {x^{2}}{2!}}+{\frac {x^{4}}{4!}}-{\frac {x^{6}}{6!}}+{\frac {x^{8}}{8!}}-\cdots \right)+i\left(x-{\frac {x^{3}}{3!}}+{\frac {x^{5}}{5!}}-{\frac {x^{7}}{7!}}+\cdots \right)\\[8pt]&=\cos x+i\sin x,\end{aligned}}}" />
-
-
-
-Letting <img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bv%7D%3D%5Cmathbf%7Bu%7D%5Ctheta" alt="https://latex.codecogs.com/svg.latex?\mathbf{v}=\mathbf{u}\theta" />  be the rotation vector, representing a rotation of <img src="https://latex.codecogs.com/svg.latex?%5Ctheta" alt="https://latex.codecogs.com/svg.latex?\theta" />
- radians around the unitary axis 
-
-<img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bu%7D%3D%5Cbegin%7Bbmatrix%7Du_x%20%5C%5C%20u_y%20%5C%5C%20u_z%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\mathbf{u}=\begin{bmatrix}u_x \\ u_y \\ u_z\end{bmatrix}" />
- 
-  
-we can get its exponential series as:
-
-
-
-
-
-<img src="https://latex.codecogs.com/svg.latex?e%5E%5Cmathbf%7Bv%7D%20%3D%20e%5E%7B%5Cmathbf%7Bu%7D%5Ctheta%7D%20%3D%20%5CBig%281%20-%20%5Cfrac%7B%5Ctheta%5E2%7D%7B2%21%7D%20&plus;%20%5Cfrac%7B%5Ctheta%5E4%7D%7B4%21%7D%20&plus;%20%5Ccdots%5CBig%29%20&plus;%20%5CBig%28%5Cmathbf%7Bu%7D%5Ctheta%20-%20%5Cfrac%7B%5Cmathbf%7Bu%7D%5Ctheta%5E3%7D%7B3%21%7D%20&plus;%20%5Cfrac%7B%5Cmathbf%7Bu%7D%5Ctheta%5E5%7D%7B5%21%7D%20&plus;%20%5Ccdots%5CBig%29" alt="https://latex.codecogs.com/svg.latex?e^\mathbf{v} = e^{\mathbf{u}\theta} = \Big(1 - \frac{\theta^2}{2!} + \frac{\theta^4}{4!} + \cdots\Big) + \Big(\mathbf{u}\theta - \frac{\mathbf{u}\theta^3}{3!} + \frac{\mathbf{u}\theta^5}{5!} + \cdots\Big)" />
-
-
-This exponential map is formerly defined as:
-
-
-
-
-<img src="https://latex.codecogs.com/svg.latex?%5Cmathbf%7Bq%7D%20%3D%20e%5E%5Cmathbf%7Bv%7D%20%3D%20%5Cbegin%7Bbmatrix%7D%5Ccos%5Cfrac%7B%5Ctheta%7D%7B2%7D%20%5C%5C%20%5Cmathbf%7Bu%7D%5Csin%5Cfrac%7B%5Ctheta%7D%7B2%7D%5Cend%7Bbmatrix%7D" alt="https://latex.codecogs.com/svg.latex?\mathbf{q} = e^\mathbf{v} = \begin{bmatrix}\cos\frac{\theta}{2} \\ \mathbf{u}\sin\frac{\theta}{2}\end{bmatrix}" />
 
 
 
