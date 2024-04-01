@@ -129,17 +129,15 @@
 [Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)  
 [Pose Graph SLAM](docs/slam/pose_graph_slam.md)  
 [Factor Graph vs Pose Graph](docs/slam/factor_graph_vs_pose_graph.md)  
-
-
 [g2o](docs/slam/g2o.md)  
 [GTSAM](docs/slam/GTSAM.md)  
 [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
-
-
-
 [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
 [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
-[kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)
+[kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)  
+[TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
+[OpenDroneMap](docs/slam/open_drone_map.md)  
+
 
 # VIO
 [IMU Propagation Derivations](https://docs.openvins.com/propagation.html)  
@@ -159,10 +157,6 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 
 
 
-## DROID-SLAM
-
-## Hierarchical-Localization
-
 ## image-matching-webui
 
 ## LightGlue
@@ -174,12 +168,6 @@ Refs: [1](https://github.com/tsattler/visuallocalizationbenchmark)
 
 ## Pixel-Perfect Structure-from-Motion
 Refs: [1](https://github.com/cvg/pixel-perfect-sfm)
-
-## ODM
-```
-docker run -ti --rm -v /home/$USER/workspace/odm_projects/datasets/code/:/datasets/code opendronemap/odm --project-path /datasets
-```
-[Datasets](https://www.opendronemap.org/odm/datasets/)
 
 
 ## AnyLoc: Towards Universal Visual Place Recognition
@@ -193,11 +181,14 @@ Refs [1](https://github.com/AnyLoc/AnyLoc)
 [GANeRF](https://github.com/barbararoessle/ganerf)  
 [DSAC*](https://github.com/vislearn/dsacstar)  
 [Tracking Any Point (TAP)](https://github.com/google-deepmind/tapnet)  
-[image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)
-[Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)
-[https://github.com/cvg/Hierarchical-Localization](https://github.com/cvg/Hierarchical-Localization)
-[instant-ngp](docs/slam/instant_ngp.md)
+[image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)  
+[Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)  
+[Hierarchical Localization](https://github.com/cvg/Hierarchical-Localization)  
+[instant-ngp](docs/slam/instant_ngp.md)  
 [NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
+
+[DROID-SLAM](https://github.com/princeton-vl/DROID-SLAM?tab=readme-ov-file)  
+
 
 # [Procrustes Analysis](docs/shape_analysis.md#procrustes-analysis)  
 
