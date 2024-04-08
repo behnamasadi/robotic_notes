@@ -138,6 +138,10 @@
 [TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
 [OpenDroneMap](docs/slam/open_drone_map.md)  
 
+### [SLAM Books](#)
+
+[Basic Knowledge on Visual SLAM](https://github.com/gaoxiang12/slambook-en/blob/master/slambook-en.pdf)  
+[SLAM for Dummies](https://dspace.mit.edu/bitstream/handle/1721.1/36832/16-412JSpring2004/NR/rdonlyres/Aeronautics-and-Astronautics/16-412JSpring2004/A3C5517F-C092-4554-AA43-232DC74609B3/0/1Aslam_blas_report.pdf)  
 
 # VIO
 [IMU Propagation Derivations](https://docs.openvins.com/propagation.html)  
