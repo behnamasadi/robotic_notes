@@ -204,3 +204,13 @@ Refs [1](https://github.com/AnyLoc/AnyLoc)
 [Iterative Closest Point (ICP)](#iterative-closest-point--icp-)  
 [KISS-ICP](#kiss-icp)  
 
+
+# E-Books and Refs
+
+[Modern Robotics Mechanics, Planning, and Control (Kevin M. Lynch, Frank C. Park)](docs/ebooks/Modern%20Robotics%20Mechanics%2C%20Planning%2C%20and%20Control%20%28Kevin%20M.%20Lynch%20and%20Frank%20C.%20Park%29.pdf)  
+[Modern Robotics Mechanics, Planning, and Control (Instructor Solution Manual, Solutions )](docs/ebooks/Modern%20Robotics%20Mechanics%2C%20Planning%2C%20and%20Control%20%28Kevin%20M.%20Lynch%2C%20Frank%20C.%20Park%29%20Exercise%20Solutions.pdf)  
+[MODERN ROBOTICS MECHANICS, PLANNING, AND CONTROL (Practice Exercises)](docs/ebooks/MODERN%20ROBOTICS%20MECHANICS%2C%20PLANNING%2C%20AND%20CONTROL%20%28Practice%20Exercises%29.pdf)  
+[Basic Knowledge on Visual SLAM: From Theory to Practice, by Xiang Gao, Tao Zhang, Qinrui Yan and Yi Liu](docs/ebooks/slambook-en.pdf)  
+[STATE ESTIMATION FOR ROBOTICS (Timothy D. Barfoot)](docs/ebooks/STATE%20ESTIMATION%20FOR%20ROBOTICS%20%28Timothy%20D.%20Barfoot%29.pdf)  
+[SLAM for Dummies](docs/ebooks/SLAM%20for%20Dummies.pdf)  
+
