@@ -384,7 +384,9 @@ Accelerometer gives estimate in non accelerating conditions (they have problem w
 # IMU Integration
 
 Refs: [1](https://rpg.ifi.uzh.ch/docs/teaching/2018/13_visual_inertial_fusion_advanced.pdf), [2](http://mars.cs.umn.edu/tr/Stergios_VINS_Tutorial_IROS19.pdf)
+## ORB SLAM3 IMU pre-integation
 
+Refs: [1](https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/212)
 
 # Noise Spectral Density
 
