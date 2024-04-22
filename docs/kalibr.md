@@ -12,9 +12,23 @@ tagSpacing: 0.3          #ratio of space between tags to tagSize
 codeOffset: 0            #code offset for the first tag in the aprilboard
 ```
 <br/>
-
+<br/>
 
 <img src="images/apriltag_size_space.png" />
+
+<br/>
+<br/>
+
+<img src="images/apriltag_distance_measure.png" />
+
+
+<br/>
+<br/>
+
+<img src="images/apriltag_frame.png" width="90%" height="90%" />
+
+
+
 
 3. The following file (`cam_april-camchain.yaml`) will be generated **automatically** from camera calibration and required by `camera and IMU calibration`:
 
