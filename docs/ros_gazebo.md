@@ -249,5 +249,12 @@ rosbag filter example.bag sliced.bag "t.secs >= 1702474496 and t.secs <= 1702474
 
 
 
+# Representing Robot Pose
+
+
+<img src="images/representing_robot_pose1.png" width="50%" height="50%" />
+
+Refs: [1](https://web.archive.org/web/20161029231029/https://paulfurgale.info/news/2014/6/9/representing-robot-pose-the-good-the-bad-and-the-ugly)
+
 
 
