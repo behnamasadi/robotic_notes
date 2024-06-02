@@ -114,12 +114,14 @@
 - [EKF Implementations](docs/ros_gazebo.md#ekf-implementations)
 
 # State Estimation
-  * [FilterPy](docs/state_estimation.md#filterpy)
-- [EKF Implementations](docs/state_estimation.md#ekf-implementations)
-- [EKF for Differential Drive Robot](docs/state_estimation.md#ekf-for-differential-drive-robot)
-  * [State Space](docs/state_estimation.md#state-space)
-- [STATE ESTIMATION FOR ROBOTICS](docs/state_estimation.md#state-estimation-for-robotics)
-
+- [Bayes filter](docs/state_estimation.md#bayes-filter)  
+- [Extended Kalman Filter](docs/state_estimation.md#extended-kalman-filter)  
+- [EKF Implementations](docs/state_estimation.md#ekf-implementations)  
+- [EKF for Differential Drive Robot](docs/state_estimation.md#ekf-for-differential-drive-robot)  
+- [Error State Extended Kalman Filter](https://notanymike.github.io/Error-State-Extended-Kalman-Filter/)  
+- [Invariant extended Kalman filter](https://en.wikipedia.org/wiki/Invariant_extended_Kalman_filter)  
+- [STATE ESTIMATION FOR ROBOTICS](docs/state_estimation.md#state-estimation-for-robotics)  
+- [FilterPy](docs/state_estimation.md#filterpy)
 
 
 
@@ -131,26 +133,35 @@
 [Factor Graph vs Pose Graph](docs/slam/factor_graph_vs_pose_graph.md)  
 [g2o](docs/slam/g2o.md)  
 [GTSAM](docs/slam/GTSAM.md)  
+- [Factor Graph - 5 Minutes with Cyrill](docs/slam/GTSAM.md#factor-graph---5-minutes-with-cyrill)
+- [Georgia Tech Smoothing and Mapping Library](docs/slam/GTSAM.md#georgia-tech-smoothing-and-mapping-library)
+- [iSAM: Incremental Smoothing and Mapping](docs/slam/GTSAM.md#isam--incremental-smoothing-and-mapping)
+- [python-graphslam](docs/slam/GTSAM.md#python-graphslam)
+- [GTSAM python Tutorial Robust Pose-graph Optimization](docs/slam/GTSAM.md#gtsam-python-tutorial-robust-pose-graph-optimization)
+
 [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
 [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
 [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
 [kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)  
 [TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
 [OpenDroneMap](docs/slam/open_drone_map.md)  
+[Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)
 
 
-
-# VIO
-[IMU Propagation Derivations](https://docs.openvins.com/propagation.html)  
-[Open Keyframe-based Visual-Inertial SLAM](https://github.com/ethz-asl/okvis)  
-
-
-# Lidar and IMU
-[Lidar and IMU ](docs/slam/lidar_and_imu.md)  
+# Visual and Inertial Odometry VIO
+[IMU Propagation Derivations openvin](https://docs.openvins.com/propagation.html)  
+[Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)  
 
 
-- modern-slam-tutorial-python
-Refs: [1](https://github.com/gisbi-kim/modern-slam-tutorial-python)
+# Lidar and IMU LIO
+- [A Stereo Event Camera Dataset for Driving Scenarios DSEC](docs/slam/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)
+- [FAST-LIO (Fast LiDAR-Inertial Odometry)](docs/slam/lidar_and_imu.md#fast-lio--fast-lidar-inertial-odometry-)
+- [incremental Generalized Iterative Closest Point (GICP) based tightly-coupled LiDAR-inertial odometry (LIO), iG-LIO](docs/slam/lidar_and_imu.md#incremental-generalized-iterative-closest-point--gicp--based-tightly-coupled-lidar-inertial-odometry--lio---ig-lio)
+- [Direct LiDAR-Inertial Odometry: Lightweight LIO with Continuous-Time Motion Correction](docs/slam/lidar_and_imu.md#direct-lidar-inertial-odometry--lightweight-lio-with-continuous-time-motion-correction)
+- [Robust Real-time LiDAR-inertial Initialization](docs/slam/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)
+- [CT-LIO: Continuous-Time LiDAR-Inertial Odometry](docs/slam/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)
+
+
 
 ## Add Apriltag to loop closure
 
