@@ -140,16 +140,16 @@
 - [iSAM: Incremental Smoothing and Mapping](docs/slam/GTSAM.md#isam--incremental-smoothing-and-mapping)
 - [python-graphslam](docs/slam/GTSAM.md#python-graphslam)
 - [GTSAM python Tutorial Robust Pose-graph Optimization](docs/slam/GTSAM.md#gtsam-python-tutorial-robust-pose-graph-optimization)
-
 [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
 [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
 [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
 [kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)  
 [TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
 [OpenDroneMap](docs/slam/open_drone_map.md)  
-[Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)
-[Interactive SLAM](https://github.com/SMRT-AIST/interactive_slam)
+[Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)  
+[Interactive SLAM](https://github.com/SMRT-AIST/interactive_slam)  
 [Volumetric TSDF Fusion of Multiple Depth Maps](https://github.com/andyzeng/tsdf-fusion)  
+[Euclidean Signed Distance Field (ESDF)](https://github.com/HKUST-Aerial-Robotics/FIESTA?tab=readme-ov-file)  
 
 # Visual and Inertial Odometry VIO
 [IMU Propagation Derivations openvin](https://docs.openvins.com/propagation.html)  
@@ -164,10 +164,17 @@
 - [Robust Real-time LiDAR-inertial Initialization](docs/slam/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)
 - [CT-LIO: Continuous-Time LiDAR-Inertial Odometry](docs/slam/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)
 
+# Lidar-Monocular Visual Odometry
+[Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
+
+
+
 # Radar SLAM
 [Navtech-Radar-SLAM](https://github.com/gisbi-kim/navtech-radar-slam)
 
-
+# Lie theory
+[manif: A small header-only library for Lie theory ](https://github.com/artivis/manif)   
+[Sophus](https://github.com/strasdat/Sophus)  
 
 ## Add Apriltag to loop closure
 
