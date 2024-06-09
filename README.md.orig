@@ -135,11 +135,20 @@
 [Factor Graph vs Pose Graph](docs/slam/factor_graph_vs_pose_graph.md)  
 [g2o](docs/slam/g2o.md)  
 [GTSAM](docs/slam/GTSAM.md)  
+<<<<<<< HEAD
+- [Factor Graph - 5 Minutes with Cyrill](docs/slam/GTSAM.md#factor-graph---5-minutes-with-cyrill)
+- [Georgia Tech Smoothing and Mapping Library](docs/slam/GTSAM.md#georgia-tech-smoothing-and-mapping-library)
+- [iSAM: Incremental Smoothing and Mapping](docs/slam/GTSAM.md#isam--incremental-smoothing-and-mapping)
+- [python-graphslam](docs/slam/GTSAM.md#python-graphslam)
+- [GTSAM python Tutorial Robust Pose-graph Optimization](docs/slam/GTSAM.md#gtsam-python-tutorial-robust-pose-graph-optimization)
+=======
 - [Factor Graph - 5 Minutes with Cyrill](docs/slam/GTSAM.md#factor-graph---5-minutes-with-cyrill)  
 - [Georgia Tech Smoothing and Mapping Library](docs/slam/GTSAM.md#georgia-tech-smoothing-and-mapping-library)  
 - [iSAM: Incremental Smoothing and Mapping](docs/slam/GTSAM.md#isam--incremental-smoothing-and-mapping)  
 - [python-graphslam](docs/slam/GTSAM.md#python-graphslam)  
 - [GTSAM python Tutorial Robust Pose-graph Optimization](docs/slam/GTSAM.md#gtsam-python-tutorial-robust-pose-graph-optimization)  
+
+>>>>>>> 7202b0f (up)
 [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
 [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
 [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
@@ -147,9 +156,11 @@
 [TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
 [OpenDroneMap](docs/slam/open_drone_map.md)  
 [Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)  
+<<<<<<< HEAD
 [Interactive SLAM](https://github.com/SMRT-AIST/interactive_slam)  
 [Volumetric TSDF Fusion of Multiple Depth Maps](https://github.com/andyzeng/tsdf-fusion)  
 [Euclidean Signed Distance Field (ESDF)](https://github.com/HKUST-Aerial-Robotics/FIESTA?tab=readme-ov-file)  
+=======
 [Lidar odometry smoothing using ES EKF and KissICP for Ouster sensors with IMUs](https://capsulesbot.com/blog/2024/02/05/esekf-smoothing-ouster-lidar-with-imu-using-kiss.html)
 
 [OpenVINS](docs/slam/open_vins.md)  
@@ -164,6 +175,8 @@
 
 # SLAM Dataset
 [rvp group](https://rvp-group.net/slam-dataset.html)  
+
+>>>>>>> 7202b0f (up)
 
 # Visual and Inertial Odometry VIO
 [IMU Propagation Derivations openvin](https://docs.openvins.com/propagation.html)  
