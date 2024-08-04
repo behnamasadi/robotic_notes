@@ -225,8 +225,15 @@ Refs [1](https://github.com/AnyLoc/AnyLoc)
 [Hierarchical Localization](https://github.com/cvg/Hierarchical-Localization)  
 [instant-ngp](docs/slam/instant_ngp.md)  
 [NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
-
 [DROID-SLAM](https://github.com/princeton-vl/DROID-SLAM?tab=readme-ov-file)  
+[ACE0](https://github.com/nianticlabs/acezero)  
+[A Hierarchical 3D Gaussian Representation for Real-Time Rendering of Very Large Datasets]  
+[DoubleTake:Geometry Guided Depth Estimation](https://nianticlabs.github.io/doubletake/)  
+[Mitigating Motion Blur in Neural Radiance Fields with Events and Frames](https://github.com/uzh-rpg/EvDeblurNeRF)  
+[LEAP-VO: Long-term Effective Any Point Tracking for Visual Odometry](https://chiaki530.github.io/projects/leapvo/)  
+[MegaScenes: Scene-Level View Synthesis at Scale](https://megascenes.github.io/)  
+[Intrinsic Image Diffusion for Indoor Single-view Material Estimation](https://github.com/Peter-Kocsis/IntrinsicImageDiffusion)  
+[Vidu4D: Single Generated Video to High-Fidelity 4D Reconstruction with Dynamic Gaussian Surfels](https://vidu4d-dgs.github.io/)  
 
 
 # [Procrustes Analysis](docs/shape_analysis.md#procrustes-analysis)  
