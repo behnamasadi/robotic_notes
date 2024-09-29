@@ -112,6 +112,9 @@ roslaunch tutorials display.launch model:=urdf/01-myfirst.urdf
 
 # URDF
 
+## urdf tutorial
+
+Refs: [1](https://github.com/ros/urdf_tutorial)
 
 
 
@@ -186,11 +189,6 @@ Refs: [1](http://wiki.ros.org/urdf/Tutorials/Using%20urdf%20with%20robot_state_p
 # Differential Drive Wheel Systems
 
 Refs: [1](https://github.com/ros-controls/ros_controllers/tree/noetic-devel/diff_drive_controller), [2](http://wiki.ros.org/diff_drive_controller)
-
-
-# Gazebo
-
-Refs: [1](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#IMU(GazeboRosImu))
 
 
 
