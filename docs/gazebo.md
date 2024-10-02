@@ -1,4 +1,4 @@
-# Gazebo
+## Gazebo Versions
 
 1. Gazebo Classic: is the original version of Gazebo. The last stable release of Gazebo Classic is Gazebo 11, which was released in 2020 and will be supported until 2025. It has integration with ROS1 and ROS2.
 
@@ -25,11 +25,8 @@ Versions of Ignition Gazebo:
 Refs: [1](https://gazebosim.org/about)
 
 
-
-# Gazebo Harmonic
-
 ## Installation
-Harmonic binaries are provided for **Ubuntu Jammy (22.04)** and **Ubuntu Noble (24.04)**.
+Gazebo Harmonic: Harmonic binaries are provided for **Ubuntu Jammy (22.04)** and **Ubuntu Noble (24.04)**.
 
 dependencies: 
 ```
@@ -82,9 +79,9 @@ Every model is a group of `links` connected together with `joints`.
 #### Inertia Matrix 
 Inertia is a property of an object that resists changes in its motion, specifically rotational motion in this case. For a 3D object, the inertia of the object is represented by a 3x3 matrix called the **inertia tensor**. The terms you mentioned, <img src="https://latex.codecogs.com/svg.image?&space;I_{xx}" alt="I_{xx}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{xy}" alt="I_{xy}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{xz}" alt="I_{xz}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{yy}" alt="I_{yy}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{yz}" alt="I_{yz}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{zz}" alt="I_{zz}" />, are the components of this tensor.
 
-Let me explain them in a simple way using a 3D object, such as a **box**.
+Simple explanation using a 3D object, such as a **box**.
 
-#### Inertia Tensor Components:
+**Inertia Tensor Components**:
 
 - **<img src="https://latex.codecogs.com/svg.image?&space;I_{xx}" alt="I_{xx}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{yy}" alt="I_{yy}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{zz}" alt="I_{zz}" />:** These represent the moments of inertia about the x, y, and z axes, respectively. These describe how difficult it is to rotate the object around each of these axes.
     - Example: If you try to rotate a box around its **x-axis**, <img src="https://latex.codecogs.com/svg.image?&space;I_{xx}" alt="I_{xx}" /> will tell you how much the box resists that rotation.
