@@ -106,6 +106,16 @@ In Summary
 - **Diagonal terms** (<img src="https://latex.codecogs.com/svg.image?&space;I_{xx}" alt="I_{xx}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{yy}" alt="I_{yy}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{zz}" alt="I_{zz}" />) show resistance to rotation about each principal axis.
 - **Off-diagonal terms** (<img src="https://latex.codecogs.com/svg.image?&space;I_{xy}" alt="I_{xy}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{xz}" alt="I_{xz}" />, <img src="https://latex.codecogs.com/svg.image?&space;I_{yz}" alt="I_{yz}" />) show coupling between the axes, where rotating around one axis can also affect rotation around others. 
 ---
+
+
+Solid cuboid of width `w`, height `h`, depth `d`, and mass `m`:
+	
+<img src="https://latex.codecogs.com/svg.image?{\displaystyle I={\begin{bmatrix}{\frac {1}{12}}m(h^{2}+d^{2})&0&0\\0&{\frac {1}{12}}m(w^{2}+h^{2})&0\\0&0&{\frac {1}{12}}m(w^{2}+d^{2})\end{bmatrix}}}" alt=""/>
+
+
+[List of moments of inertia](https://en.wikipedia.org/wiki/List_of_moments_of_inertia#List_of_3D_inertia_tensors)
+
+
 ### Visual and collision
 
 
@@ -296,5 +306,13 @@ Jazzy | Harmonic | [jazzy](https://github.com/gazebosim/ros_gz/tree/jazzy) | htt
 Rolling | Fortress | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | https://packages.ros.org
 Rolling | Garden | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source
 Rolling | Harmonic | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source
+
+
+
+## Model Insertion from Fuel
+
+```
+export GZ_SIM_RESOURCE_PATH=~/gz_models/
+```
 
 
