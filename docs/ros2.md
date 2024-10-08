@@ -400,46 +400,50 @@ A bidirectional bridge example:
 ```
 ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String@gz.msgs.StringMsg
 ```
-A bridge from Gazebo to ROS example:
-```
-ros2 run ros_gz_bridge parameter_bridge parameter_bridge /chatter@std_msgs/String[ignition.msgs.StringMsg
-```
-A bridge from ROS to Gazebo example:
-```
-ros2 run ros_gz_bridge parameter_bridge parameter_bridge /chatter@std_msgs/String]ignition.msgs.StringMsg
-```
+or 
 
+```
+ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String@ignition.msgs.StringMsg --ros-args --log-level DEBUG
 
+```
+then publish from ROS:
 
 
 ```
-ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String@ignition.msgs.StringMsg
+ros2 topic pub /chatter std_msgs/msg/String '{data: "Hello from ROS"}'
+```
+receive from gazebo: 
+
+```
+ign  topic -e -t /chatter
 ```
 
+
+then publish from gazebo:
+
+```
+ign topic -t /chatter -m ignition.msgs.StringMsg -p 'data:"Hello from Gazebo"'
+```
+
+receive in ROS: 
 ```
 ros2 topic echo /chatter
 ```
 
-
+A bridge from Gazebo to ROS example:
 
 ```
-ign topic -t /chatter -m ignition.msgs.StringMsg -p 'data:"Hello"'
+ros2 run ros_gz_bridge parameter_bridge  /chatter@std_msgs/msg/String[ignition.msgs.StringMsg
+                                                         
 ```
 
+
+A bridge from ROS to Gazebo example:
+```
+ros2 run ros_gz_bridge parameter_bridge  /chatter@std_msgs/msg/String]ignition.msgs.StringMsg
+```
 
 Ref: [1](https://index.ros.org/p/ros_gz_bridge/)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
