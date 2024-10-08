@@ -376,6 +376,75 @@ Refs [1](https://neobotix-docs.de/ros/ros2/autonomous_navigation.html#:~:text=Na
 ## ROS2 Gazebo
 
 ```
+ros2 run ros_gz_bridge parameter_bridge -h
+```
+
+Bridge a collection of ROS2 and Gazebo Transport topics and services.
+
+```
+  parameter_bridge [ topic_name@ROS2_type@Ign_type ]
+```
+
+Topics: The first `@` symbol delimits the topic name from the message types.
+
+Following the first `@` symbol is the ROS message type.
+
+The ROS message type is followed by an `@`, `[`, or `]` symbol where
+    `@`  == a bidirectional bridge, 
+    `[`  == a bridge from Gazebo to ROS,
+    `]`  == a bridge from ROS to Gazebo.
+    
+Following the direction symbol is the Gazebo Transport message type.
+
+A bidirectional bridge example:
+```
+ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String@gz.msgs.StringMsg
+```
+A bridge from Gazebo to ROS example:
+```
+ros2 run ros_gz_bridge parameter_bridge parameter_bridge /chatter@std_msgs/String[ignition.msgs.StringMsg
+```
+A bridge from ROS to Gazebo example:
+```
+ros2 run ros_gz_bridge parameter_bridge parameter_bridge /chatter@std_msgs/String]ignition.msgs.StringMsg
+```
+
+
+
+
+```
+ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String@ignition.msgs.StringMsg
+```
+
+```
+ros2 topic echo /chatter
+```
+
+
+
+```
+ign topic -t /chatter -m ignition.msgs.StringMsg -p 'data:"Hello"'
+```
+
+
+Ref: [1](https://index.ros.org/p/ros_gz_bridge/)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 ign gazebo -v 4 -r visualize_lidar.sdf
 ```
 
@@ -391,6 +460,9 @@ gz service -l
 ```
 ign gazebo -v 4 -r visualize_lidar.sdf
 ```
+
+- `-v 4`: This sets the verbosity level of Gazebo to 4. 
+- `-r`:  visualize_lidar.sdf: This loads a specific SDF
 
 ```
 ros2 run ros_gz_bridge parameter_bridge /model/vehicle_blue/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist
@@ -411,6 +483,17 @@ rviz2
 
 
 [Bridge communication between ROS and Gazebo](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_bridge)
+
+
+## Obtain the ground truth position
+
+```
+gz topic -e -t /model/tugbot/pose
+```
+`-e` : for echo.
+`-t` : specify the topic.
+
+
 
 
 ## teleop_twist_keyboard

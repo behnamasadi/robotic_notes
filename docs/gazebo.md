@@ -56,6 +56,15 @@ you can run it by:
 gz sim
 ```
 
+or 
+
+```
+ign gazebo
+```
+
+
+The difference between `ign gazebo` and `gz sim` lies mainly in naming and branding. `gz sim` is now the preferred command line tool.  Both commands operate similarly, but newer documentation and versions prefer `gz sim`.
+
 Ref: [1](https://gazebosim.org/docs/latest/install_ubuntu/)
 
 
