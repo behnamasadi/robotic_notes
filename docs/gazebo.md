@@ -21,6 +21,23 @@ Versions of Ignition Gazebo:
 
 <img src="images/gazebo_timeline.svg" width="100%" />
 
+to get the version:
+
+```
+ign gazebo --version
+```
+and 
+
+
+```
+ign gazebo --versions
+```
+
+and 
+
+```
+gz sim --version
+```
 
 Refs: [1](https://gazebosim.org/about)
 
@@ -296,25 +313,6 @@ gz service -l
 
 
 
-
-
-ROS 2 version | Gazebo version | Branch | Binaries hosted at
--- | -- | -- | --
-Foxy | Citadel | [foxy](https://github.com/gazebosim/ros_gz/tree/foxy) | https://packages.ros.org
-Foxy | Edifice | [foxy](https://github.com/gazebosim/ros_gz/tree/foxy) | only from source
-Galactic | Edifice | [galactic](https://github.com/gazebosim/ros_gz/tree/galactic) | https://packages.ros.org
-Galactic | Fortress | [galactic](https://github.com/gazebosim/ros_gz/tree/galactic) | only from source
-Humble | Fortress | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | https://packages.ros.org
-Humble | Garden | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | [gazebo packages](https://gazebosim.org/docs/latest/ros_installation#gazebo-garden-with-ros-2-humble-iron-or-rolling-use-with-caution-)[^1]
-Humble | Harmonic | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | [gazebo packages](https://gazebosim.org/docs/harmonic/ros_installation#-gazebo-harmonic-with-ros-2-humble-iron-or-rolling-use-with-caution-)[^1]
-Iron | Fortress | [humble](https://github.com/gazebosim/ros_gz/tree/iron) | https://packages.ros.org
-Iron | Garden | [humble](https://github.com/gazebosim/ros_gz/tree/iron) | only from source
-Iron | Harmonic | [humble](https://github.com/gazebosim/ros_gz/tree/iron) | only from source
-Jazzy | Garden | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source
-Jazzy | Harmonic | [jazzy](https://github.com/gazebosim/ros_gz/tree/jazzy) | https://packages.ros.org
-Rolling | Fortress | [humble](https://github.com/gazebosim/ros_gz/tree/humble) | https://packages.ros.org
-Rolling | Garden | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source
-Rolling | Harmonic | [ros2](https://github.com/gazebosim/ros_gz/tree/ros2) | only from source
 
 
 
