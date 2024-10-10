@@ -361,7 +361,7 @@ Refs: [1](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Using-ROS
 Refs: [1](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html), [2](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-system.html)
 
 ### Substitutions
-Launch files are used to start nodes, services and execute processes. This set of actions may have arguments, which affect their behavior. Substitutions can be used in arguments to provide more flexibility when describing reusable launch files.
+Launch files are used to start nodes, and services and execute processes. This set of actions may have arguments, which affect their behavior. Substitutions can be used in arguments to provide more flexibility when describing reusable launch files.
 
 ### Event handlers
 Launch in ROS 2 is a system that executes and manages user-defined processes. It is responsible for monitoring the state of processes it launched, as well as reporting and reacting to changes in the state of those processes. These changes are called events and can be handled by registering an event handler with the launch system.
@@ -373,7 +373,7 @@ Refs [1](https://neobotix-docs.de/ros/ros2/autonomous_navigation.html#:~:text=Na
 
 
 
-## ROS2 Gazebo
+## ROS2 Interaction With Gazebo
 
 ```
 ros2 run ros_gz_bridge parameter_bridge -h
@@ -487,6 +487,8 @@ rviz2
 
 
 [Bridge communication between ROS and Gazebo](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_bridge)
+
+Refs: [1](https://gazebosim.org/docs/harmonic/ros2_integration/#use-ros-2-to-interact-with-gazebo)
 
 
 ## Obtain the ground truth position
