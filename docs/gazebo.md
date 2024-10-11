@@ -305,21 +305,19 @@ gz service -l
 
 
 
-## ROS 2 integration
-
-- Use ROS to launch Gazebo
-- Use ROS to interact with Gazebo topics via the [ros_gz](https://github.com/gazebosim/ros_gz): Gazebo has its own middleware, Gazebo Transport, that exposes a set of topics and services quite similar to ROS. The ros_gz bridge allows you to create a bridge between Gazebo and your ROS system, that translates between Gazebo Transport and ROS 2 as needed.
-
-
-
-
-
-
-
 ## Model Insertion from Fuel
 
 ```
 export GZ_SIM_RESOURCE_PATH=~/gz_models/
 ```
+
+
+## Obtain the ground truth position
+
+```
+gz topic -e -t /model/tugbot/pose
+```
+`-e` : for echo.
+`-t` : specify the topic.
 
 
