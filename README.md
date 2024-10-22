@@ -91,6 +91,8 @@
   * [SO(3)](docs/robot_configuration_dof_topology.md#so-3-)
   * [SE(2)](docs/robot_configuration_dof_topology.md#se-2-)
   * [SE(3)](docs/robot_configuration_dof_topology.md#se-3-)
+- [Algebraic topology (playlist)](https://www.youtube.com/playlist?list=PLuFcVFHMIfhJSSX-tlv8XxiAZSAbhv1DA)
+ 
 
 
 # ROS1
@@ -183,6 +185,7 @@
 - [Multi-State Constraint Kalman Filter (MSCKF)](https://docs.openvins.com/namespaceov__msckf.html)
 - [STATE ESTIMATION FOR ROBOTICS](docs/state_estimation.md#state-estimation-for-robotics)  
 - [FilterPy](docs/state_estimation.md#filterpy)
+- [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/pdf/1711.02508)
 
 # Bag of Words
 [FBOW (Fast Bag of Words)](https://github.com/rmsalinas/fbow)
@@ -218,7 +221,7 @@
 [Multisensor-aided Inertial Navigation System (MINS)](https://github.com/rpng/MINS)  
 [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/slam/visual_Inertial_SLAM_comparison.md)  
 [Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)  
-
+[nano-pgo](https://github.com/gisbi-kim/nano-pgo)
 
 
 
