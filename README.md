@@ -214,7 +214,6 @@
 [Volumetric TSDF Fusion of Multiple Depth Maps](https://github.com/andyzeng/tsdf-fusion)  
 [Euclidean Signed Distance Field (ESDF)](https://github.com/HKUST-Aerial-Robotics/FIESTA?tab=readme-ov-file)  
 [Lidar odometry smoothing using ES EKF and KissICP for Ouster sensors with IMUs](https://capsulesbot.com/blog/2024/02/05/esekf-smoothing-ouster-lidar-with-imu-using-kiss.html)
-
 [OpenVINS](docs/slam/open_vins.md)  
 - [OpenVINS Multi-Camera Extension](docs/slam/open_vins.md#openvins-multi-camera-extension)  
 
@@ -318,4 +317,6 @@ Refs [1](https://github.com/AnyLoc/AnyLoc)
 [Basic Knowledge on Visual SLAM: From Theory to Practice, by Xiang Gao, Tao Zhang, Qinrui Yan and Yi Liu](docs/ebooks/slambook-en.pdf)  
 [STATE ESTIMATION FOR ROBOTICS (Timothy D. Barfoot)](docs/ebooks/STATE%20ESTIMATION%20FOR%20ROBOTICS%20%28Timothy%20D.%20Barfoot%29.pdf)  
 [SLAM for Dummies](docs/ebooks/SLAM%20for%20Dummies.pdf)  
+[VSLAM Handbook](https://github.com/tussedrotten/vslam-handbook)  
+
 
