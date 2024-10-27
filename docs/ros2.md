@@ -405,6 +405,36 @@ Here's how the key mappings work in terms of movement:
   - If you press `j`, the robot's `angular.z` is set to a positive value (turn left).
   - The combination keys like `u` and `o` adjust both the `linear` and `angular` values to move in a curve.
 
-This method gives simple control over robot movement by adjusting these velocity commands. The robot then executes the motion as long as the velocity command is being received from the `teleop_twist_keyboard`.
+##  ROS 2 to ROS 1 using ROS bridge
 
-Let me know if you'd like more specific details about the implementation!
+enable access to xhost from the container
+```
+xhost +
+```
+
+Run docker and open bash shell
+
+```
+docker run -it --privileged \
+  --env=LOCAL_USER_ID="$(id -u)" \
+  -v /home/behnam:/home/behnam:rw \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -e DISPLAY=$DISPLAY \
+  --network host \
+  --name=ros1 ros:noetic-perception-focal bash
+```
+
+- `--privileged`: Grants extended privileges to the container, necessary for ROS applications that require access to specific hardware or kernel functions.
+
+- `--env=LOCAL_USER_ID="$(id -u)"`: Passes your local user ID into the container as an environment variable, helpful for maintaining file ownership consistency.
+
+- `-v /tmp/.X11-unix:/tmp/.X11-unix:ro`: Mounts the X11 socket with read-only access for graphical applications.
+
+- `-e DISPLAY=$DISPLAY`: Sets the display environment variable so that GUI applications can access your X server.
+
+
+
+
+
+
+

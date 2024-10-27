@@ -193,34 +193,29 @@
 
 
 # [SLAM](#)
-[Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)  
-[Pose Graph SLAM](docs/slam/pose_graph_slam.md)  
-[Factor Graph vs Pose Graph](docs/slam/factor_graph_vs_pose_graph.md)  
-[g2o](docs/slam/g2o.md)  
-[GTSAM](docs/slam/GTSAM.md)  
-- [Factor Graph - 5 Minutes with Cyrill](docs/slam/GTSAM.md#factor-graph---5-minutes-with-cyrill)  
-- [Georgia Tech Smoothing and Mapping Library](docs/slam/GTSAM.md#georgia-tech-smoothing-and-mapping-library)  
-- [iSAM: Incremental Smoothing and Mapping](docs/slam/GTSAM.md#isam--incremental-smoothing-and-mapping)  
-- [python-graphslam](docs/slam/GTSAM.md#python-graphslam)  
-- [GTSAM python Tutorial Robust Pose-graph Optimization](docs/slam/GTSAM.md#gtsam-python-tutorial-robust-pose-graph-optimization)  
-[Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
-[HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
-[Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
-[kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)  
-[TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
-[OpenDroneMap](docs/slam/open_drone_map.md)  
-[Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)  
-[Interactive SLAM](https://github.com/SMRT-AIST/interactive_slam)  
-[Volumetric TSDF Fusion of Multiple Depth Maps](https://github.com/andyzeng/tsdf-fusion)  
-[Euclidean Signed Distance Field (ESDF)](https://github.com/HKUST-Aerial-Robotics/FIESTA?tab=readme-ov-file)  
-[Lidar odometry smoothing using ES EKF and KissICP for Ouster sensors with IMUs](https://capsulesbot.com/blog/2024/02/05/esekf-smoothing-ouster-lidar-with-imu-using-kiss.html)
-[OpenVINS](docs/slam/open_vins.md)  
-- [OpenVINS Multi-Camera Extension](docs/slam/open_vins.md#openvins-multi-camera-extension)  
+- [Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)
+- [Pose Graph SLAM](docs/slam/pose_graph_slam.md)
+- [nano-pgo](https://github.com/gisbi-kim/nano-pgo)
+- [Factor Graph vs Pose Graph](docs/slam/factor_graph_vs_pose_graph.md)  
+- [g2o](docs/slam/g2o.md)  
+- [GTSAM](docs/slam/GTSAM.md)  
+  - [Factor Graph - 5 Minutes with Cyrill](docs/slam/GTSAM.md#factor-graph---5-minutes-with-cyrill)  
+  - [Georgia Tech Smoothing and Mapping Library](docs/slam/GTSAM.md#georgia-tech-smoothing-and-mapping-library)  
+  - [iSAM: Incremental Smoothing and Mapping](docs/slam/GTSAM.md#isam--incremental-smoothing-and-mapping)  
+  - [python-graphslam](docs/slam/GTSAM.md#python-graphslam)  
+  - [GTSAM python Tutorial Robust Pose-graph Optimization](docs/slam/GTSAM.md#gtsam-python-tutorial-robust-pose-graph-optimization)  
+- [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
+- [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
+- [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
+- [kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)  
+- [TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
+- [OpenDroneMap](docs/slam/open_drone_map.md)  
+- [Interactive SLAM](https://github.com/SMRT-AIST/interactive_slam)  
+- [Volumetric TSDF Fusion of Multiple Depth Maps](https://github.com/andyzeng/tsdf-fusion)  
+- [Euclidean Signed Distance Field (ESDF)](https://github.com/HKUST-Aerial-Robotics/FIESTA?tab=readme-ov-file)  
+- [Lidar odometry smoothing using ES EKF and KissICP for Ouster sensors with IMUs](https://capsulesbot.com/blog/2024/02/05/esekf-smoothing-ouster-lidar-with-imu-using-kiss.html)
+- [Multisensor-aided Inertial Navigation System (MINS)](https://github.com/rpng/MINS)  
 
-[Multisensor-aided Inertial Navigation System (MINS)](https://github.com/rpng/MINS)  
-[Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/slam/visual_Inertial_SLAM_comparison.md)  
-[Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)  
-[nano-pgo](https://github.com/gisbi-kim/nano-pgo)
 
 
 
@@ -228,8 +223,20 @@
 [rvp group](https://rvp-group.net/slam-dataset.html)  
 
 # Visual and Inertial Odometry VIO
-[IMU Propagation Derivations openvin](https://docs.openvins.com/propagation.html)  
-[Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)  
+
+- [Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)  
+- [HybVIO](https://github.com/SpectacularAI/HybVIO/t)  
+- [SVO Pro](https://github.com/uzh-rpg/rpg_svo_pro_open)  
+- [OpenVINS](docs/slam/open_vins.md)  
+  - [OpenVINS Multi-Camera Extension](docs/slam/open_vins.md#openvins-multi-camera-extension)  
+  - [Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)  
+  - [IMU Propagation Derivations openvin](https://docs.openvins.com/propagation.html)  
+- [Kimera-VIO](https://github.com/MIT-SPARK/Kimera-VIO)  
+- [3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)  
+
+# Benchmark
+[Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/slam/visual_Inertial_SLAM_comparison.md)  
+[A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
 
 
 # Lidar and IMU LIO
@@ -239,9 +246,12 @@
 - [Direct LiDAR-Inertial Odometry: Lightweight LIO with Continuous-Time Motion Correction](docs/slam/lidar_and_imu.md#direct-lidar-inertial-odometry--lightweight-lio-with-continuous-time-motion-correction)  
 - [Robust Real-time LiDAR-inertial Initialization](docs/slam/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)  
 - [CT-LIO: Continuous-Time LiDAR-Inertial Odometry](docs/slam/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)  
+- [Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)  
+- [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM/tree/ros2)  
+- [GLIM](https://github.com/koide3/glim)  
+- [Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
 
-# Lidar-Monocular Visual Odometry
-[Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
+
 
 
 

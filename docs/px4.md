@@ -39,7 +39,7 @@ make list_config_targets
 
 - VIEWER: `gz`, `gazebo`, `jmavsim`, `none`. if you want to launch PX4 and wait for a simulator (jmavsim, Gazebo, Gazebo Classic, or some other simulator). For example, `make px4_sitl none_iris` launches PX4 without a simulator (but with the iris airframe).
 
-````
+```
 make px4_sitl jmavsim
 ```
 
@@ -114,8 +114,8 @@ cmake ..
 make
 sudo make install
 sudo ldconfig /usr/local/lib/
-
 ```
+installation:
 
 ```
 make -j20 install DESTDIR=~/
@@ -152,7 +152,7 @@ colcon build
  
 
 
-````
+```
 gz topic -i -t /world/default/model/x500_lidar_0/link/link/sensor/lidar_2d_v2/scan/points
 ```
 

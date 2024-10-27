@@ -43,10 +43,6 @@ ros2 launch ros_gz_sim gz_sim.launch.py gz_args:=empty.sdf
 
 Refs: [1](https://gazebosim.org/docs/harmonic/ros2_launch_gazebo/)
 
-
-
-[Bridge communication between ROS and Gazebo](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_bridge)
-
 ## ROS2 Interaction With Gazebo
 
 ### Bridge communication between ROS and Gazebo
@@ -65,7 +61,9 @@ The following message types can be bridged for topics:
 | tf2_msgs/msg/TFMessage                      | gz.msgs.Pose_V                              |
 | sensor_msgs/msg/Image                       | gz.msgs.Image                               |
 | sensor_msgs/msg/MagneticField	              | gz.msgs.Magnetometer                        |
-| sensor_msgs/msg/NavSatFix	              |gz.msgs.NavSat                               |
+| sensor_msgs/msg/NavSatFix	              | gz.msgs.NavSat                              |
+| nav_msgs/msg/Odometry                       | gz.msgs.Odometry                            |
+| sensor_msgs/msg/CameraInfo                  | gz.msgs.CameraInfo                          |
 
 	
 
@@ -384,12 +382,295 @@ ros2 run ros_gz_bridge parameter_bridge /navsat@sensor_msgs/msg/NavSatFix[gz.msg
 
 
 
+### 7. Robot description publisher (spawning urdf model)
+
+Lets download a simple model [08-macroed.urdf.xacro](https://github.com/ros/urdf_tutorial/blob/ros2/urdf/08-macroed.urdf.xacro)
+
+
+```
+xacro 08-macroed.urdf.xacro > 08-macroed.urdf.urdf
+```
+
+```
+check_urdf 08-macroed.urdf.urdf
+```
+
+```
+urdf_to_graphviz 08-macroed.urdf.urdf
+```
+
+and for SVG
+
+```
+dot -Tsvg macroed.gv -o output.svg
+```
+
+<img src="images/08-macroed.svg" />
+
+
+more models [here](https://wiki.ros.org/urdf/Examples)
 
 
 
+now run:
 
 
+```
+gz sim empty.sdf
+```
 
+all worlds available at: `/usr/share/gz/gz-sim8/worlds/`
+
+
+list all services:
+
+```
+gz service -l
+```
+
+Look for a create service.
+
+```
+/world/empty/create
+```
+
+to get the service’s request and response message types:
+
+
+```
+gz service -is /world/empty/create
+```
+ which gives you:
+
+```
+gz.msgs.EntityFactory, gz.msgs.Boolean
+```
+
+
+spawns the URDF file model.urdf into the Gazebo Sim world as a model named urdf_model:
+
+```
+gz service -s /world/empty/create --reqtype gz.msgs.EntityFactory --reptype gz.msgs.Boolean --timeout 1000 --req 'sdf_filename: "08-macroed.urdf.urdf", name: "08-macroed"'
+```
+**very important:**: in the terminal that you have run `gz sim empty.sdf` you have access to `08-macroed.urdf.urdf` (it should be in the same directory)
+ 
+another example: `rrbot.xacro`
+
+```
+<?xml version="1.0"?>
+<!-- Revolute-Revolute Manipulator -->
+<robot name="rrbot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="mass" value="1" /> <!-- arbitrary value for mass -->
+  <xacro:property name="width" value="0.1" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="height1" value="2" /> <!-- Link 1 -->
+  <xacro:property name="height2" value="1" /> <!-- Link 2 -->
+  <xacro:property name="height3" value="1" /> <!-- Link 3 -->
+  <xacro:property name="axel_offset" value="0.05" /> <!-- Space btw top of beam and the each joint -->
+
+  <!-- Define colors -->
+  <material name="black">
+    <color rgba="0.0 0.0 0.0 1.0"/>
+  </material>
+
+  <material name="orange">
+    <color rgba="${255/255} ${108/255} ${10/255} 1.0"/>
+  </material>
+
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <link name="world"/>
+
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="link1"/>
+  </joint>
+
+  <!-- Base Link -->
+  <link name="link1">
+    <collision>
+      <origin xyz="0 0 ${height1/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${width} ${width} ${height1}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height1/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${width} ${width} ${height1}"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height1/2}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+    ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+    iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+    izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint1" type="continuous">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0 ${width} ${height1 - axel_offset}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <!-- Middle Link -->
+  <link name="link2">
+    <collision>
+      <origin xyz="0 0 ${height2/2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${width} ${width} ${height2}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height2/2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${width} ${width} ${height2}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height2/2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+    ixx="${mass / 12.0 * (width*width + height2*height2)}" ixy="0.0" ixz="0.0"
+    iyy="${mass / 12.0 * (height2*height2 + width*width)}" iyz="0.0"
+    izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint2" type="continuous">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 ${width} ${height2 - axel_offset*2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <!-- Top Link -->
+  <link name="link3">
+    <collision>
+      <origin xyz="0 0 ${height3/2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${width} ${width} ${height3}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height3/2 - axel_offset}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${width} ${width} ${height3}"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height3/2 - axel_offset}" rpy="0 0 0"/>
+      <mass value="${mass}"/>
+      <inertia
+    ixx="${mass / 12.0 * (width*width + height3*height3)}" ixy="0.0" ixz="0.0"
+    iyy="${mass / 12.0 * (height3*height3 + width*width)}" iyz="0.0"
+    izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+  </link>
+
+  <!-- Gazebo colors and frictions -->
+  <!-- Link1 -->
+  <gazebo reference="link1">
+    <material>
+      <diffuse> 1 0.423529412 0.039215686 1</diffuse>
+      <ambient> 1 0.423529412 0.039215686 1</ambient>
+      <specular>1 0.423529412 0.039215686 1</specular>
+    </material>
+  </gazebo>
+
+  <!-- Link2 -->
+  <gazebo reference="link2">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>
+      <diffuse> 0 0 0 1</diffuse>
+      <ambient> 0 0 0 1</ambient>
+      <specular>0 0 0 1</specular>
+    </material>
+  </gazebo>
+
+  <!-- Link3 -->
+  <gazebo reference="link3">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>
+      <diffuse> 1 0.423529412 0.039215686 1</diffuse>
+      <ambient> 1 0.423529412 0.039215686 1</ambient>
+      <specular>1 0.423529412 0.039215686 1</specular>
+    </material>
+  </gazebo>
+
+  <!-- Joint states plugin -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"/>
+  </gazebo>
+
+</robot>
+```
+
+```
+xacro rrbot.xacro > rrbot.urdf
+```
+
+then run: 
+
+```
+gz service -s /world/empty/create --reqtype gz.msgs.EntityFactory --reptype gz.msgs.Boolean --timeout 1000 --req 'sdf_filename: "rrbot.urdf", name: "rrbot"'
+```
+
+
+### 8.Joint States Publisher
+
+
+```
+ros2 launch ros_gz_sim_demos tf_bridge.launch.py
+```
+
+in the file: `tf_bridge.launch.py`
+ 
+change:
+```
+    cmd=[
+        'ign', 'gazebo', '-r',
+        os.path.join(
+            pkg_ros_gz_sim_demos,
+            'models',
+            'double_pendulum_model.sdf'
+        )
+    ]
+```
+
+
+to this 
+
+```
+cmd=[
+        'gz', 'sim', '-r',
+        os.path.join(
+            pkg_ros_gz_sim_demos,
+            'models',
+            'double_pendulum_model.sdf'
+        )
+    ]
+```
+
+<img src="images/tf_bridge.gif" />
 
 
 
