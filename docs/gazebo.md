@@ -21,7 +21,7 @@ Versions of Ignition Gazebo:
 
 <img src="images/gazebo_timeline.svg" width="100%" />
 
-to get the version:
+If you have installed `ign`, to get the version:
 
 ```
 ign gazebo --version
@@ -80,7 +80,7 @@ ign gazebo
 ```
 
 
-The difference between `ign gazebo` and `gz sim` lies mainly in naming and branding. `gz sim` is now the preferred command line tool.  Both commands operate similarly, but newer documentation and versions prefer `gz sim`.
+
 
 Ref: [1](https://gazebosim.org/docs/latest/install_ubuntu/)
 
@@ -259,48 +259,6 @@ add the lidar sensor
     <always_on>1</always_on>
     <visualize>true</visualize>
 </sensor>
-```
-
-## Spawn URDF
-Lets download a simple model [08-macroed.urdf.xacro](https://github.com/ros/urdf_tutorial/blob/ros2/urdf/08-macroed.urdf.xacro)
-
-
-```
-xacro 08-macroed.urdf.xacro > 08-macroed.urdf.urdf
-```
-
-```
-check_urdf 08-macroed.urdf.urdf
-```
-
-```
-urdf_to_graphviz 08-macroed.urdf.urdf
-```
-
-and for SVG
-
-```
-dot -Tsvg macroed.gv -o output.svg
-```
-
-<img src="images/08-macroed.svg" />
-
-
-more models [here](https://wiki.ros.org/urdf/Examples)
-
-
-
-Now 
-
-
-```
-gz sim empty.sdf
-```
-
-list all services:
-
-```
-gz service -l
 ```
 
 

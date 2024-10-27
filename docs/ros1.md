@@ -256,3 +256,29 @@ Refs: [1](https://web.archive.org/web/20161029231029/https://paulfurgale.info/ne
 
 
 
+
+
+## catkin
+always call catkin_make in the root of your catkin workspace
+```
+cd ~/catkin_ws
+catkin_make
+```
+
+The above command will build any packages located in ~/catkin_ws/src. The equivalent commands to do this manually would be:
+
+```
+ cd ~/catkin_ws
+ cd src
+ catkin_init_workspace
+ cd ..
+ mkdir build
+ cd build
+ cmake ../src -DCMAKE_INSTALL_PREFIX=../install -DCATKIN_DEVEL_PREFIX=../devel
+ make
+```
+
+Refs: [1](https://wiki.ros.org/catkin/commands/catkin_make)
+
+
+
