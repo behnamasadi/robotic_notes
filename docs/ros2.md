@@ -84,11 +84,20 @@ sudo apt install python3-colcon-common-extensions
 ```
 If you do not want to build a specific package place an empty file named `COLCON_IGNORE` in the directory and it will not be indexed.
 
+
+### specify a package to build
 or you can specify your package
 
 ```
-colcon build --packages-select my_package
+colcon build --packages-select <my_package>
 ```
+
+### sending cmake arguments
+
+```
+colcon build --cmake-args -DCeres_DIR=/home/$USER/usr/lib/cmake/Ceres/    -Dabsl_DIR=/home/$USER/usr/lib/cmake/absl/ --packages-select slam_toolbox
+```
+
 
 
 #### Underlay
