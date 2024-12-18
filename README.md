@@ -328,5 +328,6 @@ Refs [1](https://github.com/AnyLoc/AnyLoc)
 [STATE ESTIMATION FOR ROBOTICS (Timothy D. Barfoot)](docs/ebooks/STATE%20ESTIMATION%20FOR%20ROBOTICS%20%28Timothy%20D.%20Barfoot%29.pdf)  
 [SLAM for Dummies](docs/ebooks/SLAM%20for%20Dummies.pdf)  
 [VSLAM Handbook](https://github.com/tussedrotten/vslam-handbook)  
+[SLAM Handbook](https://github.com/SLAM-Handbook-contributors/slam-handbook-public-release)
 
 
