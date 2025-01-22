@@ -1,3 +1,6 @@
+# [Lie Group and Lie Algebra](#)
+- [Lie Group and Lie Algebra](docs/lie_group_lie_algebra/index.ipynb)   
+
 # Aerial Robotics
 - [Aerial Robotics](docs/aerial_robotics.md#aerial-robotics)
 

@@ -1,7 +1,23 @@
-data/kitti/05/image_0/*
-data/kitti/05/image_1/*
-data/kitti/out.mp4
-*/__pycache__/*
-.vscode/*
-*.autosave
-
+**/build/
+*.user
+*.kdev4
+src/sandbox/*
+CMakeLists.txt.user
+*.vscode/*
+*/*.log
+**/__pycache__/*
+**/build/*
+**/*.so
+**/.ipynb_checkpoints/
+.pkl
+*.gz
+*egg-info*
+*build*
+# Ignore compiled Python bytecode files
+*.pyc
+# Ignore Python cache directories
+__pycache__/
+# Ignore environment-specific settings
+.env
+# Ignore editor-specific files
+.idea/
