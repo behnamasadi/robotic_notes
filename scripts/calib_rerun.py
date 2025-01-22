@@ -5,6 +5,8 @@ import numpy as np
 import cv2 as cv
 from rerun.datatypes import Angle, RotationAxisAngle
 
+# https://dev.to/rerunio/visualize-structure-from-motion-i44
+
 
 def list_images(images_dir):
     """
