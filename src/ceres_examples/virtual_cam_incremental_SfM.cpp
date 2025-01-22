@@ -438,78 +438,6 @@ void virtualCamIncrementalSfM() {
     all_matches.push_back(matches);
   }
 
-  //////////////////////////// recoverPose ////////////////////////////
-
-  double prob = 0.999;
-  double threshold = 1.0;
-  cv::Mat E = cv::findEssentialMat(imagePointsCam0, imagePointsCam1, K,
-                                   cv::RANSAC, prob, threshold);
-
-  cv::Mat R_im1_to_i, t_im1_to_i;
-  cv::recoverPose(E, imagePointsCam0, imagePointsCam1, K, R_im1_to_i,
-                  t_im1_to_i, cv::noArray());
-
-  //////////////////////////// Triangulate points ////////////////////////////
-  cv::Mat points4D;
-
-  // Compute the projection matrices
-  cv::Mat Rt_0 = cv::Mat::eye(3, 4, CV_64F); // [I|0] for the first camera
-  cv::Mat Rt_1(3, 4, CV_64F);                // [R|t] for the second camera
-  R_im1_to_i.copyTo(
-      Rt_1(cv::Rect(0, 0, 3, 3))); // Copy R into the top-left 3x3 submatrix
-  t_im1_to_i.copyTo(Rt_1(cv::Rect(3, 0, 1, 3))); // Copy t into the last column
-
-  cv::Mat P0 = K * Rt_0;
-  cv::Mat P1 = K * Rt_1;
-
-  std::cout << "P0:\n" << P0 << std::endl;
-  std::cout << "P1:\n" << P1 << std::endl;
-
-  std::cout << "press any keys to triangulate points" << std::endl;
-  std::cin.get();
-
-  //////////////////////////// Triangulate points ////////////////////////////
-  cv::triangulatePoints(P0, P1, imagePointsCam0, imagePointsCam1, points4D);
-
-  // Convert points from homogeneous to 3D (divide by w)
-  std::vector<cv::Point3f> triangulatedPoints;
-  for (int i = 0; i < points4D.cols; ++i) {
-    cv::Point3f point;
-    point.x = points4D.at<float>(0, i) / points4D.at<float>(3, i);
-    point.y = points4D.at<float>(1, i) / points4D.at<float>(3, i);
-    point.z = points4D.at<float>(2, i) / points4D.at<float>(3, i);
-    //    std::cout << "triangulatedPoints: " << point << std::endl;
-
-    triangulatedPoints.push_back(point);
-  }
-
-  // points are in rectified coordinated, meaning in left camera
-
-  std::vector<cv::Point3f> pointsInWorld;
-
-  for (const auto &point : triangulatedPoints) {
-    // Convert point from camera space to world space
-    cv::Mat pointMat = (cv::Mat_<double>(3, 1) << point.x, point.y, point.z);
-
-    // Apply rotation from camera to world
-    cv::Mat rotatedPoint = rotation_Cam0_in_world * pointMat;
-
-    // Apply translation
-    cv::Point3f worldPoint;
-    worldPoint.x = rotatedPoint.at<double>(0) + t_Cam0_in_world.at<double>(0);
-    worldPoint.y = rotatedPoint.at<double>(1) + t_Cam0_in_world.at<double>(1);
-    worldPoint.z = rotatedPoint.at<double>(2) + t_Cam0_in_world.at<double>(2);
-    pointsInWorld.push_back(worldPoint);
-  }
-  // Log the triangulated points to Rerun
-  std::vector<rerun::components::Position3D> triangulated3d_positions;
-  for (const auto &point : pointsInWorld) {
-    triangulated3d_positions.push_back({point.x, point.y, point.z});
-  }
-  rec.log("world/triangulated_points",
-          rerun::Points3D(triangulated3d_positions)
-              .with_radii(std::vector<float>(triangulatedPoints.size(), 0.05)));
-
   // camera0  is the world,we set identity and zero
   std::vector<CameraExtrinsics> cameras(N_CAMERAS);
   cameras[0].R = cv::Mat::eye(3, 3, CV_64F);
@@ -668,14 +596,22 @@ void virtualCamIncrementalSfM() {
           {point_in_cam_im0.x, point_in_cam_im0.y, point_in_cam_im0.z});
     }
 
+    std::vector<rerun::Color> colors(rr_triangulated_pointsInCam0.size());
+
+    for (size_t j = 0; j < rr_triangulated_pointsInCam0.size(); ++j) {
+
+      if ((i % 2) == 0) {
+        colors[j] = rerun::Color(255, 0, 0); // Red
+      } else {
+        colors[j] = rerun::Color(0, 255, 0); // Green, for example
+      }
+    }
+
     rec.log("world/triangulated_pointsInCam0",
             rerun::Points3D(rr_triangulated_pointsInCam0)
                 .with_radii(std::vector<float>(
                     rr_triangulated_pointsInCam0.size(), 0.05))
-                .with_colors(std::vector<rerun::Color>(
-                    rr_triangulated_pointsInCam0.size(),
-                    rerun::Color(255, 0, 0) // Red color for example
-                    )));
+                .with_colors(colors));
     std::cin.get();
   }
 }
