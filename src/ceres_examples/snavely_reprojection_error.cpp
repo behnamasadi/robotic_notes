@@ -88,11 +88,11 @@ void projectPointcloudInStereoImagePlane() {
   thetaRight[1] = pitchRight;
   thetaRight[2] = yawRight;
 
-  txLeft = -1;
+  txLeft = -0.5;
   tyLeft = 0.0;
   tzLeft = -4.0;
 
-  txRight = 1.0;
+  txRight = 0.5;
   tyRight = 0.0;
   tzRight = -4.0;
 
