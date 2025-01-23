@@ -39,6 +39,11 @@ add_executable(snavely_reprojection_error src/ceres_examples/snavely_reprojectio
 target_link_libraries(snavely_reprojection_error PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
 
+
+add_executable(simple_snavely_reprojection_error src/ceres_examples/simple_snavely_reprojection_error.cpp)
+target_link_libraries(simple_snavely_reprojection_error PRIVATE Ceres::ceres ${OpenCV_LIBS} )
+
+
 add_executable(incremental_SfM  src/ceres_examples/incremental_SfM.cpp)
 target_link_libraries(incremental_SfM  PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
