@@ -1,10 +1,14 @@
 #include "../collection_adapters.hpp"
+#include "../snavely_reprojection_error.h"
 #include "../transformation.hpp"
+#include <ceres/ceres.h>
+#include <ceres/rotation.h>
 #include <opencv2/opencv.hpp>
 #include <rerun.hpp>
 #include <rerun/archetypes/arrows3d.hpp>
 #include <rerun/datatypes/rgba32.hpp>
 
+using namespace ceres::examples;
 //------------------------------------------------------------------------------
 // ) Convert from homogeneous (4 x N) to std::vector<cv::Point3f> (divide by w)
 //------------------------------------------------------------------------------
@@ -152,6 +156,47 @@ void drawMatchesBetweenTheTwoFrames(cv::Mat image1, cv::Mat image2,
 }
 
 //------------------------------------------------------------------------------
+// ) Utility to convert (R,t) from OpenCV to the 9-parameter format
+//    for the Snavely model in Ceres:
+//    - camera[0..2]: angle-axis
+//    - camera[3..5]: translation
+//    - camera[6]: focal
+//    - camera[7..8]: k1, k2
+//------------------------------------------------------------------------------
+void RtToAngleAxisAndTranslate(const cv::Mat &R, const cv::Mat &t,
+                               double *camera_params) {
+  // 1) Convert rotation matrix R (3x3) to angle-axis (3)
+  // We'll store it in camera_params[0..2].
+  double rotMat[9];
+  for (int r = 0; r < 3; r++) {
+    for (int c = 0; c < 3; c++) {
+      rotMat[r * 3 + c] = R.at<double>(r, c);
+    }
+  }
+  double angleAxis[3];
+  ceres::RotationMatrixToAngleAxis<double>(rotMat, angleAxis);
+  camera_params[0] = angleAxis[0];
+  camera_params[1] = angleAxis[1];
+  camera_params[2] = angleAxis[2];
+
+  // 2) translation => camera_params[3..5]
+
+  camera_params[3] = t.at<double>(0, 0);
+  camera_params[4] = t.at<double>(1, 0);
+  camera_params[5] = t.at<double>(2, 0);
+  std::cout << "translation" << camera_params[3] << "," << camera_params[4]
+            << "," << camera_params[5] << std::endl;
+}
+
+void setCameraIntrinsic(double focal, double k1, double k2,
+                        double *camera_params) {
+
+  camera_params[6] = focal; // focal
+  camera_params[7] = k1;    // k1
+  camera_params[8] = k1;    // k2
+}
+
+//------------------------------------------------------------------------------
 // ) Simple struct to hold per-camera data in a more readable form (OpenCV
 // style)
 //    We'll transform them into the 9-parameter "bundle" format for Ceres.
@@ -159,6 +204,18 @@ void drawMatchesBetweenTheTwoFrames(cv::Mat image1, cv::Mat image2,
 struct CameraExtrinsics {
   cv::Mat R; // 3x3
   cv::Mat t; // 3x1
+};
+
+//------------------------------------------------------------------------------
+// We'll keep a global list of 3D points (in world coords)
+// and for each 3D point, we'll store which camera+feature sees it
+// (observations).
+//------------------------------------------------------------------------------
+
+struct Observation {
+  int camera_idx; // which camera sees this point
+  int point_idx;  // which 3D point is observed
+  double x, y;    // 2D feature coords
 };
 
 void virtualCamIncrementalSfM() {
@@ -169,6 +226,14 @@ void virtualCamIncrementalSfM() {
   ///////////////// cameras extrinsic /////////////////
   // clang-format off
     /*
+
+
+                  //-\\
+                 // - \\
+                /// - \\\
+                \\\   ///
+                 \\ - //
+                  \\-//
 
 
 
@@ -251,6 +316,18 @@ void virtualCamIncrementalSfM() {
 
   ///////// camera intrinsic parameters/////////
 
+  //  4, 5, 8, 12 or 14 elements
+  double k1, k2, p1, p2, k3;
+
+  k1 = 0.;
+  k2 = 0.;
+  p1 = 0.;
+  p2 = 0.;
+  k3 = 0.;
+
+  cv::Mat distortionCoefficient =
+      (cv::Mat_<double>(5, 1) << k1, k2, p1, p2, k3);
+
   unsigned int numberOfPixelInHeight, numberOfPixelInWidth;
   double heightOfSensor, widthOfSensor;
   double focalLength = 4.0;
@@ -266,6 +343,11 @@ void virtualCamIncrementalSfM() {
 
   mx = (numberOfPixelInWidth) / widthOfSensor;
   V0 = (numberOfPixelInWidth) / 2;
+
+  double fx = focalLength * mx;
+  double cx, cy;
+  cx = (numberOfPixelInWidth) / 2;
+  cy = (numberOfPixelInHeight) / 2;
 
   cv::Mat K = (cv::Mat_<double>(3, 3) << focalLength * mx, 0, V0, 0,
                focalLength * my, U0, 0, 0, 1);
@@ -443,7 +525,26 @@ void virtualCamIncrementalSfM() {
   cameras[0].R = cv::Mat::eye(3, 3, CV_64F);
   cameras[0].t = cv::Mat::zeros(3, 1, CV_64F);
 
-  //  std::vector<cv::Point3f> triangulated_pointsInCam0;
+  std::vector<double> cameraParams(9 * N_CAMERAS, 0.0);
+
+  // Initialize camera0 in the bundle with R=I, t=0 => angle-axis=0, ...
+  std::cout
+      << "calling RtToAngleAxisAndTranslate with cameraParams address at: "
+      << 0 * 9 << std::endl;
+  RtToAngleAxisAndTranslate(cameras[0].R, cameras[0].t, &cameraParams[0 * 9]);
+
+  //  cameraParams[0 * 9 + 6] = fx; // focal guess
+  //  cameraParams[0 * 9 + 7] = k1; // k1
+  //  cameraParams[0 * 9 + 8] = k2; // k2
+  std::cout << "calling setCameraIntrinsic with cameraParams address at: "
+            << 0 * 9 << std::endl;
+  setCameraIntrinsic(fx, k1, k2, &cameraParams[0 * 9]);
+
+  // All 3D points in world coords
+  std::vector<cv::Point3f> globalPoints3D;
+
+  // All 2D observations of these 3D points, camera_idx, 3d point_idx, x, y
+  std::vector<Observation> observations;
 
   // Log the triangulated points to Rerun
   std::vector<rerun::components::Position3D> rr_triangulated_pointsInCam0;
@@ -513,8 +614,14 @@ void virtualCamIncrementalSfM() {
     // cameraParams[i * 9+6] will be populated by rotation and translation
     //--------------------------------------------------------------------------
 
-    //    RtToAngleAxisAndTranslate(cameras[i].R, cameras[i].t, &cameraParams[i
-    //    * 9]);
+    std::cout
+        << "calling RtToAngleAxisAndTranslate with cameraParams address at: "
+        << i * 9 << std::endl;
+    RtToAngleAxisAndTranslate(cameras[i].R, cameras[i].t, &cameraParams[i * 9]);
+
+    std::cout << "calling setCameraIntrinsic with cameraParams address at: "
+              << i * 9 << std::endl;
+    setCameraIntrinsic(fx, k1, k2, &cameraParams[i * 9]);
 
     //--------------------------------------------------------------------------
     // 11) Triangulate some new 3D points from (i-1, i):
@@ -558,17 +665,10 @@ void virtualCamIncrementalSfM() {
     std::cout << "P_" << i - 1 << ":\n" << P_im1 << std::endl;
     std::cout << "P_" << i << ":\n" << P_i << std::endl;
 
-    cv::Mat points4D_;
-    //    cv::triangulatePoints(P_im1, P_i, pts_im1, pts_i, points4D);
+    cv::Mat points4D;
 
-    cv::triangulatePoints(P_im1, P_i, pts_im1, pts_i, points4D_);
-    std::vector<cv::Point3f> newPoints_ = convertHomogeneous(points4D_);
-
-    // to display points in 3d, we need to transform them into cam0 coordinate,
-    // we know that traiangulated points are in cami-1 coordinates, and
-    // cameras[i - 1] transform the point from cam0 to cami-1, so we need the
-    // inverse of cami-1 to transform the triangulated points from cami-1 into
-    // cam0
+    cv::triangulatePoints(P_im1, P_i, pts_im1, pts_i, points4D);
+    std::vector<cv::Point3f> newPoints_in_cam0 = convertHomogeneous(points4D);
 
     cv::Mat R_im1_to_0 = cameras[i - 1].R.t();
     cv::Mat t_im1_to_0 = -cameras[i - 1].R.t() * cameras[i - 1].t;
@@ -578,26 +678,35 @@ void virtualCamIncrementalSfM() {
     std::cout << "Translation from cam" << i - 1 << " to cam0\n"
               << t_im1_to_0 << std::endl;
 
-    for (const auto &point_in_cam_im0 : newPoints_) {
+    for (size_t k = 0; k < newPoints_in_cam0.size(); k++) {
 
-      //      cv::Mat pointMat = (cv::Mat_<double>(3, 1) << point_in_cam_im1.x,
-      //                          point_in_cam_im1.y, point_in_cam_im1.z);
-      //      cv::Mat rotatedPoint = R_im1_to_0 * pointMat + t_im1_to_0;
+      int newPointIdx = static_cast<int>(globalPoints3D.size());
+      globalPoints3D.push_back(newPoints_in_cam0[k]);
 
-      //      cv::Point3f point_in_cam0;
-      //      point_in_cam0.x = rotatedPoint.at<double>(0);
-      //      point_in_cam0.y = rotatedPoint.at<double>(1);
-      //      point_in_cam0.z = rotatedPoint.at<double>(2);
-      //      //      triangulated_pointsInCam0.push_back(point_in_cam0);
-      //      rr_triangulated_pointsInCam0.push_back(
-      //          {point_in_cam0.x, point_in_cam0.y, point_in_cam0.z});
+      {
+        Observation obs;
+        obs.camera_idx = i - 1;
+        obs.point_idx = newPointIdx;
+        obs.x = pts_im1[k].x;
+        obs.y = pts_im1[k].y;
+        observations.push_back(obs);
+      }
+      // Observation from camera (i):
+      {
+        Observation obs;
+        obs.camera_idx = i;
+        obs.point_idx = newPointIdx;
+        obs.x = pts_i[k].x;
+        obs.y = pts_i[k].y;
+        observations.push_back(obs);
+      }
 
-      rr_triangulated_pointsInCam0.push_back(
-          {point_in_cam_im0.x, point_in_cam_im0.y, point_in_cam_im0.z});
+      rr_triangulated_pointsInCam0.push_back({newPoints_in_cam0[k].x,
+                                              newPoints_in_cam0[k].y,
+                                              newPoints_in_cam0[k].z});
     }
 
     std::vector<rerun::Color> colors(rr_triangulated_pointsInCam0.size());
-
     for (size_t j = 0; j < rr_triangulated_pointsInCam0.size(); ++j) {
 
       if ((i % 2) == 0) {
@@ -612,7 +721,123 @@ void virtualCamIncrementalSfM() {
                 .with_radii(std::vector<float>(
                     rr_triangulated_pointsInCam0.size(), 0.05))
                 .with_colors(colors));
+
+    std::cout << "press any key to publish new 3d points " << std::endl;
     std::cin.get();
+  }
+
+  // pointParamsPtr => we store 3D points in world in globalPoints3D,
+  // but for Snavely we want them as a double[3]. We'll create a dynamic array:
+  // Alternatively, we can store them in a single global  vector<double> of size
+  // 3*#points. For brevity, let's do a quick hack: store them temporarily in a
+  // static array, then feed them to the CostFunction.(But  typically you'd keep
+  // them in a single vector.)
+
+  std::vector<double> pointParams;
+  pointParams.resize(3 * globalPoints3D.size());
+  // Copy from cv::Point3f to the double vector
+  for (size_t i = 0; i < globalPoints3D.size(); i++) {
+    pointParams[3 * i + 0] = globalPoints3D[i].x;
+    pointParams[3 * i + 1] = globalPoints3D[i].y;
+    pointParams[3 * i + 2] = globalPoints3D[i].z;
+  }
+
+  //--------------------------------------------------------------------------
+  // At this point, we have:
+  //  - N_CAMERAS cameras in cameras[], with extrinsics in world coords
+  //  - globalPoints3D (3D points in world coords)
+  //  - observations (2D) telling us which camera sees which point, with OpenCV
+  //  reproject model and NOT with SnavelyReprojectionError
+  //
+  // Next: Setup a Ceres bundle adjustment problem using
+  // SnavelyReprojectionError.
+  //--------------------------------------------------------------------------
+  ceres::Problem problem;
+
+  std::cout << "observations.size(): " << observations.size() << std::endl;
+
+  // For each observation (camera_idx, point_idx, x, y)
+  for (const Observation &obs : observations) {
+
+    //    std::cout << "obs.point_idx: " << obs.point_idx << std::endl;
+
+    double imagePointCamera_x = obs.x;
+    double imagePointCamera_y = obs.y;
+
+    auto obs_x = -(imagePointCamera_x - cx);
+    auto obs_y = -(imagePointCamera_y - cy);
+
+    // cameraParamsPtr => address of the 9 parameters for that camera,
+    // cameraParams: 9 x N_CAMERAS
+    double *cameraParamsPtr = &cameraParams[obs.camera_idx * 9];
+
+    double *pointPtr = &pointParams[3 * obs.point_idx];
+    //    std::cout << pointPtr[0] << "," << pointPtr[1] << "," << pointPtr[2]<<
+    //    std::endl;
+
+    // Create the reprojection error cost:
+    ceres::CostFunction *costFunc =
+        SnavelyReprojectionError::Create(obs_x, obs_y);
+
+    // Add a residual block:
+    problem.AddResidualBlock(costFunc,
+                             nullptr, // squared loss
+                             cameraParamsPtr, pointPtr);
+  }
+
+  std::cout << "===================Camera Param before "
+               "optimization:===================\n";
+
+  for (std::size_t i = 0; i < N_CAMERAS; i++) {
+
+    std::cout << "Camera " << i << " initial parameters:\n";
+    std::cout << "Angle-axis = (" << cameraParams[i * 9] << ", "
+              << cameraParams[i * 9 + 1] << ", " << cameraParams[i * 9 + 2]
+              << ")\n";
+    std::cout << "Translation = (" << cameraParams[i * 9 + 3] << ", "
+              << cameraParams[i * 9 + 4] << ", " << cameraParams[i * 9 + 5]
+              << ")\n";
+    std::cout << "Focal length = " << cameraParams[i * 9 + 6] << "\n";
+    std::cout << "k1 = " << cameraParams[i * 9 + 7]
+              << ", k2 = " << cameraParams[i * 9 + 8] << "\n";
+  }
+
+  // Optionally, set some parameters as constant (e.g. fix the first camera):
+
+  problem.SetParameterBlockConstant(&cameraParams[0]);
+
+  // Configure solver:
+  ceres::Solver::Options options;
+  options.linear_solver_type = ceres::DENSE_SCHUR;
+  options.minimizer_progress_to_stdout = true;
+  options.max_num_iterations = 100;
+
+  // Solve BA:
+  ceres::Solver::Summary summary;
+  ceres::Solve(options, &problem, &summary);
+  std::cout << "Bundle Adjustment Summary:\n"
+            << summary.FullReport() << std::endl;
+
+  //--------------------------------------------------------------------------
+  //  FINAL: we have refined cameraParams & 3D points. Typically you'd
+  //         copy them back to your pipeline or continue incremental steps.
+  //--------------------------------------------------------------------------
+
+  std::cout << "===================Camera Param After "
+               "optimization:===================\n";
+
+  for (std::size_t i = 0; i < N_CAMERAS; i++) {
+
+    std::cout << "Camera " << i << " initial parameters:\n";
+    std::cout << "Angle-axis = (" << cameraParams[i * 9] << ", "
+              << cameraParams[i * 9 + 1] << ", " << cameraParams[i * 9 + 2]
+              << ")\n";
+    std::cout << "Translation = (" << cameraParams[i * 9 + 3] << ", "
+              << cameraParams[i * 9 + 4] << ", " << cameraParams[i * 9 + 5]
+              << ")\n";
+    std::cout << "Focal length = " << cameraParams[i * 9 + 6] << "\n";
+    std::cout << "k1 = " << cameraParams[i * 9 + 7]
+              << ", k2 = " << cameraParams[i * 9 + 8] << "\n";
   }
 }
 
