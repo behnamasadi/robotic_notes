@@ -7,6 +7,8 @@
     { "name": "gtk3"   },
     { "name": "eigen3" },
     { "name": "opencv" },
-    { "name": "ceres" }
+    { "name": "ceres" },
+    { "name": "manif" },
+    { "name": "sophus"}
   ]
 }

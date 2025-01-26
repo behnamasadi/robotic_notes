@@ -1,6 +1,6 @@
 # ref: https://github.com/goldbattle/simple_2d_slam/
 
-import g2o_file_reader
+
 from load_2d_g2o import load_2d_g2o
 import os
 import matplotlib.pyplot as plt
