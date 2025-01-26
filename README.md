@@ -71,8 +71,8 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 # [Lie Group and Lie Algebra](#)
 - [Lie Group and Lie Algebra](docs/lie_group_lie_algebra/index.ipynb)   
 - [manif](docs/manif.ipynb)   
-  * [SE2 localization](dcos/se2_localization.ipynb)
-  * [SE2 SAM](dcos/se2_sam.ipynb)
+  * [SE2 localization](docs/se2_localization.ipynb)
+  * [SE2 SAM](docs/se2_sam.ipynb)
 - [Sophus](https://github.com/strasdat/Sophus)  
 
 # Topology and Configuration of Robot and Space
@@ -105,7 +105,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
   - [Forward Kinematics for Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#11-forward-kinematics-for-differential-drive-robots)
   - [Inverse Kinematics of Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#12--inverse-kinematics-of-differential-drive-robots)
   - [Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
-
+- [Nonlinear uncertainty model associated with a robot's position over time (Banana Shape)](docs/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
 
 # IMU
 
