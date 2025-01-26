@@ -583,6 +583,7 @@ void virtualCamIncrementalSfM() {
     cv::triangulatePoints(P_im1, P_i, pts_im1, pts_i, points4D);
     std::vector<cv::Point3f> newPoints_in_cam0 = convertHomogeneous(points4D);
 
+    // if you want to display the camera position in th world use these
     cv::Mat R_im1_to_0 = cameras[i - 1].R.t();
     cv::Mat t_im1_to_0 = -cameras[i - 1].R.t() * cameras[i - 1].t;
 
@@ -670,6 +671,42 @@ void virtualCamIncrementalSfM() {
     problem.AddResidualBlock(costFunc,
                              nullptr, // squared loss
                              cameraParamsPtr, pointPtr);
+
+    /*
+    double camera_params[9];
+    cv::Mat rvec;
+    cv::Mat R_left_camera_in_left_camera = cv::Mat::eye(3, 3, CV_64F);
+
+    cv::Mat t_left_camera_in_left_camera = (cv::Mat_<double>(3, 1) << 0, 0, 0);
+
+    cv::Rodrigues(leftCameraRotation_c_w, rvec);
+    for (int k = 0; k < 3; ++k) {
+      camera_params[k] = rvec.at<double>(k);
+      camera_params[k + 3] = leftCamera_T_c_w.at<double>(k, 0);
+    }
+
+    //    camera_params[6] = focalLength * mx;
+    camera_params[6] = 1.0;
+    camera_params[7] = k1;
+    camera_params[8] = k2;
+
+    // Evaluate the residual using the error model
+    errorModel(camera_params, point3D, residuals);
+
+
+    */
+
+    // http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres7Problem7Options19evaluation_callbackE
+
+    /*
+
+You can set any parameter block to be constant using
+Problem::SetParameterBlockConstant() and undo this using
+SetParameterBlockVariable().
+*/
+    // problem.SetParameterLowerBound()
+    // problem.SetParameterBlockVariable()
+    // problem.SetManifold()
   }
 
   std::cout << "===================Camera Param before "

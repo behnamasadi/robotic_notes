@@ -1,9 +1,101 @@
+# Installation and Requirement 
+
+First add vcpkg as submodule to your project:
+
+```
+git submodule add https://github.com/microsoft/vcpkg
+```
+
+Then run the following script on Windows:
+
+```
+.\vcpkg\bootstrap-vcpkg.bat
+```
+
+on the bash:
+
+```
+./vcpkg/bootstrap-vcpkg.sh
+```
+The bootstrap script performs prerequisite checks and downloads the vcpkg executable.
+
+
+set the path:
+
+```
+export VCPKG_ROOT=$PWD/vcpkg
+export PATH=$VCPKG_ROOT:$PATH
+```
+Setting `VCPKG_ROOT` tells vcpkg where your vcpkg instance is located.
+
+
+
+Now you can run:
+
+
+```
+cmake -S . -B build   -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+```
+
+
+```
+cmake --build build --parallel
+```
+
+To build the `rerun`, just comment everything in the `CMakeLists.txt`  and only leave this part:
+
+```
+include(FetchContent)
+FetchContent_Declare(rerun_sdk URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip)
+FetchContent_MakeAvailable(rerun_sdk)
+```
+The reason is building `arrow_cpp` might take very long time. Also install the rerun server via:
+
+
+Install the python packages:
+```
+pip3 install rerun-sdk==0.20.3
+conda install -c conda-forge opencv
+pip install graphslam
+conda install conda-forge::gtsam
+conda install conda-forge::matplotlib
+conda install conda-forge::plotly
+```
+
+Also create this soft link.
+
+```
+ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robotic_notes/docs
+```
+
 # [Lie Group and Lie Algebra](#)
 - [Lie Group and Lie Algebra](docs/lie_group_lie_algebra/index.ipynb)   
+- [manif](docs/manif.ipynb)   
+  * [SE2 localization](dcos/se2_localization.ipynb)
+  * [SE2 SAM](dcos/se2_sam.ipynb)
+- [Sophus](https://github.com/strasdat/Sophus)  
+
+# Topology and Configuration of Robot and Space
+- [Configuration of Robot](docs/robot_configuration_dof_topology.md#configuration-of-robot)
+- [Configuration  Space - (C-space )](docs/robot_configuration_dof_topology.md#configuration--space----c-space--)
+- [Degrees of freedom.](docs/robot_configuration_dof_topology.md#degrees-of-freedom)
+- [Task Space](docs/robot_configuration_dof_topology.md#task-space)
+- [Work Space](docs/robot_configuration_dof_topology.md#work-space)
+- [Dexterous space:](docs/robot_configuration_dof_topology.md#dexterous-space-)
+- [dof](docs/robot_configuration_dof_topology.md#dof)
+- [Topology](docs/robot_configuration_dof_topology.md#topology)
+  * [Different way to represent C-space](docs/robot_configuration_dof_topology.md#different-way-to-represent-c-space)
+    + [Explicit](docs/robot_configuration_dof_topology.md#explicit)
+    + [Implicit](docs/robot_configuration_dof_topology.md#implicit)
+- [Algebraic topology (playlist)](https://www.youtube.com/playlist?list=PLuFcVFHMIfhJSSX-tlv8XxiAZSAbhv1DA)
+- [Non-Holonomic Constraints, Pfaffian Constraints and Holonomic Constraints](docs/non_holonomic_pfaffian_constraint.ipynb)
+
 
 # Aerial Robotics
 - [Aerial Robotics](docs/aerial_robotics.md#aerial-robotics)
 
+# PX4
+- [PX4](docs/px4.md)
 
 
 # Differential Drive Robots and Wheel odometry
@@ -13,8 +105,6 @@
   - [Forward Kinematics for Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#11-forward-kinematics-for-differential-drive-robots)
   - [Inverse Kinematics of Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#12--inverse-kinematics-of-differential-drive-robots)
   - [Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
-
-
 
 
 # IMU
@@ -75,27 +165,6 @@
 - [Camera Calibration](docs/kalibr.md#camera-calibration)
 - [Camera IMU Calibration](docs/kalibr.md#camera-imu-calibration)
 
-# Topology and Configuration of Robot and Space
-
-- [Configuration of Robot](docs/robot_configuration_dof_topology.md#configuration-of-robot)
-- [Configuration  Space - (C-space )](docs/robot_configuration_dof_topology.md#configuration--space----c-space--)
-- [Degrees of freedom.](docs/robot_configuration_dof_topology.md#degrees-of-freedom)
-- [Task Space](docs/robot_configuration_dof_topology.md#task-space)
-- [Work Space](docs/robot_configuration_dof_topology.md#work-space)
-- [Dexterous space:](docs/robot_configuration_dof_topology.md#dexterous-space-)
-- [dof](docs/robot_configuration_dof_topology.md#dof)
-- [Topology](docs/robot_configuration_dof_topology.md#topology)
-  * [Different way to represent C-space](docs/robot_configuration_dof_topology.md#different-way-to-represent-c-space)
-    + [Explicit](docs/robot_configuration_dof_topology.md#explicit)
-    + [Implicit](docs/robot_configuration_dof_topology.md#implicit)
-- [Important Lie Groups and Typologies](docs/robot_configuration_dof_topology.md#important-lie-groups-and-typologies)
-  * [so(3)](docs/robot_configuration_dof_topology.md#so-3-)
-  * [SO(2)](docs/robot_configuration_dof_topology.md#so-2-)
-  * [SO(3)](docs/robot_configuration_dof_topology.md#so-3-)
-  * [SE(2)](docs/robot_configuration_dof_topology.md#se-2-)
-  * [SE(3)](docs/robot_configuration_dof_topology.md#se-3-)
-- [Algebraic topology (playlist)](https://www.youtube.com/playlist?list=PLuFcVFHMIfhJSSX-tlv8XxiAZSAbhv1DA)
- 
 
 
 # ROS1
@@ -184,20 +253,21 @@
 - [EKF Implementations](docs/state_estimation.md#ekf-implementations)  
 - [EKF for Differential Drive Robot](docs/state_estimation.md#ekf-for-differential-drive-robot)  
 - [Error State Extended Kalman Filter EFK ES](https://notanymike.github.io/Error-State-Extended-Kalman-Filter/)  
-- [Invariant extended Kalman filter EKF](https://en.wikipedia.org/wiki/Invariant_extended_Kalman_filter)
-- [Multi-State Constraint Kalman Filter (MSCKF)](https://docs.openvins.com/namespaceov__msckf.html)
+- [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/pdf/1711.02508)
+- [Invariant extended Kalman filter EKF](https://en.wikipedia.org/wiki/Invariant_extended_Kalman_filter)  
+- [Multi-State Constraint Kalman Filter (MSCKF)](https://docs.openvins.com/namespaceov__msckf.html)  
 - [STATE ESTIMATION FOR ROBOTICS](docs/state_estimation.md#state-estimation-for-robotics)  
-- [FilterPy](docs/state_estimation.md#filterpy)
+- [FilterPy](docs/state_estimation.md#filterpy)  
 - [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/pdf/1711.02508)
 
 # Bag of Words
-[FBOW (Fast Bag of Words)](https://github.com/rmsalinas/fbow)
-
+- [FBOW (Fast Bag of Words)](https://github.com/rmsalinas/fbow)
+- [AnyLoc: Towards Universal Visual Place Recognition](https://github.com/AnyLoc/AnyLoc)
 
 
 # [SLAM](#)
 - [Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)
-- [Pose Graph SLAM](docs/slam/pose_graph_slam.md)
+- [Pose Graph SLAM](docs/slam/pose_graph_slam.ipynb)
 - [nano-pgo](https://github.com/gisbi-kim/nano-pgo)
 - [Factor Graph vs Pose Graph](docs/slam/factor_graph_vs_pose_graph.md)  
 - [g2o](docs/slam/g2o.md)  
@@ -218,12 +288,14 @@
 - [Euclidean Signed Distance Field (ESDF)](https://github.com/HKUST-Aerial-Robotics/FIESTA?tab=readme-ov-file)  
 - [Lidar odometry smoothing using ES EKF and KissICP for Ouster sensors with IMUs](https://capsulesbot.com/blog/2024/02/05/esekf-smoothing-ouster-lidar-with-imu-using-kiss.html)
 - [Multisensor-aided Inertial Navigation System (MINS)](https://github.com/rpng/MINS)  
+- [GLOMAP explained](https://www.youtube.com/watch?v=lYC-oMSCNOE)
 
 
 
+#  Ceres Non-linear Least Squares
 
-# SLAM Dataset
-[rvp group](https://rvp-group.net/slam-dataset.html)  
+
+
 
 # Visual and Inertial Odometry VIO
 
@@ -237,10 +309,11 @@
 - [Kimera-VIO](https://github.com/MIT-SPARK/Kimera-VIO)  
 - [3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)  
 
-# Benchmark
-[Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/slam/visual_Inertial_SLAM_comparison.md)  
-[A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
-
+# SLAM Benchmark 
+- [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/slam/visual_Inertial_SLAM_comparison.md)  
+- [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
+- [ETH3D](https://www.eth3d.net/slam_overview)  
+- [rvp group](https://rvp-group.net/slam-dataset.html)  
 
 # Lidar and IMU LIO
 - [A Stereo Event Camera Dataset for Driving Scenarios DSEC](docs/slam/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)  
@@ -255,15 +328,10 @@
 - [Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
 
 
-
-
-
 # Radar SLAM
-[Navtech-Radar-SLAM](https://github.com/gisbi-kim/navtech-radar-slam)
+[- Navtech-Radar-SLAM](https://github.com/gisbi-kim/navtech-radar-slam)
 
-# Lie theory
-[manif: A small header-only library for Lie theory ](https://github.com/artivis/manif)   
-[Sophus](https://github.com/strasdat/Sophus)  
+
 
 ## Add Apriltag to loop closure
 
@@ -271,44 +339,41 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 
 
 
-## image-matching-webui
-
-## LightGlue
 
 
-## DenseSFM
+# Structure-from-Motion
+- [Robust Rotation Averaging](https://www.youtube.com/watch?v=oAR-LMStRS4)
+- [Bundler](https://www.cs.cornell.edu/~snavely/bundler/bundler-v0.4-manual.html)
+- [Global Structure-from-Motion Revisited](https://arxiv.org/pdf/2407.20219)
+- [LightGlue](https://github.com/cvg/LightGlue)
+- [DenseSFM](https://github.com/tsattler/visuallocalizationbenchmark)
+- [Pixel-Perfect Structure-from-Motion](https://github.com/cvg/pixel-perfect-sfm)
+- [image-matching-webui](https://huggingface.co/spaces/Realcat/image-matching-webui)
 
-Refs: [1](https://github.com/tsattler/visuallocalizationbenchmark)
-
-## Pixel-Perfect Structure-from-Motion
-Refs: [1](https://github.com/cvg/pixel-perfect-sfm)
-
-
-## AnyLoc: Towards Universal Visual Place Recognition
-
-Refs [1](https://github.com/AnyLoc/AnyLoc)
 
 
 
 # Deep Learning based SLAM 
-[Gaussian Splatting](docs/slam/gaussian_splatting.md)  
-[GANeRF](https://github.com/barbararoessle/ganerf)  
-[DSAC*](https://github.com/vislearn/dsacstar)  
-[Tracking Any Point (TAP)](https://github.com/google-deepmind/tapnet)  
-[image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)  
-[Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)  
-[Hierarchical Localization](https://github.com/cvg/Hierarchical-Localization)  
-[instant-ngp](docs/slam/instant_ngp.md)  
-[NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
-[DROID-SLAM](https://github.com/princeton-vl/DROID-SLAM?tab=readme-ov-file)  
-[ACE0](https://github.com/nianticlabs/acezero)  
-[A Hierarchical 3D Gaussian Representation for Real-Time Rendering of Very Large Datasets]  
-[DoubleTake:Geometry Guided Depth Estimation](https://nianticlabs.github.io/doubletake/)  
-[Mitigating Motion Blur in Neural Radiance Fields with Events and Frames](https://github.com/uzh-rpg/EvDeblurNeRF)  
-[LEAP-VO: Long-term Effective Any Point Tracking for Visual Odometry](https://chiaki530.github.io/projects/leapvo/)  
-[MegaScenes: Scene-Level View Synthesis at Scale](https://megascenes.github.io/)  
-[Intrinsic Image Diffusion for Indoor Single-view Material Estimation](https://github.com/Peter-Kocsis/IntrinsicImageDiffusion)  
-[Vidu4D: Single Generated Video to High-Fidelity 4D Reconstruction with Dynamic Gaussian Surfels](https://vidu4d-dgs.github.io/)  
+- [Gaussian Splatting](docs/slam/gaussian_splatting.md)  
+- [GANeRF](https://github.com/barbararoessle/ganerf)  
+- [DSAC*](https://github.com/vislearn/dsacstar)  
+- [Tracking Any Point (TAP)](https://github.com/google-deepmind/tapnet)  
+- [image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)  
+- [Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)  
+- [Hierarchical Localization](https://github.com/cvg/Hierarchical-Localization)  
+- [instant-ngp](docs/slam/instant_ngp.md)  
+- [NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
+- [DROID-SLAM](https://github.com/princeton-vl/DROID-SLAM?tab=readme-ov-file)  
+- [ACE0](https://github.com/nianticlabs/acezero)  
+- [A Hierarchical 3D Gaussian Representation for Real-Time Rendering of Very Large Datasets](https://arxiv.org/pdf/2406.12080)  - 
+- [DoubleTake:Geometry Guided Depth Estimation](https://nianticlabs.github.io/doubletake/)  
+- [Mitigating Motion Blur in Neural Radiance Fields with Events and Frames](https://github.com/uzh-rpg/EvDeblurNeRF)  
+- [LEAP-VO: Long-term Effective Any Point Tracking for Visual Odometry](https://chiaki530.github.io/projects/leapvo/)  
+- [MegaScenes: Scene-Level View Synthesis at Scale](https://megascenes.github.io/)  
+- [Intrinsic Image Diffusion for Indoor Single-view Material Estimation](https://github.com/Peter-Kocsis/IntrinsicImageDiffusion)  
+- [Vidu4D: Single Generated Video to High-Fidelity 4D Reconstruction with Dynamic Gaussian Surfels](https://vidu4d-dgs.github.io/)  
+- [Detector-Free Structure from Motion](https://hxy-123.github.io/)
+
 
 
 # [Procrustes Analysis](docs/shape_analysis.md#procrustes-analysis)  
@@ -320,6 +385,10 @@ Refs [1](https://github.com/AnyLoc/AnyLoc)
 [Umeyama Algorithm](#umeyama-algorithm)  
 [Iterative Closest Point (ICP)](#iterative-closest-point--icp-)  
 [KISS-ICP](#kiss-icp)  
+
+
+# Lidar-Camera Calibration
+[MATLAB Lidar-Camera Calibration](https://www.mathworks.com/help/lidar/ug/lidar-camera-calibration.html)
 
 
 # E-Books and Refs
