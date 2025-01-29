@@ -1,4 +1,4 @@
-#include "../snavely_reprojection_error.h"
+#include "../snavely_reprojection_error.hpp"
 #include "../collection_adapters.hpp"
 
 #include "transformation.hpp"

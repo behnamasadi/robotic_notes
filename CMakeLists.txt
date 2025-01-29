@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16...3.27)
-project(slam-tutorials CXX)
+project(robotic_notes CXX)
 
 
 if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
