@@ -211,524 +211,6 @@ struct Observation {
   double x, y;    // 2D feature coords
 };
 
-void virtualCamIncrementalSfM() {
-
-  double txCam0, txCam1, txCam2, tyCam0, tyCam1, tyCam2, tzCam0, tzCam1, tzCam2;
-  cv::Vec3d thetaCam0, thetaCam1, thetaCam2;
-
-  ///////////////// cameras extrinsic /////////////////
-  // clang-format off
-    /*
-
-
-                  //-\\
-                 // - \\
-                /// - \\\
-                \\\   ///
-                 \\ - //
-                  \\-//
-
-
-
-
-                      Z                        Z                            Z
-                      ▲                         ▲                           ▲
-                     /                           \                           \
-                    /                             \                           \
-                   /1 2 3 4     X                  \ 1 2 3 4                   \ 1 2 3 4
-      (world)Cam0  |------------ ⯈                 |------------ ⯈Cam1         |------------ ⯈Cam2
-                  1|                             1 |                          1 |
-                  2|                             2 |                          2 |
-                  3|                             3 |                          3 |
-                 Y |                             Y |                          Y |
-                   ⯆                              ⯆                            ⯆
-
-
-    */
-  // clang-format on
-
-  thetaCam0[0] = 0;
-  thetaCam0[1] = +M_PI / 12;
-  thetaCam0[2] = 0;
-
-  thetaCam1[0] = 0;
-  thetaCam1[1] = +M_PI / 18;
-  thetaCam1[2] = 0;
-
-  thetaCam2[0] = 0;
-  thetaCam2[1] = -M_PI / 24;
-  thetaCam2[2] = 0;
-
-  txCam0 = 0;
-  tyCam0 = 0.0;
-  tzCam0 = 0;
-
-  txCam1 = 0.75;
-  tyCam1 = 0.0;
-  tzCam1 = 0;
-
-  txCam2 = +1.5;
-  tyCam2 = 0.0;
-  tzCam2 = 0;
-
-  cv::Mat t_Cam0_in_world = (cv::Mat_<double>(3, 1) << txCam0, tyCam0, tzCam0);
-
-  cv::Mat t_Cam1_in_world = (cv::Mat_<double>(3, 1) << txCam1, tyCam1, tzCam1);
-
-  cv::Mat t_Cam2_in_world = (cv::Mat_<double>(3, 1) << txCam2, tyCam2, tzCam2);
-
-  cv::Mat rotation_Cam0_in_world, rotation_Cam1_in_world,
-      rotation_Cam2_in_world;
-
-  rotation_Cam0_in_world = eulerAnglesToRotationMatrix(thetaCam0);
-  rotation_Cam1_in_world = eulerAnglesToRotationMatrix(thetaCam1);
-  rotation_Cam2_in_world = eulerAnglesToRotationMatrix(thetaCam2);
-
-  ///////// creating ellipsoid in the world coordinate /////////
-  std::vector<cv::Vec3f> objectPointsInWorldCoordinate;
-
-  float ellipsoidCenterX = -1.5;
-  float ellipsoidCenterY = 0;
-  float ellipsoidCenterZ = -4;
-  objectPointsInWorldCoordinate = createEllipsoidInWorldCoordinate<cv::Vec3f>(
-      ellipsoidCenterX, ellipsoidCenterY, ellipsoidCenterZ);
-
-  ///////// camera intrinsic parameters/////////
-
-  //  4, 5, 8, 12 or 14 elements
-  double k1, k2, p1, p2, k3;
-
-  k1 = 0.;
-  k2 = 0.;
-  p1 = 0.;
-  p2 = 0.;
-  k3 = 0.;
-
-  cv::Mat distortionCoefficient =
-      (cv::Mat_<double>(5, 1) << k1, k2, p1, p2, k3);
-
-  unsigned int numberOfPixelInHeight, numberOfPixelInWidth;
-  double heightOfSensor, widthOfSensor;
-  double focalLength = 4.0;
-  double mx, my, U0, V0;
-  numberOfPixelInHeight = 600;
-  numberOfPixelInWidth = 600;
-
-  heightOfSensor = 10;
-  widthOfSensor = 10;
-
-  my = (numberOfPixelInHeight) / heightOfSensor;
-
-  mx = (numberOfPixelInWidth) / widthOfSensor;
-
-  double fx = focalLength * mx;
-  double fy = focalLength * my;
-
-  double cx, cy;
-
-  cx = (numberOfPixelInWidth) / 2;
-  cy = (numberOfPixelInHeight) / 2;
-
-  cv::Mat K = (cv::Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
-
-  std::vector<cv::Point2f> imagePointsCam0, imagePointsCam1, imagePointsCam2;
-
-  cv::Mat rotation_world_in_Cam0 = rotation_Cam0_in_world.t();
-  cv::Mat t_world_in_Cam0 = -rotation_Cam0_in_world.t() * t_Cam0_in_world;
-
-  cv::projectPoints(objectPointsInWorldCoordinate, rotation_world_in_Cam0,
-                    t_world_in_Cam0, K, cv::noArray(), imagePointsCam0);
-
-  cv::Mat rotation_world_in_Cam1 = rotation_Cam1_in_world.t();
-  cv::Mat t_world_in_Cam1 = -rotation_Cam1_in_world.t() * t_Cam1_in_world;
-
-  cv::projectPoints(objectPointsInWorldCoordinate, rotation_world_in_Cam1,
-                    t_world_in_Cam1, K, cv::noArray(), imagePointsCam1);
-
-  cv::Mat rotation_world_in_Cam2 = rotation_Cam2_in_world.t();
-  cv::Mat t_world_in_Cam2 = -rotation_Cam2_in_world.t() * t_Cam2_in_world;
-
-  cv::projectPoints(objectPointsInWorldCoordinate, rotation_world_in_Cam2,
-                    t_world_in_Cam2, K, cv::noArray(), imagePointsCam2);
-
-  const auto rec = rerun::RecordingStream("virtual_cam_incremental_SfM");
-  rec.spawn().exit_on_failure();
-  // OpenCV X=Right, Y=Down, Z=Forward
-  rec.log_static("world", rerun::ViewCoordinates::RIGHT_HAND_Y_DOWN);
-
-  std::vector<rerun::components::Position3D> point3d_positions;
-  std::vector<float> point_sizes; // Define a vector for point sizes
-
-  // Log the arrows to the Rerun Viewer
-  rec.log("world/xyz",
-          rerun::Arrows3D::from_vectors(
-              {{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}})
-              .with_colors({{255, 0, 0}, {0, 255, 0}, {0, 0, 255}}));
-
-  // objectPointsInCameraCoordinate;
-  float x, y, z;
-
-  for (std::size_t i = 0; i < objectPointsInWorldCoordinate.size(); i++) {
-    x = objectPointsInWorldCoordinate[i][0];
-    y = objectPointsInWorldCoordinate[i][1];
-    z = objectPointsInWorldCoordinate[i][2];
-    point3d_positions.push_back({x, y, z});
-    point_sizes.push_back(0.05);
-  }
-
-  rec.log("world/points",
-          rerun::Points3D(point3d_positions).with_radii(point_sizes));
-
-  // Extract translation vector
-  rerun::Vec3D rr_translation_cam0 =
-      getRerunTranslationFromCvMat<double>(t_Cam0_in_world);
-  rerun::Vec3D rr_translation_cam1 =
-      getRerunTranslationFromCvMat<double>(t_Cam1_in_world);
-  rerun::Vec3D rr_translation_cam2 =
-      getRerunTranslationFromCvMat<double>(t_Cam2_in_world);
-
-  rerun::Mat3x3 rr_rotation_matrix_cam0 =
-      getRerunRotationFromCvMat<double>(rotation_Cam0_in_world);
-  rerun::Mat3x3 rr_rotation_matrix_cam1 =
-      getRerunRotationFromCvMat<double>(rotation_Cam1_in_world);
-  rerun::Mat3x3 rr_rotation_matrix_cam2 =
-      getRerunRotationFromCvMat<double>(rotation_Cam2_in_world);
-
-  // Log the data
-  std::string camera_name_cam0 = "world/cam0";
-  std::string camera_name_cam1 = "world/cam1";
-  std::string camera_name_cam2 = "world/cam2";
-
-  rec.log(camera_name_cam0,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
-
-  rec.log(camera_name_cam1,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
-
-  rec.log(camera_name_cam2,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
-
-  rec.log(camera_name_cam0,
-          rerun::Transform3D(rr_translation_cam0, rr_rotation_matrix_cam0));
-
-  rec.log(camera_name_cam1,
-          rerun::Transform3D(rr_translation_cam1, rr_rotation_matrix_cam1));
-
-  rec.log(camera_name_cam2,
-          rerun::Transform3D(rr_translation_cam2, rr_rotation_matrix_cam2));
-
-  ////////////////////////////////////////////////////////////////////////
-
-  std::string fileName;
-  fileName = std::string("image_cam0") + std::to_string(focalLength) +
-             std::string("_.png");
-  cv::Mat img_cam0 =
-      createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
-                  imagePointsCam0, fileName);
-  // Log the image to the camera entity in the hierarchy
-  rec.log("world/cam0/image/rgb",
-          rerun::Image::from_greyscale8(
-              img_cam0, {numberOfPixelInWidth, numberOfPixelInHeight}));
-
-  fileName = std::string("image_cam1") + std::to_string(focalLength) +
-             std::string("_.png");
-  cv::Mat img_cam1 =
-      createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
-                  imagePointsCam1, fileName);
-  // Log the image to the camera entity in the hierarchy
-  rec.log("world/cam1/image/rgb",
-          rerun::Image::from_greyscale8(
-              img_cam1, {numberOfPixelInWidth, numberOfPixelInHeight}));
-
-  fileName = std::string("image_cam2") + std::to_string(focalLength) +
-             std::string("_.png");
-  cv::Mat img_cam2 =
-      createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
-                  imagePointsCam2, fileName);
-  // Log the image to the camera entity in the hierarchy
-  rec.log("world/cam2/image/rgb",
-          rerun::Image::from_greyscale8(
-              img_cam2, {numberOfPixelInWidth, numberOfPixelInHeight}));
-
-  std::cout << "press any keys to draw correspondance " << std::endl;
-  std::cin.get();
-
-  int N_CAMERAS = 3;
-
-  std::vector<std::vector<cv::KeyPoint>> keypoints(N_CAMERAS);
-  std::vector<std::vector<cv::DMatch>> all_matches;
-
-  // Size of the keypoint is set to 1.0f
-  for (const auto &point : imagePointsCam0) {
-    keypoints[0].emplace_back(point, 1.0f);
-  }
-
-  for (const auto &point : imagePointsCam1) {
-    keypoints[1].emplace_back(point, 1.0f);
-  }
-
-  for (const auto &point : imagePointsCam2) {
-    keypoints[2].emplace_back(point, 1.0f);
-  }
-
-  std::vector<cv::Mat> images;
-  images.push_back(img_cam0);
-  images.push_back(img_cam1);
-  images.push_back(img_cam2);
-
-  for (size_t i = 0; i < N_CAMERAS - 1; ++i) {
-
-    std::vector<cv::DMatch> matches;
-    // Generate matches based on point order, assumes all cameras have the same
-    // number of points
-    size_t num_points = keypoints[i].size();
-    for (size_t j = 0; j < num_points; ++j) {
-      // Match index j to j with a distance of 0.0
-      matches.emplace_back(cv::DMatch(j, j, 0.0f));
-      //      std::cout << "j:" << j << std::endl;
-    }
-
-    drawMatchesBetweenTheTwoFrames(images[i], images[i + 1], keypoints[i],
-                                   keypoints[i + 1], matches);
-
-    all_matches.push_back(matches);
-  }
-
-  // camera0  is the world,we set identity and zero
-  std::vector<CameraExtrinsics> cameras(N_CAMERAS);
-  cameras[0].R = cv::Mat::eye(3, 3, CV_64F);
-  cameras[0].t = cv::Mat::zeros(3, 1, CV_64F);
-
-  std::vector<double> cameraParams(9 * N_CAMERAS, 0.0);
-
-  // Initialize camera0 in the bundle with R=I, t=0 => angle-axis=0, ...
-  RtToAngleAxisAndTranslate(cameras[0].R, cameras[0].t, &cameraParams[0 * 9]);
-
-  setCameraIntrinsic(1.0, k1, k2, &cameraParams[0 * 9]);
-
-  // All 3D points in world coords
-  std::vector<cv::Point3f> globalPoints3D;
-
-  // All 2D observations of these 3D points, camera_idx, 3d point_idx, x, y
-  std::vector<Observation> observations;
-
-  for (size_t i = 1; i < N_CAMERAS; ++i) {
-
-    // Log the triangulated points to Rerun
-    std::vector<rerun::components::Position3D> rr_triangulated_pointsInCam0;
-
-    std::cout << "i is : " << i << ", prcessing camera: " << i - 1
-              << " and camera: " << i << std::endl;
-
-    std::vector<cv::Point2f> pts_im1, pts_i;
-
-    for (const auto &match : all_matches[i - 1]) {
-      pts_im1.push_back(keypoints[i - 1][match.queryIdx].pt);
-      pts_i.push_back(keypoints[i][match.trainIdx].pt);
-    }
-
-    cv::Mat mask;
-    cv::Mat E =
-        cv::findEssentialMat(pts_im1, pts_i, K, cv::RANSAC, 0.999, 1.0, mask);
-
-    cv::Mat R_im1_to_i, t_im1_to_i;
-    cv::recoverPose(E, pts_im1, pts_i, K, R_im1_to_i, t_im1_to_i, mask);
-
-    //--------------------------------------------------------------------------
-    // 9) Now we want camera i has the transformation to transform points in 3d
-    // expresses in world (camera0) we know camera [i-1] has extrinsics
-    // (R_0_to_im1, t_0_to_im1).
-    //--------------------------------------------------------------------------
-
-    cv::Mat R_0_to_im1 = cameras[i - 1].R;
-    cv::Mat t_0_to_im1 = cameras[i - 1].t;
-
-    cv::Mat R_0_to_i = R_im1_to_i * R_0_to_im1;
-    cv::Mat t_0_to_i = R_0_to_im1 * t_im1_to_i + t_0_to_im1;
-
-    cameras[i].R = R_0_to_i.clone();
-    cameras[i].t = t_0_to_i.clone();
-
-    RtToAngleAxisAndTranslate(cameras[i].R, cameras[i].t, &cameraParams[i * 9]);
-    //    setCameraIntrinsic(fx, k1, k2, &cameraParams[i * 9]);
-    setCameraIntrinsic(1.0, k1, k2, &cameraParams[i * 9]);
-
-    cv::Mat Rt_im1(3, 4, CV_64F);
-    cameras[i - 1].R.copyTo(Rt_im1(cv::Rect(0, 0, 3, 3)));
-    cameras[i - 1].t.copyTo(Rt_im1(cv::Rect(3, 0, 1, 3)));
-    cv::Mat P_im1 = K * Rt_im1;
-
-    cv::Mat Rt_i(3, 4, CV_64F);
-    cameras[i].R.copyTo(Rt_i(cv::Rect(0, 0, 3, 3)));
-    cameras[i].t.copyTo(Rt_i(cv::Rect(3, 0, 1, 3)));
-    cv::Mat P_i = K * Rt_i;
-
-    cv::Mat points4D;
-
-    cv::triangulatePoints(P_im1, P_i, pts_im1, pts_i, points4D);
-    std::vector<cv::Point3f> newPoints_in_cam0 = convertHomogeneous(points4D);
-
-    // if you want to display the camera position in th world use these
-    cv::Mat R_im1_to_0 = cameras[i - 1].R.t();
-    cv::Mat t_im1_to_0 = -cameras[i - 1].R.t() * cameras[i - 1].t;
-
-    std::cout << "Rotation from cam" << i - 1 << " to cam0 cam_0_" << i - 1
-              << "\n"
-              << R_im1_to_0 << std::endl;
-    std::cout << "Translation from cam" << i - 1 << " to cam0\n"
-              << t_im1_to_0 << std::endl;
-
-    for (size_t k = 0; k < newPoints_in_cam0.size(); k++) {
-
-      int newPointIdx = static_cast<int>(globalPoints3D.size());
-      globalPoints3D.push_back(newPoints_in_cam0[k]);
-
-      {
-        Observation obs;
-        obs.camera_idx = i - 1;
-        obs.point_idx = newPointIdx;
-
-        // negative sign for Snavely
-        obs.x = -(pts_im1[k].x - cx) / fx;
-        obs.y = -(pts_im1[k].y - cy) / fy;
-
-        observations.push_back(obs);
-      }
-      // Observation from camera (i):
-      {
-        Observation obs;
-        obs.camera_idx = i;
-        obs.point_idx = newPointIdx;
-        // negative sign for Snavely
-        obs.x = -(pts_i[k].x - cx) / fx;
-        obs.y = -(pts_i[k].y - cy) / fy;
-        observations.push_back(obs);
-      }
-
-      rr_triangulated_pointsInCam0.push_back({newPoints_in_cam0[k].x,
-                                              newPoints_in_cam0[k].y,
-                                              newPoints_in_cam0[k].z});
-    }
-
-    std::vector<rerun::Color> colors(rr_triangulated_pointsInCam0.size());
-    for (size_t j = 0; j < rr_triangulated_pointsInCam0.size(); ++j) {
-
-      if ((i % 2) == 0) {
-        colors[j] = rerun::Color(255, 0, 0); // Red
-      } else {
-        colors[j] = rerun::Color(0, 255, 0); // Green, for example
-      }
-    }
-
-    rec.log("world/triangulated_pointsCam" + std::to_string(i) + "InCam0",
-            rerun::Points3D(rr_triangulated_pointsInCam0)
-                .with_radii(std::vector<float>(
-                    rr_triangulated_pointsInCam0.size(), 0.05))
-                .with_colors(colors));
-
-    std::cout << "press any key to publish new 3d points " << std::endl;
-    std::cin.get();
-  }
-
-  std::vector<double> pointParams;
-  pointParams.resize(3 * globalPoints3D.size());
-  // Copy from cv::Point3f to the double vector
-  for (size_t i = 0; i < globalPoints3D.size(); i++) {
-    pointParams[3 * i + 0] = globalPoints3D[i].x;
-    pointParams[3 * i + 1] = globalPoints3D[i].y;
-    pointParams[3 * i + 2] = globalPoints3D[i].z;
-  }
-
-  ceres::Problem problem;
-
-  std::cout << "observations.size(): " << observations.size() << std::endl;
-
-  int id = 0;
-  for (const Observation &obs : observations) {
-
-    ceres::CostFunction *costFunc = SnavelyReprojectionErrorFixedCamera::Create(
-        obs.x, obs.y, fx, k1, k2, static_cast<int>(id));
-    id++;
-
-    double *cameraParamsPtr = &cameraParams[obs.camera_idx * 9];
-    double *pointPtr = &pointParams[3 * obs.point_idx];
-    // Create the reprojection error cost:
-
-    // Add a residual block:
-    problem.AddResidualBlock(costFunc,
-                             nullptr, // squared loss
-                             cameraParamsPtr, pointPtr);
-
-    // http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres7Problem7Options19evaluation_callbackE
-
-    /*
-
-You can set any parameter block to be constant using
-Problem::SetParameterBlockConstant() and undo this using
-SetParameterBlockVariable().
-*/
-    // problem.SetParameterLowerBound()
-    // problem.SetParameterBlockVariable()
-    // problem.SetManifold()
-  }
-
-  std::cout << "===================Camera Param before "
-               "optimization:===================\n";
-
-  for (std::size_t i = 0; i < N_CAMERAS; i++) {
-
-    std::cout << "Camera " << i << " initial parameters:\n";
-    std::cout << "Angle-axis = (" << cameraParams[i * 9] << ", "
-              << cameraParams[i * 9 + 1] << ", " << cameraParams[i * 9 + 2]
-              << ")\n";
-    std::cout << "Translation = (" << cameraParams[i * 9 + 3] << ", "
-              << cameraParams[i * 9 + 4] << ", " << cameraParams[i * 9 + 5]
-              << ")\n";
-    std::cout << "Focal length = " << cameraParams[i * 9 + 6] << "\n";
-    std::cout << "k1 = " << cameraParams[i * 9 + 7]
-              << ", k2 = " << cameraParams[i * 9 + 8] << "\n";
-  }
-
-  // fix the first camera:
-  problem.SetParameterBlockConstant(&cameraParams[0]);
-
-  // Configure solver:
-  ceres::Solver::Options options;
-  options.linear_solver_type = ceres::DENSE_SCHUR;
-  options.minimizer_progress_to_stdout = true;
-  options.max_num_iterations = 100;
-
-  // Solve BA:
-  ceres::Solver::Summary summary;
-
-  ceres::Solve(options, &problem, &summary);
-  std::cout << "Bundle Adjustment Summary:\n"
-            << summary.FullReport() << std::endl;
-
-  std::cout << "===================Camera Param After "
-               "optimization:===================\n";
-
-  for (std::size_t i = 0; i < N_CAMERAS; i++) {
-
-    std::cout << "Camera " << i << " initial parameters:\n";
-    std::cout << "Angle-axis = (" << cameraParams[i * 9] << ", "
-              << cameraParams[i * 9 + 1] << ", " << cameraParams[i * 9 + 2]
-              << ")\n";
-    std::cout << "Translation = (" << cameraParams[i * 9 + 3] << ", "
-              << cameraParams[i * 9 + 4] << ", " << cameraParams[i * 9 + 5]
-              << ")\n";
-    std::cout << "Focal length = " << cameraParams[i * 9 + 6] << "\n";
-    std::cout << "k1 = " << cameraParams[i * 9 + 7]
-              << ", k2 = " << cameraParams[i * 9 + 8] << "\n";
-  }
-}
-
 void virtualCamIncrementalSfMFixedCam() {
 
   double txCam0, txCam1, txCam2, tyCam0, tyCam1, tyCam2, tzCam0, tzCam1, tzCam2;
@@ -766,18 +248,18 @@ void virtualCamIncrementalSfMFixedCam() {
   // clang-format on
 
   thetaCam0[0] = 0;
-  //  thetaCam0[1] = +M_PI / 12;
-  thetaCam0[1] = 0;
+  thetaCam0[1] = +M_PI / 12;
+  //  thetaCam0[1] = 0;
   thetaCam0[2] = 0;
 
   thetaCam1[0] = 0;
-  //  thetaCam1[1] = +M_PI / 18;
-  thetaCam1[1] = 0;
+  thetaCam1[1] = +M_PI / 18;
+  //  thetaCam1[1] = 0;
   thetaCam1[2] = 0;
 
   thetaCam2[0] = 0;
-  //  thetaCam2[1] = -M_PI / 24;
-  thetaCam2[1] = 0;
+  thetaCam2[1] = -M_PI / 24;
+  //  thetaCam2[1] = 0;
   thetaCam2[2] = 0;
 
   txCam0 = 0.0;
@@ -785,12 +267,12 @@ void virtualCamIncrementalSfMFixedCam() {
   tzCam0 = 0.0;
 
   //  txCam1 = 0.75;
-  txCam1 = 1.0;
-  tyCam1 = +0.2;
-  tzCam1 = +0.2;
+  txCam1 = 0.9;
+  tyCam1 = +0.1;
+  tzCam1 = +0.3;
 
-  txCam2 = +2.0;
-  tyCam2 = +0.4;
+  txCam2 = +1.6;
+  tyCam2 = -0.1;
   tzCam2 = +0.4;
 
   cv::Mat t_Cam0_in_world = (cv::Mat_<double>(3, 1) << txCam0, tyCam0, tzCam0);
@@ -1165,7 +647,7 @@ void virtualCamIncrementalSfMFixedCam() {
   for (const Observation &obs : observations) {
 
     ceres::CostFunction *costFunc = SnavelyReprojectionErrorFixedCamera::Create(
-        obs.x, obs.y, fx, k1, k2, id);
+        obs.x, obs.y, 1, k1, k2, id);
     id++;
 
     double *cameraParamsPtr = &cameraParams[obs.camera_idx * 6];
@@ -1221,6 +703,27 @@ void virtualCamIncrementalSfMFixedCam() {
               << cameraParams[i * 6 + 4] << ", " << cameraParams[i * 6 + 5]
               << ")\n";
   }
+
+  std::vector<rerun::components::Position3D> point3d_positions_after_BA;
+  std::vector<float> point_sizes_after_BA;   // Define a vector for point sizes
+  std::vector<rerun::Color> colors_after_BA; //(pointParams.size() / 3);
+
+  for (std::size_t i = 0; i < pointParams.size(); i = i + 3) {
+    x = pointParams[i + 0];
+    y = pointParams[i + 1];
+    z = pointParams[i + 2];
+    point3d_positions_after_BA.push_back({x, y, z});
+    point_sizes_after_BA.push_back(0.05);
+    // colors_after_BA[i] = rerun::Color(255, 255, 0); // Red+Green
+
+    colors_after_BA.push_back(rerun::Color(255, 255, 0));
+  }
+
+  rec.log("world/points_aftre_BA", rerun::Points3D(point3d_positions_after_BA)
+                                       .with_radii(point_sizes_after_BA)
+                                       .with_colors(colors_after_BA));
+
+  std::cin.get();
 }
 
 void evaluateSnavelyReprojectionErrorFixedCamera() {
@@ -1429,6 +932,6 @@ void evaluateSnavelyReprojectionErrorFixedCamera() {
 }
 
 int main() {
-  evaluateSnavelyReprojectionErrorFixedCamera();
-  //  virtualCamIncrementalSfMFixedCam();
+  //  evaluateSnavelyReprojectionErrorFixedCamera();
+  virtualCamIncrementalSfMFixedCam();
 }

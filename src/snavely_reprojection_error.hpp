@@ -89,16 +89,17 @@ struct SnavelyReprojectionErrorFixedCamera {
                   const T* const point,
                   T* residuals) const {
 
+      /*
       std::cout << "\nInside operator() for block " << m_block_id << ":\n";
 
-//      std::cout << "camera: ";
-//        for (int j = 0; j < 6; j++) {
-//            std::cout << camera[j] << " ";
-//        }
-//        std::cout << std::endl;
+      std::cout << "camera: ";
+        for (int j = 0; j < 6; j++) {
+            std::cout << camera[j] << " ";
+        }
+        std::cout << std::endl;
 
         std::cout << "point: " << point[0] << " " << point[1] << " " << point[2] << std::endl;
-
+    */
 
     // camera[0,1,2] are the angle-axis rotation.
     T p[3];
@@ -125,10 +126,11 @@ struct SnavelyReprojectionErrorFixedCamera {
     // The error is the difference between the predicted and observed position.
     residuals[0] = predicted_x - T(m_observed_x);
     residuals[1] = predicted_y - T(m_observed_y);
-    /**/
+    /*
     std::cout<<"predicted:"<< predicted_x<<","<<predicted_y <<std::endl;
     std::cout<<"observed:"<< m_observed_x<<","<<m_observed_y<<  std::endl;
     std::cin.get();
+    */
 
     return true;
   }
