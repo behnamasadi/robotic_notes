@@ -1,30 +1,36 @@
 ## MarsLogger
 
-First visit the [project page](https://github.com/OSUPCVLab/mobile-ar-sensor-logger/wiki/Transfer-Android-Ubuntu)
+First visit the [project page](https://github.com/OSUPCVLab/mobile-ar-sensor-logger/wiki/Transfer-Android-Ubuntu) and download the `apk` and install in it on your phone, On the phone tab build version 7 the and then enable `USB debugging` on your phone, 
 
+
+Then on the machine:
 ```
 sudo apt-get update
 sudo apt-get install android-tools-adb
 ```
+the recording are stored in `/sdcard/Android/data/edu.osu.pcv.marslogger/files/data` so copy the data to your machine, first browse them:
 
+```
 adb shell
 cd /sdcard/Android/data/edu.osu.pcv.marslogger/files/data
 ls
 exit
-
-
+```
+then copy them:
+```
 MARS_DIR=/sdcard/Android/data/edu.osu.pcv.marslogger/files/data
-OUTPUT_DIR=/home/behnam/Desktop/MarsLogger
+OUTPUT_DIR=/home/$USER/Desktop/MarsLogger
 cd $OUTPUT_DIR
 adb pull $MARS_DIR
-
+```
 ## Convert recording to ROS bag
-in  /home/behnam/anaconda3/envs/bagwriter/venv/bin/python
+
+in  /home/$USER/anaconda3/envs/bagwriter/venv/bin/python
 
 
-BAG_PYTHON=/home/behnam/workspace/vio_common/python/kalibr_bagcreater.py
+BAG_PYTHON=/home/$USER/workspace/vio_common/python/kalibr_bagcreater.py
 
-ANDROID_DATA_DIR=/home/behnam/data/2023_03_07_10_16_29
+ANDROID_DATA_DIR=/home/$USER/data/2023_03_07_10_16_29
 python $BAG_PYTHON --video $ANDROID_DATA_DIR/movie.mp4 \
 --imu $ANDROID_DATA_DIR/gyro_accel.csv \
 --video_time_file $ANDROID_DATA_DIR/frame_timestamps.txt \
@@ -32,8 +38,8 @@ python $BAG_PYTHON --video $ANDROID_DATA_DIR/movie.mp4 \
 
 
 
-BAG_PYTHON=/home/behnam/workspace/vio_common/python/kalibr_bagcreater.py
-ANDROID_DATA_DIR=/home/behnam/data/2023_03_07_09_14_07
+BAG_PYTHON=/home/$USER/workspace/vio_common/python/kalibr_bagcreater.py
+ANDROID_DATA_DIR=/home/$USER/data/2023_03_07_09_14_07
 python $BAG_PYTHON --video $ANDROID_DATA_DIR/movie.mp4  --max_video_frame_height=10000 --imu $ANDROID_DATA_DIR/gyro_accel.csv --video_time_file $ANDROID_DATA_DIR/frame_timestamps.txt --output_bag $ANDROID_DATA_DIR/movie.bag 
 
 
@@ -44,7 +50,7 @@ python $BAG_PYTHON --video $ANDROID_DATA_DIR/movie.mp4  --max_video_frame_height
 python bag_from_recording.py --height 1280
 
 
-FOLDER=/home/behnam/anaconda3/envs/bagwriter/src/kalibr_fly
+FOLDER=/home/$USER/anaconda3/envs/bagwriter/src/kalibr_fly
 
 xhost +local:root
 docker run -it -e "DISPLAY" -e "QT_X11_NO_MITSHM=1" \
@@ -63,7 +69,7 @@ TargetViewTable]: Tried to add second view to a given cameraId & timestamp. Mayb
 
 
 =================================kalibr android =================================
-FOLDER=/home/behnam/Desktop/MarsLogger/data/2023_03_06_15_20_28
+FOLDER=/home/$USER/Desktop/MarsLogger/data/2023_03_06_15_20_28
 =================================kalibr android =================================
 
 xhost +local:root
@@ -85,20 +91,20 @@ rosrun kalibr kalibr_calibrate_imu_camera --bag /data/cam_april.bag --cam  /data
 
 ================================= ORB_SLAM3 =================================
 xxxxxxxxxxxxxxxxxxxxxx fails xxxxxxxxxxxxxxxxxxxxxxxxxx
-rosrun ORB_SLAM3 Mono /home/behnam/workspace/ORB_SLAM3/Vocabulary/ORBvoc.txt  /home/behnam/Desktop/MarsLogger/data/2023_03_06_15_20_28/ORB3_EuRoC.yaml
+rosrun ORB_SLAM3 Mono /home/$USER/workspace/ORB_SLAM3/Vocabulary/ORBvoc.txt  /home/$USER/Desktop/MarsLogger/data/2023_03_06_15_20_28/ORB3_EuRoC.yaml
 
 
-rosrun ORB_SLAM3 Mono_Inertial /home/behnam/workspace/ORB_SLAM3/Vocabulary/ORBvoc.txt      /home/behnam/Desktop/MarsLogger/data/2023_03_06_15_20_28/ORB3_EuRoC.yaml
-cd /home/behnam/Desktop/MarsLogger/data/2023_03_07_10_16_29
+rosrun ORB_SLAM3 Mono_Inertial /home/$USER/workspace/ORB_SLAM3/Vocabulary/ORBvoc.txt      /home/$USER/Desktop/MarsLogger/data/2023_03_06_15_20_28/ORB3_EuRoC.yaml
+cd /home/$USER/Desktop/MarsLogger/data/2023_03_07_10_16_29
 rosbag play movie.bag /cam0/image_raw:=/camera/image_raw  /imu0:=/imu
 
 
 ================================= vins =================================
 
 roslaunch vins vins_rviz.launch
-rosrun vins vins_node /home/behnam/Desktop/MarsLogger/data/2023_03_06_15_20_28/android_imu_config.yaml
+rosrun vins vins_node /home/$USER/Desktop/MarsLogger/data/2023_03_06_15_20_28/android_imu_config.yaml
 
 roslaunch vins vins_rviz.launch
-rosrun vins vins_node /home/behnam/Desktop/MarsLogger/data/2023_03_06_15_20_28/gazebo_firefly.yaml
+rosrun vins vins_node /home/$USER/Desktop/MarsLogger/data/2023_03_06_15_20_28/gazebo_firefly.yaml
 
 
