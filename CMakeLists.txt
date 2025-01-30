@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16...3.27)
-project(robotic_notes CXX)
+project(robotic-notes CXX)
 
 
 if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -28,10 +28,14 @@ find_package(Sophus CONFIG REQUIRED)
 
 ############################ ceres ############################
 
+add_executable(ceres_automatic_diff_dual_number src/ceres_examples/automatic_diff_dual_number.cpp)
+target_link_libraries(ceres_automatic_diff_dual_number PRIVATE Ceres::ceres)
+
+add_executable(ceres_jet_class src/ceres_examples/ceres_jet_class.cpp)
+target_link_libraries(ceres_jet_class PRIVATE Ceres::ceres)
+
 add_executable(ceres_example src/ceres_examples/ceres_example.cpp)
 target_link_libraries(ceres_example PRIVATE Ceres::ceres)
-
-
 
 add_executable(ceres_exponential_curve_fitting_example src/ceres_examples/ceres_exponential_curve_fitting_example.cpp)
 target_link_libraries(ceres_exponential_curve_fitting_example PRIVATE Ceres::ceres)
