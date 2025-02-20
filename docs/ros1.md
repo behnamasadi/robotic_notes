@@ -281,4 +281,38 @@ The above command will build any packages located in ~/catkin_ws/src. The equiva
 Refs: [1](https://wiki.ros.org/catkin/commands/catkin_make)
 
 
+## Docker Installation
+
+
+```
+docker pull osrf/ros:noetic-desktop-full
+```
+
+allow GUI
+
+```
+export containerId=$(docker ps -l -q)
+```
+
+and 
+
+```
+xhost +local: docker inspect --format='{{ .Config.Hostname }}' $containerId
+```
+
+
+then:
+
+
+
+```
+docker run -it --privileged \
+  --env=LOCAL_USER_ID="$(id -u)" \
+  -v /home/behnam:/home/behnam:rw \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -e DISPLAY=$DISPLAY \
+  --network host \
+  --name=ros1 osrf/ros:noetic-desktop-full
+```
+
 
