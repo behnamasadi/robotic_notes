@@ -1,9 +1,38 @@
 ## Installation
 
-- Rolling Ridley (progressing since June 2020)
 - Jazzy Jalisco (May 2029, Ubuntu Linux - Noble Numbat (24.04))
-- Humble Hawksbill (EOL date May 2027, Ubuntu Linux - Jammy Jellyfish (22.04))
 
+### Docker
+
+```
+docker pull osrf/ros:jazzy-desktop
+```
+
+allow GUI
+
+```
+export containerId=$(docker ps -l -q)
+```
+
+and 
+
+```
+xhost +local: docker inspect --format='{{ .Config.Hostname }}' $containerId
+```
+
+
+then:
+
+
+```
+docker run -it --privileged \
+  --env=LOCAL_USER_ID="$(id -u)" \
+  -v /home/behnam:/home/behnam:rw \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -e DISPLAY=$DISPLAY \
+  --network host \
+  --name=ros2 osrf/ros:jazzy-desktop-full
+```
 
 
 

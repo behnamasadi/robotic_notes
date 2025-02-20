@@ -105,7 +105,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
   - [Forward Kinematics for Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#11-forward-kinematics-for-differential-drive-robots)
   - [Inverse Kinematics of Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#12--inverse-kinematics-of-differential-drive-robots)
   - [Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
-- [Nonlinear uncertainty model associated with a robot's position over time (Banana Shape)](docs/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
+- [Nonlinear uncertainty model associated with a robot's position over time (The Banana Distribution is Gaussian)](docs/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
 
 # IMU
 

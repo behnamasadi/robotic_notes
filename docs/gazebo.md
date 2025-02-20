@@ -21,29 +21,64 @@ Versions of Ignition Gazebo:
 
 <img src="images/gazebo_timeline.svg" width="100%" />
 
-If you have installed `ign`, to get the version:
+to get the version, path, etc:
 
 ```
-ign gazebo --version
+gz sim -h
 ```
-and 
+some commonly used cpmmands and params:
 
+- `-g`: Run only the GUI.                                
+- `-r`: Run simulation on start.                         
+- `-s`: Run only the server (headless mode). This overrides -g, if it is also present.             
+- `-v [arg]`: Adjust the level of console output (0~4). The default verbosity is `1`, use `-v` without rguments for level `3`.  
+                               
 
-```
-ign gazebo --versions
-```
-
-and 
-
-```
-gz sim --version
-```
 
 Refs: [1](https://gazebosim.org/about)
 
 
 ## Installation
 Gazebo Harmonic: Harmonic binaries are provided for **Ubuntu Jammy (22.04)** and **Ubuntu Noble (24.04)**.
+
+
+### Installation using docker
+
+You can use docker:
+
+```
+docker pull osrf/ros:jazzy-desktop
+```
+
+allow GUI
+
+```
+export containerId=$(docker ps -l -q)
+```
+
+and 
+
+```
+xhost +local: docker inspect --format='{{ .Config.Hostname }}' $containerId
+```
+
+
+then:
+
+
+```
+docker run -it --privileged \
+  --env=LOCAL_USER_ID="$(id -u)" \
+  -v /home/behnam:/home/behnam:rw \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -e DISPLAY=$DISPLAY \
+  --network host \
+  --name=ros2 osrf/ros:jazzy-desktop-full
+```
+
+### Installation directly on your machine
+you can directly install it on your machine:
+
 
 dependencies: 
 ```
@@ -264,6 +299,109 @@ add the lidar sensor
 
 
 ## Model Insertion from Fuel
+All models available at [app.gazebosim.org](https://app.gazebosim.org/)
+
+
+```
+export GZ_SIM_RESOURCE_PATH=$GZ_SIM_RESOURCE_PATH:/home/behnam/gz_models
+```
+
+
+and then 
+
+
+```
+gz service -s /world/diff_drive/create --reqtype gz.msgs.EntityFactory --reptype gz.msgs.Boolean --timeout 300 --req "sdf: '<sdf version=\"1.6\">'\
+'<include>'\
+'<uri>file:///home/behnam/gz_models/chessboard/model.sdf</uri>'\
+'<pose>1 1 0 0 0 0</pose>'\
+'</include>'\
+'</sdf>'"
+```
+
+add April tag
+
+```
+gz service -s /world/diff_drive/create --reqtype gz.msgs.EntityFactory --reptype gz.msgs.Boolean --timeout 300 --req "sdf: '<sdf version=\"1.6\">'\
+'<include>'\
+'<uri>file:///home/behnam/gz_models/Apriltag36_11_00001/model.sdf</uri>'\
+'<pose>2 0.2 0.8 3.14 1.57 0</pose>'\
+'</include>'\
+'</sdf>'"
+```
+
+
+
+
+
+
+or Aruco
+
+```
+gz service -s /world/diff_drive/create --reqtype gz.msgs.EntityFactory --reptype gz.msgs.Boolean --timeout 300 --req "sdf: '<sdf version=\"1.6\">'\
+'<include>'\
+'<uri>file:///home/behnam/gz_models/aruco_default/model.sdf</uri>'\
+'<pose>2 0.2 0.8 3.14 1.57 1</pose>'\
+'</include>'\
+'</sdf>'"
+```
+
+
+
+gz service -s /world/diff_drive/create --reqtype gz.msgs.EntityFactory --reptype gz.msgs.Boolean --timeout 300 --req "sdf: '<sdf version=\"1.6\">'\
+'<include>'\
+'<uri>file:///home/behnam/gz_models/aruco_default/model.sdf</uri>'\
+'<pose>2.5 0.2 0.8 4.71 -0.785 1.57</pose>'\
+'</include>'\
+'</sdf>'"
+
+
+
+
+
+you can use service, i.e, first find the service: 
+```
+gz service -l | grep create
+```
+
+then add a light:
+
+```
+gz service -s /world/diff_drive/create --reqtype gz.msgs.EntityFactory --reptype gz.msgs.Boolean --timeout 300 --req 'sdf: '\
+'"<?xml version=\"1.0\" ?>'\
+'<sdf version=\"1.6\">'\
+'<light name=\"spawned_light\" type=\"directional\">'\
+'<pose>0 0 10 0.1 1.0 0</pose>'\
+'</light>'\
+'</sdf>"'
+```
+
+add a sphere:
+
+```
+gz service -s /world/diff_drive/create   --reqtype gz.msgs.EntityFactory   --reptype gz.msgs.Boolean   --timeout 300   --req "sdf: '<sdf version=\"1.6\">'\
+'<model name=\"spawned_model\">'\
+'<pose>2 3 1 0 0 0</pose>'\
+'<link name=\"link\">'\
+'<visual name=\"visual\">'\
+'<geometry><sphere><radius>1.0</radius></sphere></geometry>'\
+'</visual>'\
+'<collision name=\"collision\">'\
+'<geometry><sphere><radius>1.0</radius></sphere></geometry>'\
+'</collision>'\
+'</link>'\
+'</model>'\
+'</sdf>'"
+```
+
+
+Environment variables:                                                          
+- `GZ_SIM_RESOURCE_PATH`:         Colon separated paths used to locate  resources such as worlds and models.                                         
+- `GZ_SIM_SYSTEM_PLUGIN_PATH`:    Colon separated paths used to locate system plugins.                                                       
+- `GZ_SIM_SERVER_CONFIG_PATH`:    Path to server configuration file.             
+- `GZ_GUI_PLUGIN_PATH`:           Colon separated paths used to locate GUI  plugins.                                                                       
+- `GZ_GUI_RESOURCE_PATH`:         Colon separated paths used to locate GUI resources such as configuration files.                                       
+
 
 ```
 export GZ_SIM_RESOURCE_PATH=~/gz_models/
