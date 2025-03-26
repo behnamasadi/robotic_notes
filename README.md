@@ -376,9 +376,34 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 - [MegaScenes: Scene-Level View Synthesis at Scale](https://megascenes.github.io/)  
 - [Intrinsic Image Diffusion for Indoor Single-view Material Estimation](https://github.com/Peter-Kocsis/IntrinsicImageDiffusion)  
 - [Vidu4D: Single Generated Video to High-Fidelity 4D Reconstruction with Dynamic Gaussian Surfels](https://vidu4d-dgs.github.io/)  
-- [Detector-Free Structure from Motion](https://hxy-123.github.io/)
+- [Detector-Free Structure from Motion](https://hxy-123.github.io/)  
+- [Continuous 3D Perception Model with Persistent State](https://github.com/CUT3R/CUT3R)  
+- [MegaSam: Accurate, Fast and Robust Casual Structure and Motion from Casual Dynamic Videos](https://github.com/mega-sam/mega-sam)  
+- [Mast3r Slam with Rerun](https://github.com/rerun-io/mast3r-slam)  
+- [Stereo Any Video:Temporally Consistent Stereo Matching](https://tomtomtommi.github.io/StereoAnyVideo/)  
+- [Multi-view Reconstruction via SfM-guided Monocular Depth Estimation](https://github.com/zju3dv/Murre)  
+- [UniK3D: Universal Camera Monocular 3D Estimation](https://github.com/lpiccinelli-eth/unik3d)  
+- [Depth Any Camera: Zero-Shot Metric Depth Estimation from Any Camera](https://github.com/yuliangguo/depth_any_camera)  
+- [Fast3R: Towards 3D Reconstruction of 1000+ Images in One Forward Pass](https://github.com/facebookresearch/fast3r)  
+- [VGGT: Visual Geometry Grounded Transformer](https://github.com/facebookresearch/vggt)  
+- [MAGiC-SLAM: Multi-Agent Gaussian Globally Consistent SLAM](https://vladimiryugay.github.io/magic_slam/index.html)  
+- [Speedy MASt3R](https://arxiv.org/html/2503.10017v1)  
+- [CURL-MAP](https://github.com/SenseRoboticsLab/CURL-MAP)  
 
 
+# [Gaussian Splat]
+- [Morpheus Text-Driven 3D Gaussian Splat Shape and Color Stylization](https://nianticlabs.github.io/morpheus/)  
+- []()
+
+
+# [Object Pose and Shape Estimation]
+- []()  
+- [RF-DETR: SOTA Real-Time Object Detection Model](https://github.com/roboflow/rf-detr)  
+
+
+# []
+- [Layered Image Vectorization via Semantic Simplification](https://szuviz.github.io/layered_vectorization/)  
+- [Potree: WebGL based point cloud renderer ](https://github.com/potree/potree/)  
 
 # [Procrustes Analysis](docs/shape_analysis.md#procrustes-analysis)  
 
@@ -392,7 +417,12 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 
 
 # Lidar-Camera Calibration
-- [MATLAB Lidar-Camera Calibration](https://www.mathworks.com/help/lidar/ug/lidar-camera-calibration.html)
+- [MATLAB Lidar-Camera Calibration](https://www.mathworks.com/help/lidar/ug/lidar-camera-calibration.html)  
+- [ROS2 Camera Lidar Fusion](https://github.com/CDonosoK/ros2_camera_lidar_fusion)  
+- [Awesome-LiDAR-Camera-Calibration](https://github.com/Deephome/Awesome-LiDAR-Camera-Calibration)  
+
+
+
 
 
 # E-Books and Refs
