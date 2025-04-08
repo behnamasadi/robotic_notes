@@ -75,7 +75,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
   * [SE2 SAM](docs/se2_sam.ipynb)
 - [Sophus](https://github.com/strasdat/Sophus)  
 
-# Topology and Configuration of Robot and Space
+# [Topology and Configuration of Robot and Space](#)
 - [Configuration of Robot](docs/robot_configuration_dof_topology.md#configuration-of-robot)
 - [Configuration  Space - (C-space )](docs/robot_configuration_dof_topology.md#configuration--space----c-space--)
 - [Degrees of freedom.](docs/robot_configuration_dof_topology.md#degrees-of-freedom)
@@ -91,14 +91,14 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 - [Non-Holonomic Constraints, Pfaffian Constraints and Holonomic Constraints](docs/non_holonomic_pfaffian_constraint.ipynb)
 
 
-# Aerial Robotics
+# [Aerial Robotics](#)
 - [Aerial Robotics](docs/aerial_robotics.md#aerial-robotics)
 
-# PX4
+# [PX4](#)
 - [PX4](docs/px4.md)
 
 
-# Differential Drive Robots and Wheel odometry
+# [Differential Drive Robots and Wheel odometry](#)
 
 - [Kinematics of Differential Drive Robots and Wheel odometry](docs/differential_drive_robots_and_wheel_odometry.md#kinematics-of-differential-drive-robots-and-wheel-odometry)
 - [Velocity-based (dead reckoning)](docs/differential_drive_robots_and_wheel_odometry.md#1-velocity-based--dead-reckoning-)
@@ -107,7 +107,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
   - [Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
 - [Nonlinear uncertainty model associated with a robot's position over time (The Banana Distribution is Gaussian)](docs/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
 
-# IMU
+# [IMU](#)
 
 - [1. Global References](docs/imu.md#1-global-references)
 - [2. Accelerometer Model](docs/imu.md#2-accelerometer-model)
@@ -152,13 +152,13 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
     + [Example:](docs/imu.md#example--1)
     + [Note:](docs/imu.md#note-)
 
-# Apriltag
+# [Apriltag](#)
 - [Apriltag](docs/apriltag.md#apriltag)
 - [Generating Tag](docs/apriltag.md#generating-tag)
 - [Apriltag ROS](docs/apriltag.md#apriltag-ros)
 - [Detecting Apriltag](docs/apriltag.md#detecting-apriltag)
 
-# Kalibr
+# [Kalibr](#)
 
 - [Datasets and Calibration Targets](docs/kalibr.md#datasets-and-calibration-targets)
 - [Supported Camera Models and Distortion](docs/kalibr.md#supported-camera-models-and-distortion)
@@ -167,7 +167,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 
 
 
-# ROS1
+# [ROS1](#)
 - [1. Names](docs/ros1.md#1-names)
   * [1.1 Graph Resource Names](docs/ros1.md#11-graph-resource-names)
     + [1.1.1 Resolving Name](docs/ros1.md#111-resolving-name)
@@ -186,7 +186,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 - [EKF Implementations](docs/ros1.md#ekf-implementations)
 - [Differential Drive Wheel Systems](docs/ros1.md#differential-drive-wheel-systems)
 
-# ROS2
+# [ROS2](#)
 - [Installation](docs/ros2.md#installation)
 - [Configuration](docs/ros2.md#configuration)
   * [Domain ID.](docs/ros2.md#domain-id)
@@ -205,7 +205,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 - [teleop_twist_keyboard](docs/ros2.md#teleop-twist-keyboard)
 
 
-# Gazebo
+# [Gazebo](#)
 
 - [Gazebo Versions](docs/gazebo.md#gazebo-versions)
 - [Installation](docs/gazebo.md#installation)
@@ -232,7 +232,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 - [ROS 2 integration](docs/gazebo.md#ros-2-integration)
 
 
-# ROS2 Gazebo Integration
+# [ROS2 Gazebo Integration](#)
 - [Installation of ros_gz](docs/ros2_gazebo_integration.md#installation-of-ros-gz)
   * [Launch Gazebo from ROS 2](docs/ros2_gazebo_integration.md#launch-gazebo-from-ros-2)
 - [ROS2 Interaction With Gazebo](docs/ros2_gazebo_integration.md#ros2-interaction-with-gazebo)
@@ -245,10 +245,10 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
   * [6. GNSS](docs/ros2_gazebo_integration.md#6-gnss)
 
 
-# MarsLogger
+# [MarsLogger](#)
 - [MarsLogger](docs/mars_logger.md)
 
-# State Estimation
+# [State Estimation](#)
 - [Bayes filter](docs/state_estimation.md#bayes-filter)  
 - [Extended Kalman Filter](docs/state_estimation.md#extended-kalman-filter)  
 - [EKF Implementations](docs/state_estimation.md#ekf-implementations)  
@@ -264,7 +264,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 - [Error-State-Extended-Kalman-Filter(IMU, a GNSS, and a LiDAR)](https://github.com/enginBozkurt/Error-State-Extended-Kalman-Filter)  
 
 
-# Bag of Words
+# [Bag of Words](#)
 - [FBOW (Fast Bag of Words)](https://github.com/rmsalinas/fbow)
 - [AnyLoc: Towards Universal Visual Place Recognition](https://github.com/AnyLoc/AnyLoc)
 
@@ -301,7 +301,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 
 
 
-# Visual and Inertial Odometry VIO
+# [Visual and Inertial Odometry VIO](#)
 
 - [Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)  
 - [HybVIO](https://github.com/SpectacularAI/HybVIO/t)  
@@ -313,7 +313,7 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 - [Kimera-VIO](https://github.com/MIT-SPARK/Kimera-VIO)  
 - [3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)  
 
-# SLAM Benchmark 
+# [SLAM Benchmark ](#)
 - [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/slam/visual_Inertial_SLAM_comparison.md)  
 - [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
 - [ETH3D](https://www.eth3d.net/slam_overview)  
@@ -345,7 +345,7 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 
 
 
-# Structure-from-Motion
+# [Structure-from-Motion](#)
 - [Robust Rotation Averaging](https://www.youtube.com/watch?v=oAR-LMStRS4)
 - [Bundler](https://www.cs.cornell.edu/~snavely/bundler/bundler-v0.4-manual.html)
 - [Global Structure-from-Motion Revisited](https://arxiv.org/pdf/2407.20219)
@@ -357,7 +357,7 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 
 
 
-# Deep Learning based SLAM 
+# [Deep Learning based SLAM](#)
 - [Gaussian Splatting](docs/slam/gaussian_splatting.md)  
 - [GANeRF](https://github.com/barbararoessle/ganerf)  
 - [DSAC*](https://github.com/vislearn/dsacstar)  
@@ -391,17 +391,16 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 - [CURL-MAP](https://github.com/SenseRoboticsLab/CURL-MAP)  
 
 
-# [Gaussian Splat]
+# [Gaussian Splat](#)
 - [Morpheus Text-Driven 3D Gaussian Splat Shape and Color Stylization](https://nianticlabs.github.io/morpheus/)  
-- []()
 
 
-# [Object Pose and Shape Estimation]
-- []()  
+
+# [Object Pose and Shape Estimation](#)
 - [RF-DETR: SOTA Real-Time Object Detection Model](https://github.com/roboflow/rf-detr)  
 
 
-# []
+# [Visualization](#)
 - [Layered Image Vectorization via Semantic Simplification](https://szuviz.github.io/layered_vectorization/)  
 - [Potree: WebGL based point cloud renderer ](https://github.com/potree/potree/)  
 
@@ -425,7 +424,7 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 
 
 
-# E-Books and Refs
+# [E-Books and Refs](#)
 
 - [Modern Robotics Mechanics, Planning, and Control (Kevin M. Lynch, Frank C. Park)](docs/ebooks/Modern%20Robotics%20Mechanics%2C%20Planning%2C%20and%20Control%20%28Kevin%20M.%20Lynch%20and%20Frank%20C.%20Park%29.pdf)  
 - [Modern Robotics Mechanics, Planning, and Control (Instructor Solution Manual, Solutions )](docs/ebooks/Modern%20Robotics%20Mechanics%2C%20Planning%2C%20and%20Control%20%28Kevin%20M.%20Lynch%2C%20Frank%20C.%20Park%29%20Exercise%20Solutions.pdf)  
