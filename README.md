@@ -434,5 +434,5 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 - [SLAM for Dummies](docs/ebooks/SLAM%20for%20Dummies.pdf)  
 - [VSLAM Handbook](https://github.com/tussedrotten/vslam-handbook)  
 - [SLAM Handbook](https://github.com/SLAM-Handbook-contributors/slam-handbook-public-release)
-
-
+- [Matrix Calculus (for Machine Learning and Beyond)](https://arxiv.org/pdf/2501.14787)
+- [Reinforcement Learning: A Comprehensive Overview](https://arxiv.org/pdf/2412.05265)
