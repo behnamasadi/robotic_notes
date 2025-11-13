@@ -1,6 +1,14 @@
 # Installation and Requirement 
 
-First add vcpkg as submodule to your project:
+### C++ Dependencies
+
+
+```
+cd /home/$USER/workspace/
+git clone git@github.com:behnamasadi/robotic_notes.git
+```
+
+Add vcpkg as submodule to your project:
 
 ```
 git submodule add https://github.com/microsoft/vcpkg
@@ -52,6 +60,21 @@ FetchContent_MakeAvailable(rerun_sdk)
 The reason is building `arrow_cpp` might take very long time. Also install the rerun server via:
 
 
+### Python Dependencies
+
+```
+conda create -n robotic_notes
+conda activate robotic_notes
+conda install python=3.13
+cd /home/$USER/anaconda3/envs/robotic_notes/
+```
+
+Create this soft link.
+
+```
+ln -s /home/$USER/workspace/robotic_notes /home/$USER/anaconda3/envs/robotic_notes/src
+```
+
 Install the python packages:
 ```
 pip3 install rerun-sdk==0.20.3
@@ -60,13 +83,12 @@ pip install graphslam
 conda install conda-forge::gtsam
 conda install conda-forge::matplotlib
 conda install conda-forge::plotly
+pip install gradio_rerun
 ```
 
-Also create this soft link.
 
-```
-ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robotic_notes/docs
-```
+
+
 
 # [Lie Group and Lie Algebra](#)
 - [Lie Group and Lie Algebra](docs/lie_group_lie_algebra/index.ipynb)   
@@ -249,11 +271,10 @@ ln -s /home/$USER/workspace/robotic_notes/docs/ /home/$USER/anaconda3/envs/robot
 - [MarsLogger](docs/mars_logger.md)
 
 # [State Estimation](#)
-- [Bayes filter](docs/state_estimation.md#bayes-filter)  
-- [Extended Kalman Filter](docs/state_estimation.md#extended-kalman-filter)  
-- [EKF Implementations](docs/state_estimation.md#ekf-implementations)  
-- [EKF for Differential Drive Robot](docs/state_estimation.md#ekf-for-differential-drive-robot)  
-
+- [Bayes filter](docs/state_estimation.md#bayes-filter)
+- [Extended Kalman Filter](docs/state_estimation.md#extended-kalman-filter)
+- [EKF Implementations](docs/state_estimation.md#ekf-implementations)
+- [EKF for Differential Drive Robot](docs/state_estimation.md#ekf-for-differential-drive-robot)
 - [Invariant extended Kalman filter EKF](https://en.wikipedia.org/wiki/Invariant_extended_Kalman_filter)  
 - [Multi-State Constraint Kalman Filter (MSCKF)](https://docs.openvins.com/namespaceov__msckf.html)  
 - [STATE ESTIMATION FOR ROBOTICS](docs/state_estimation.md#state-estimation-for-robotics)  
@@ -415,7 +436,7 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 - [KISS-ICP](#kiss-icp)  
 
 
-# Lidar-Camera Calibration
+# [Lidar-Camera Calibration](#)
 - [MATLAB Lidar-Camera Calibration](https://www.mathworks.com/help/lidar/ug/lidar-camera-calibration.html)  
 - [ROS2 Camera Lidar Fusion](https://github.com/CDonosoK/ros2_camera_lidar_fusion)  
 - [Awesome-LiDAR-Camera-Calibration](https://github.com/Deephome/Awesome-LiDAR-Camera-Calibration)  
