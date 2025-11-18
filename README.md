@@ -314,7 +314,7 @@ pip install gradio_rerun
 - [Lidar odometry smoothing using ES EKF and KissICP for Ouster sensors with IMUs](https://capsulesbot.com/blog/2024/02/05/esekf-smoothing-ouster-lidar-with-imu-using-kiss.html)
 - [Multisensor-aided Inertial Navigation System (MINS)](https://github.com/rpng/MINS)  
 - [GLOMAP explained](https://www.youtube.com/watch?v=lYC-oMSCNOE)
-
+- [Zero-Shot Point Cloud Registration](https://github.com/MIT-SPARK/BUFFER-X)
 
 
 #  Ceres Non-linear Least Squares
