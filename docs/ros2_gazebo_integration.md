@@ -1,47 +1,333 @@
-- [Installation of ros_gz](#installation-of-ros-gz)
-  * [Launch Gazebo from ROS 2](#launch-gazebo-from-ros-2)
-- [ROS2 Interaction With Gazebo](#ros2-interaction-with-gazebo)
-  * [Bridge communication between ROS and Gazebo](#bridge-communication-between-ros-and-gazebo)
-  * [1. Simple Hello between ROS2 and Gazebo](#1-simple-hello-between-ros2-and-gazebo)
-  * [2. Camera Example](#2-camera-example)
-  * [3. Diff Drive Example](#3-diff-drive-example)
-  * [4. GPU lidar](#4-gpu-lidar)
-  * [5. IMU, Magnetometer](#5-imu--magnetometer)
-  * [6. GNSS](#6-gnss)
+- [ROS2 Docker](#ros2-docker)
 
 
 
 
-## Installation of ros_gz
+## ROS2 Docker
 
 
-Set the `GZ_VERSION` environment variable to the Gazebo version
+
+#### **Official mapping (2024–2025)**
+
+| ROS 2 distro | ros_gz git branch | Required GZ_VERSION value | Actual Gazebo release name |
+|--------------|-------------------|----------------------------|----------------------------|
+| ROS Jazzy    | `jazzy`           | `harmonic`                 | Gazebo Harmonic            |
+| ROS Iron     | `iron`            | `garden`                   | Gazebo Garden              |
+| ROS Humble   | `humble`          | `fortress`                 | Gazebo Fortress            |
+
+
+---
+
+#### 1. Create this file exactly once (put it in your project root or `~/ros2_docker/`)
+
+`Dockerfile` (no extension needed):
+
+```dockerfile
+FROM osrf/ros:jazzy-desktop-full
+
+ARG USERNAME=behnam
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# Remove the default user/group that ships with UID/GID 1000 (name varies)
+# and make sure UID 1000 + GID 1000 are completely free
+RUN set -e && \
+    # Try to remove any existing user with UID 1000
+    (id -u 1000 >/dev/null 2>&1 && userdel -r $(id -un 1000)) || true && \
+    # Try to remove any existing group with GID 1000
+    (getent group 1000 >/dev/null 2>&1 && groupdel $(getent group 1000 | cut -d: -f1)) || true && \
+    # Install sudo if missing (it usually is already there)
+    apt-get update && apt-get install -y --no-install-recommends sudo && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Now safely create your own group and user
+    groupadd --gid ${USER_GID} ${USERNAME} && \
+    useradd --uid ${USER_UID} --gid ${USER_GID} \
+            --create-home --shell /bin/bash ${USERNAME} && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} && \
+    chmod 0440 /etc/sudoers.d/${USERNAME} && \
+    usermod -aG dialout,video ${USERNAME}
+
+# Switch to your user forever
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+ENV USER=${USERNAME}
+
+# Nice orange prompt so you know you're inside the container
+RUN echo '# Orange ROS2-Jazzy prompt (only when inside container)' >> /etc/bash.bashrc && \
+    echo 'export PS1="\[\e[38;5;208m\][ROS2-Jazzy \u@\h] \[\e[0;33m\]\w\[\e[0m\] \$ "' >> /etc/bash.bashrc && \
+    echo 'export GZ_VERSION=harmonic' >> /etc/bash.bashrc
+```
+
+#### 2. Build it once (takes ~30 seconds)
+
+```bash
+docker build -t ros:jazzy \
+  --build-arg USER_UID=$(id -u) \
+  --build-arg USER_GID=$(id -g) \
+  --build-arg USERNAME=$USER .
+```
+
+#### 3. Run it 
+
+```bash
+# First, allow GUI apps from Docker containers
+xhost +local:docker
+
+# (fixed, predictable container name)
+docker run -it --rm \
+  --name jazzy \
+  --privileged \
+  --network host \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  -v "$HOME":"$HOME":rw \
+  --workdir "$PWD" \
+  --ipc=host \
+  --ulimit nofile=524288 \
+  ros:jazzy \
+  bash
+```  
+
+
+
+| Option | Why it matters |
+|-----|----------------|
+| `-v /tmp/.X11-unix:/tmp/.X11-unix:rw` | Some distributions (Ubuntu 22.04/24.04, Fedora, Arch, etc.) require **read-write** access to the X11 socket, even though it’s technically read-only. Using `:ro` silently fails → black windows or “Cannot open display”. |
+| `--ipc=host` | ROS 2 tools (especially rviz2, Gazebo, Foxglove) heavily use shared memory (`/dev/shm`). Without this flag you get crashes or extremely slow rendering. |
+| `--ulimit nofile=524288` | Prevents “Too many open files” errors when running large ROS 2 nodes or rviz2 with many topics. |
+|`ros:jazzy`      | Image   |
+|`jazzy` (or whatever you like)   |Container |
+
+
+
+
+#### Why this is the real best practice today
+
+- Never runs as root  
+- Files created inside → owned by you on the host (no more `sudo chown -R`)  
+- Proper `$HOME`, bash history, sudo, rosdep, colcon all work perfectly  
+- GUI apps (rviz2, rqt, Foxglove Studio) work out of the box  
+- Fully reproducible — commit the Dockerfile to your repo and everyone gets the exact same setup  
+- Works even if your UID is 1001, 1337, 50000, etc.  
+
+
+
+* UID **1000** is clean
+* GID **1000** is clean
+* Your user (`behnam`) is created without conflicts
+* All files inside the mounted host workspace `/home/behnam` stay owned by you
+* colcon, rosdep, RViz2, Gazebo, Foxglove all run perfectly
+* No surprises caused by “mystery users” that OSRF sometimes adds to base images
+
+Removing the existing UID/GID 1000 (if present) is sometimes the *only* reliable fix when working with OSRF images that already include stub users.
+
+---
+
+####  Why this Dockerfile is the most robust solution
+
+**1. OSRF base images often ship with a default user**
+
+Sometimes:
 
 ```
-export GZ_VERSION=harmonic
+uid=1000(dev)
+gid=1000(dev)
+```
+
+This version **removes them cleanly**, avoiding collisions.
+
+---
+
+**2. You remove both the user AND the group with UID/GID 1000**
+
+This guarantees those IDs are free:
+
+```
+id -u 1000 -> remove user
+groupdel $(getent group 1000)
+```
+
+This is the strongest way to ensure a deterministic environment.
+
+---
+
+**3. You recreate the group + user cleanly**
+
+You do:
+
+```
+groupadd --gid 1000 behnam
+useradd --uid 1000 --gid 1000 behnam
+```
+
+This ensures the container’s internal user is **identical** to your host user.
+
+This is the foundation for:
+
+* correct permissions
+* correct ownership of builds
+* correct home directory behavior
+* correct colcon + rosdep + pip cache paths
+
+---
+
+
+## Installing New Packages
+
+The current alias uses `--rm`, so every time you exit the container it disappears → all `apt install`, `pip install`, `rosdep` system packages you installed are **gone** the next time you start it again.
+
+Here are the three real-world solutions people actually use:
+
+#### Option 1 – Recommended
+
+**Re-build the image whenever you need new system packages.**  
+It’s only 30–60 seconds and gives you a perfectly clean, reproducible environment forever.
+
+1. Add the missing packages to your Dockerfile (just one extra line):
+
+```dockerfile
+# ~/ros2_docker/Dockerfile  ← 100 % working version – November 2025
+FROM osrf/ros:jazzy-desktop-full
+
+ARG USERNAME=behnam
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# 1. Clean up the default UID/GID 1000 user that the base image ships with
+RUN set -e && \
+    (id -u 1000 >/dev/null 2>&1 && userdel -r $(id -un 1000)) || true && \
+    (getent group 1000 >/dev/null 2>&1 && groupdel $(getent group 1000 | cut -d: -f1)) || true
+
+# 2. Create your own user (same UID/GID as host)
+RUN apt-get update && apt-get install -y --no-install-recommends sudo && \
+    rm -rf /var/lib/apt/lists/* && \
+    groupadd --gid ${USER_GID} ${USERNAME} && \
+    useradd --uid ${USER_UID} --gid ${USER_GID} \
+            --create-home --shell /bin/bash ${USERNAME} && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} && \
+    chmod 0440 /etc/sudoers.d/${USERNAME} && \
+    usermod -aG dialout,video ${USERNAME}
+
+# 3. Install the system packages you actually need (add more here anytime)
+#     → these were the ones that failed for you + a few very common ones
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ros-jazzy-libg2o \
+        libceres-dev \
+        libsuitesparse-dev \
+        ros-jazzy-bond \
+        ros-jazzy-bondcpp \
+        ros-jazzy-nav2-map-server \
+        ros-jazzy-nav2-bringup \
+        ros-jazzy-navigation2 \
+        ros-jazzy-urdf-launch \
+        ros-jazzy-simulation-interfaces \
+        gz-harmonic \
+        python3-pip \
+        python3-colcon-common-extensions \
+        git \
+        wget \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch to your user for the rest of eternity
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+
+# ──────────────────────────────────────────────────────────────
+# Add a nice orange prompt so you instantly know you're inside the container
+# ──────────────────────────────────────────────────────────────
+RUN echo '# Orange ROS2-Jazzy prompt (only when inside container)' >> /etc/bash.bashrc && \
+    echo 'export PS1="\[\e[38;5;208m\][ROS2-Jazzy \u@\h] \[\e[0;33m\]\w\[\e[0m\] \$ "' >> /etc/bash.bashrc && \
+    echo 'export GZ_VERSION=harmonic' >> /etc/bash.bashrc
+
+ENV USER=${USERNAME}
 ```
 
 
-then 
+2. Re-build once (30–60 seconds):
+
+```bash
+cd ~/ros2_docker
+docker build -t ros:jazzy \
+  \
+  --build-arg USERNAME=$USER \
+  --build-arg USER_UID=$(id -u) \
+  --build-arg USER_GID=$(id -g) .
+```
+
+3. Keep using the same fast alias with `--rm`:
+
+```bash
+alias jazzy='docker run -it --rm --name jazzy --privileged --network host \
+  -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -v $HOME:$HOME:rw --workdir "$PWD" ros:jazzy'
+```
+
+→ Now every new container already has `libg2o`, `nav2-map-server`, `ceres`, etc. pre-installed.  
+You only rebuild when you actually need a new system package → perfect reproducibility.
+
+#### Option 2 – Zero rebuilds ever
+
+Keep a **persistent container** instead of `--rm`.
+
+```bash
+# ──────────────────────────────────────────────────────────────
+# 1. Run this ONLY ONCE (or when you want to recreate the container)
+# ──────────────────────────────────────────────────────────────
+xhost +local:docker   # allow GUI from all local containers (safe)
+
+docker run -d \
+  --name jazzy-permanent \
+  --restart unless-stopped \
+  --privileged \
+  --network host \
+  --ipc=host \
+  --ulimit nofile=524288 \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  -v "$HOME":"$HOME":rw \
+  -v "$PWD":"$PWD":rw \
+  --workdir "$PWD" \
+  ros:jazzy \
+  sleep infinity
+```
+
+Now you can `sudo apt install …`, `pip install …` as much as you want — everything survives reboots and new terminals.
+
+
+You can start:
+
+
+```bash
+docker start -i jazzy-permanent
+```
+or attach:
 
 ```
-cd ~/ros2_ws/src/
-git clone https://github.com/gazebosim/ros_gz.git -b humble
+docker exec -it jazzy-permanent bash
+````
 
-cd ../
-rosdep install -r --from-paths src -i -y --rosdistro humble
-colcon build
+
+---
+
+
+## Launch Gazebo from ROS 2
+
+
+```bash
+source /opt/ros/jazzy/setup.sh
+gz sim
 ```
-Refs: [1](https://github.com/gazebosim/ros_gz/tree/humble)
 
-
-### Launch Gazebo from ROS 2
+or (may not work over docker)
 
 ```
 ros2 launch ros_gz_sim gz_sim.launch.py gz_args:=empty.sdf
 ```
 
 Refs: [1](https://gazebosim.org/docs/harmonic/ros2_launch_gazebo/)
+
+
 
 ## ROS2 Interaction With Gazebo
 
@@ -61,7 +347,7 @@ The following message types can be bridged for topics:
 | tf2_msgs/msg/TFMessage                      | gz.msgs.Pose_V                              |
 | sensor_msgs/msg/Image                       | gz.msgs.Image                               |
 | sensor_msgs/msg/MagneticField	              | gz.msgs.Magnetometer                        |
-| sensor_msgs/msg/NavSatFix	              | gz.msgs.NavSat                              |
+| sensor_msgs/msg/NavSatFix                   | gz.msgs.NavSat                              |
 | nav_msgs/msg/Odometry                       | gz.msgs.Odometry                            |
 | sensor_msgs/msg/CameraInfo                  | gz.msgs.CameraInfo                          |
 
@@ -109,59 +395,59 @@ ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String@ignition.ms
 
 ```
 
-
-To install "Gazebo Harmonic" uninstall the default Ignition Fortress topics and install the correct bridge and other interface topics for Gazebo Harmonic with ROS2 Humble:
-
-
-```
-# Remove the wrong version (for Ignition Fortress)
-sudo apt remove ros-humble-ros-gz
-
-# Install the version for Gazebo Garden
-sudo apt install ros-humble-ros-gzharmonic
-```
-
-
 [read more here](https://docs.px4.io/main/en/ros2/user_guide.html#ros-gz-bridge-not-publishing-on-the-clock-topic)
 
 
 
-then publish from ROS:
+**Start the bidirectional bridge** (allows communication both ways):
 
-
-```
-ros2 topic pub /chatter std_msgs/msg/String '{data: "Hello from ROS"}'
-```
-receive from gazebo: 
-
-```
-ign  topic -e -t /chatter
+```bash
+source /opt/ros/jazzy/setup.sh
 ```
 
 
-then publish from gazebo:
-
-```
-ign topic -t /chatter -m ignition.msgs.StringMsg -p 'data:"Hello from Gazebo"'
+```bash
+ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String@gz.msgs.StringMsg
 ```
 
-receive in ROS: 
+**Test 1: Publish from ROS2 → Receive in Gazebo**
+
+Terminal 1 - Listen on Gazebo side:
+```bash
+gz topic -e -t /chatter
 ```
+
+Terminal 2 - Publish from ROS2:
+```bash
+ros2 topic pub /chatter std_msgs/msg/String '{data: "Hello from ROS2"}'
+```
+
+**Test 2: Publish from Gazebo → Receive in ROS2**
+
+Terminal 1 - Listen on ROS2 side:
+```bash
 ros2 topic echo /chatter
 ```
 
-A bridge from Gazebo to ROS example:
-
-```
-ros2 run ros_gz_bridge parameter_bridge  /chatter@std_msgs/msg/String[ignition.msgs.StringMsg
-                                                         
+Terminal 2 - Publish from Gazebo:
+```bash
+gz topic -t /chatter -m gz.msgs.StringMsg -p 'data:"Hello from Gazebo"'
 ```
 
+**One-way bridge examples:**
 
-A bridge from ROS to Gazebo example:
+Gazebo to ROS only (Gazebo publishes, ROS subscribes):
+```bash
+ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String]gz.msgs.StringMsg
 ```
-ros2 run ros_gz_bridge parameter_bridge  /chatter@std_msgs/msg/String]ignition.msgs.StringMsg
+
+ROS to Gazebo only (ROS publishes, Gazebo subscribes):
+```bash
+ros2 run ros_gz_bridge parameter_bridge /chatter@std_msgs/msg/String[gz.msgs.StringMsg
 ```
+
+**Notes:** 
+- **Docker limitation:** The `gz topic` CLI tool doesn't work inside Docker containers due to shared memory/discovery issues. However, the bridge and Gazebo plugins work perfectly! To verify the bridge is working in Docker, use `ros2 topic echo /chatter` instead. The `gz topic` commands work correctly when running on the host system.
 
 Ref: [1](https://index.ros.org/p/ros_gz_bridge/)
 
@@ -671,7 +957,5 @@ cmd=[
 ```
 
 <img src="images/tf_bridge.gif" />
-
-
 
 
