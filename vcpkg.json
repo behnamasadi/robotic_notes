@@ -9,6 +9,7 @@
     { "name": "opencv" },
     { "name": "ceres" },
     { "name": "manif" },
-    { "name": "sophus"}
+    { "name": "sophus"},
+    { "name": "arrow" }
   ]
 }

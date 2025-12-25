@@ -309,34 +309,25 @@ template <typename T> std::vector<T> createEllipsoidInWorldCoordinate() {
   return objectPointsInWorldCoordinate;
 }
 
-template <typename T> rerun::Vec3D getRerunTranslationFromCvMat(cv::Mat t) {
-
-  // Extract translation vector
-  rerun::Vec3D translation(t.at<T>(0, 0), t.at<T>(1, 0), t.at<T>(2, 0));
-
-  return translation;
-}
-
-template <typename T> rerun::Mat3x3 getRerunRotationFromCvMat(cv::Mat R) {
-
-  // Extract rotation matrix as std::array<float, 9> in
-  // column-major order
-  std::array<float, 9> rotation_data = {
-      static_cast<float>(R.at<double>(0, 0)),
-      static_cast<float>(R.at<double>(1, 0)),
-      static_cast<float>(R.at<double>(2, 0)),
-
-      static_cast<float>(R.at<double>(0, 1)),
-      static_cast<float>(R.at<double>(1, 1)),
-      static_cast<float>(R.at<double>(2, 1)),
-
-      static_cast<float>(R.at<double>(0, 2)),
-      static_cast<float>(R.at<double>(1, 2)),
-      static_cast<float>(R.at<double>(2, 2)),
-  };
-
-  return rotation_data;
-}
+// Rerun helper functions disabled
+// template <typename T> rerun::Vec3D getRerunTranslationFromCvMat(cv::Mat t) {
+//   rerun::Vec3D translation(t.at<T>(0, 0), t.at<T>(1, 0), t.at<T>(2, 0));
+//   return translation;
+// }
+// template <typename T> rerun::Mat3x3 getRerunRotationFromCvMat(cv::Mat R) {
+//   std::array<float, 9> rotation_data = {
+//       static_cast<float>(R.at<double>(0, 0)),
+//       static_cast<float>(R.at<double>(1, 0)),
+//       static_cast<float>(R.at<double>(2, 0)),
+//       static_cast<float>(R.at<double>(0, 1)),
+//       static_cast<float>(R.at<double>(1, 1)),
+//       static_cast<float>(R.at<double>(2, 1)),
+//       static_cast<float>(R.at<double>(0, 2)),
+//       static_cast<float>(R.at<double>(1, 2)),
+//       static_cast<float>(R.at<double>(2, 2)),
+//   };
+//   return rotation_data;
+// }
 
 cv::Mat createImage(double focalLength, int numberOfPixelInHeight,
                     int numberOfPixelInWidth,
@@ -567,77 +558,13 @@ int main(int argc, char **argv) {
   cv::projectPoints(objectPointsInWorldCoordinate, rotation_world_in_Cam2,
                     t_world_in_Cam2, K, distortionCoefficient, imagePointsCam2);
 
-  // OpenCV X=Right, Y=Down, Z=Forward
-  rec.log_static("world", rerun::ViewCoordinates::RIGHT_HAND_Y_DOWN);
-  std::vector<rerun::components::Position3D> point3d_positions;
-  std::vector<float> point_sizes; // Define a vector for point sizes
-
-  // Log the arrows to the Rerun Viewer
-  rec.log("world/xyz",
-          rerun::Arrows3D::from_vectors(
-              {{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}})
-              .with_colors({{255, 0, 0}, {0, 255, 0}, {0, 0, 255}}));
-
-  // objectPointsInCameraCoordinate;
-  float x, y, z;
-
-  for (std::size_t i = 0; i < objectPointsInWorldCoordinate.size(); i++) {
-    x = objectPointsInWorldCoordinate[i][0];
-    y = objectPointsInWorldCoordinate[i][1];
-    z = objectPointsInWorldCoordinate[i][2];
-    point3d_positions.push_back({x, y, z});
-    point_sizes.push_back(0.05);
-  }
-
-  rec.log("world/points",
-          rerun::Points3D(point3d_positions).with_radii(point_sizes));
-
-  // Extract translation vector
-  rerun::Vec3D rr_t_Cam0_in_world =
-      getRerunTranslationFromCvMat<double>(t_Cam0_in_world);
-  rerun::Vec3D rr_t_Cam1_in_world =
-      getRerunTranslationFromCvMat<double>(t_Cam1_in_world);
-
-  rerun::Vec3D rr_t_Cam2_in_world =
-      getRerunTranslationFromCvMat<double>(t_Cam2_in_world);
-
-  rerun::Mat3x3 rr_rotation_Cam0_in_world =
-      getRerunRotationFromCvMat<double>(rotation_Cam0_in_world);
-
-  rerun::Mat3x3 rr_rotation_Cam1_in_world =
-      getRerunRotationFromCvMat<double>(rotation_Cam1_in_world);
-
-  rerun::Mat3x3 rr_rotation_Cam2_in_world =
-      getRerunRotationFromCvMat<double>(rotation_Cam2_in_world);
-
-  // Log the data
-  std::string camera_name_cam0 = "world/cam0";
-  std::string camera_name_cam1 = "world/cam1";
-  std::string camera_name_cam2 = "world/cam2";
-
-  rec.log(camera_name_cam0,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
-
-  rec.log(camera_name_cam1,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
-
-  rec.log(camera_name_cam2,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
-
-  rec.log(camera_name_cam0,
-          rerun::Transform3D(rr_t_Cam0_in_world, rr_rotation_Cam0_in_world));
-
-  rec.log(camera_name_cam1,
-          rerun::Transform3D(rr_t_Cam1_in_world, rr_rotation_Cam1_in_world));
-
-  rec.log(camera_name_cam2,
-          rerun::Transform3D(rr_t_Cam2_in_world, rr_rotation_Cam2_in_world));
+  // Rerun visualization disabled
+  // rec.log_static("world", rerun::ViewCoordinates::RIGHT_HAND_Y_DOWN);
+  // std::vector<rerun::components::Position3D> point3d_positions;
+  // std::vector<float> point_sizes;
+  // rec.log("world/xyz", rerun::Arrows3D::from_vectors(...));
+  // rec.log("world/points", rerun::Points3D(point3d_positions).with_radii(point_sizes));
+  // ... (all rerun logging code commented out)
 
   std::string fileName;
 
@@ -647,11 +574,8 @@ int main(int argc, char **argv) {
   cv::Mat img_cam0 =
       createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
                   imagePointsCam0, fileName);
-
-  // Log the image to the camera entity in the hierarchy
-  rec.log("world/cam0/image/rgb",
-          rerun::Image::from_greyscale8(
-              img_cam0, {numberOfPixelInWidth, numberOfPixelInHeight}));
+  // Rerun visualization disabled
+  // rec.log("world/cam0/image/rgb", rerun::Image::from_greyscale8(...));
 
   fileName = std::string("image_cam1_") + std::to_string(focalLength) +
              std::string("_.png");
@@ -659,11 +583,8 @@ int main(int argc, char **argv) {
   cv::Mat img_cam1 =
       createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
                   imagePointsCam1, fileName);
-
-  // Log the image to the camera entity in the hierarchy
-  rec.log("world/cam1/image/rgb",
-          rerun::Image::from_greyscale8(
-              img_cam1, {numberOfPixelInWidth, numberOfPixelInHeight}));
+  // Rerun visualization disabled
+  // rec.log("world/cam1/image/rgb", rerun::Image::from_greyscale8(...));
 
   fileName = std::string("image_cam2_") + std::to_string(focalLength) +
              std::string("_.png");
@@ -671,11 +592,8 @@ int main(int argc, char **argv) {
   cv::Mat img_cam2 =
       createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
                   imagePointsCam2, fileName);
-
-  // Log the image to the camera entity in the hierarchy
-  rec.log("world/cam2/image/rgb",
-          rerun::Image::from_greyscale8(
-              img_cam2, {numberOfPixelInWidth, numberOfPixelInHeight}));
+  // Rerun visualization disabled
+  // rec.log("world/cam2/image/rgb", rerun::Image::from_greyscale8(...));
 
   int N_CAMERAS = 3;
 

@@ -8,25 +8,44 @@ cd /home/$USER/workspace/
 git clone git@github.com:behnamasadi/robotic_notes.git
 ```
 
-Add vcpkg as submodule to your project:
+vcpkg is configured as a git submodule. Initialize it:
 
 ```
-git submodule add https://github.com/microsoft/vcpkg
+cd /home/$USER/workspace/robotic_notes
+git submodule update --init --recursive
 ```
 
-Then run the following script on Windows:
+If you need to add vcpkg as a submodule (if not already configured):
+
+```
+cd /home/$USER/workspace/robotic_notes
+git submodule add https://github.com/microsoft/vcpkg.git vcpkg
+```
+
+Then run the bootstrap script. On Windows:
 
 ```
 .\vcpkg\bootstrap-vcpkg.bat
 ```
 
-on the bash:
+On bash:
 
 ```
 ./vcpkg/bootstrap-vcpkg.sh
 ```
+
 The bootstrap script performs prerequisite checks and downloads the vcpkg executable.
 
+To update vcpkg to the latest version (when using as a submodule):
+
+```
+cd /home/$USER/workspace/robotic_notes
+git submodule update --remote vcpkg
+```
+
+This will fetch the latest changes from the vcpkg repository and update the submodule to the latest commit.
+
+Note: When using vcpkg in manifest mode (with `vcpkg.json`), you don't need to run `vcpkg update`. Instead, modify your `vcpkg.json` file and run `cmake` again, which will automatically install the updated packages.
 
 set the path:
 
@@ -36,7 +55,13 @@ export PATH=$VCPKG_ROOT:$PATH
 ```
 Setting `VCPKG_ROOT` tells vcpkg where your vcpkg instance is located.
 
+Install required system dependencies for vcpkg (on Linux):
 
+```
+sudo apt-get install -y bison flex build-essential cmake autoconf autoconf-archive automake libtool libx11-dev libxft-dev libxext-dev libxtst-dev libxrandr-dev ninja-build pkg-config
+```
+
+These dependencies are needed for vcpkg to build packages like `gettext`, `gperf`, `cairo` (with x11 feature), `at-spi2-core`, `gtk3`, and other C++ libraries. The `ninja-build` and `pkg-config` packages are required for meson-based builds.
 
 Now you can run:
 
@@ -57,7 +82,8 @@ include(FetchContent)
 FetchContent_Declare(rerun_sdk URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip)
 FetchContent_MakeAvailable(rerun_sdk)
 ```
-The reason is building `arrow_cpp` might take very long time. Also install the rerun server via:
+
+**Note:** Building `arrow_cpp` (which is a dependency of rerun_sdk) can take a very long time and may fail with compilation errors (e.g., abseil build failures with newer GCC versions like GCC 13). If you encounter build errors with arrow_cpp, comment out all other code in `CMakeLists.txt` and only keep the rerun SDK part above. Also install the rerun server via:
 
 
 ### Python Dependencies
