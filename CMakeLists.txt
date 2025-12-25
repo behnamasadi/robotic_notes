@@ -3,7 +3,12 @@ project(robotic-notes CXX)
 
 
 if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-        set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE PATH "toolchain file")
+        get_filename_component(VCPKG_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" ABSOLUTE)
+        set(CMAKE_TOOLCHAIN_FILE "${VCPKG_TOOLCHAIN_FILE}" CACHE PATH "toolchain file")
+else()
+        # Ensure CMAKE_TOOLCHAIN_FILE is always absolute
+        get_filename_component(CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}" ABSOLUTE)
+        set(CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}" CACHE PATH "toolchain file" FORCE)
 endif()
 message("toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 
@@ -11,9 +16,80 @@ message("toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 find_package(Boost REQUIRED)
 message("Boost_VERSION: " ${Boost_VERSION})
 
+# Ensure CMAKE_TOOLCHAIN_FILE is absolute before rerun_sdk uses it
+# This is critical because rerun_sdk passes it to arrow_cpp, which needs an absolute path
+if(CMAKE_TOOLCHAIN_FILE)
+    get_filename_component(CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}" ABSOLUTE)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}" CACHE PATH "toolchain file" FORCE)
+    message(STATUS "Using absolute toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
+endif()
+
 include(FetchContent)
 FetchContent_Declare(rerun_sdk URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip)
-FetchContent_MakeAvailable(rerun_sdk)
+set(FETCHCONTENT_QUIET OFF)
+
+# Patch rerun_sdk's download_and_build_arrow.cmake to ensure absolute toolchain path
+# This is needed because ExternalProject_Add passes CMAKE_TOOLCHAIN_FILE as-is,
+# and arrow_cpp can't resolve relative paths from its build directory
+FetchContent_GetProperties(rerun_sdk)
+if(NOT rerun_sdk_POPULATED)
+    FetchContent_Populate(rerun_sdk)
+    if(CMAKE_TOOLCHAIN_FILE)
+        get_filename_component(ABS_TOOLCHAIN "${CMAKE_TOOLCHAIN_FILE}" ABSOLUTE)
+        # Read the file
+        file(READ "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" ARROW_CMAKE_CONTENT)
+        # Replace the CMAKE_TOOLCHAIN_FILE variable reference with the absolute path
+        string(REPLACE 
+            "-DCMAKE_TOOLCHAIN_FILE=\${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_TOOLCHAIN_FILE=${ABS_TOOLCHAIN}"
+            ARROW_CMAKE_CONTENT "${ARROW_CMAKE_CONTENT}")
+        # Write it back
+        file(WRITE "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" "${ARROW_CMAKE_CONTENT}")
+        message(STATUS "Patched rerun_sdk to use absolute toolchain path: ${ABS_TOOLCHAIN}")
+    endif()
+endif()
+
+# Configure rerun_sdk to use Arrow from vcpkg instead of building it
+# This avoids the abseil/GCC 13 compatibility issue
+set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "Disable Arrow download and build to use vcpkg version")
+
+# Use FetchContent_Populate and add_subdirectory to ensure target is available
+FetchContent_GetProperties(rerun_sdk)
+if(NOT rerun_sdk_POPULATED)
+    FetchContent_Populate(rerun_sdk)
+    if(CMAKE_TOOLCHAIN_FILE)
+        get_filename_component(ABS_TOOLCHAIN "${CMAKE_TOOLCHAIN_FILE}" ABSOLUTE)
+        # Read the file
+        file(READ "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" ARROW_CMAKE_CONTENT)
+        # Replace the CMAKE_TOOLCHAIN_FILE variable reference with the absolute path
+        string(REPLACE 
+            "-DCMAKE_TOOLCHAIN_FILE=\${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_TOOLCHAIN_FILE=${ABS_TOOLCHAIN}"
+            ARROW_CMAKE_CONTENT "${ARROW_CMAKE_CONTENT}")
+        # Write it back
+        file(WRITE "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" "${ARROW_CMAKE_CONTENT}")
+        message(STATUS "Patched rerun_sdk to use absolute toolchain path: ${ABS_TOOLCHAIN}")
+    endif()
+    # Add the subdirectory to make the target available
+    add_subdirectory(${rerun_sdk_SOURCE_DIR} ${rerun_sdk_BINARY_DIR})
+else()
+    # Already populated, just add subdirectory
+    add_subdirectory(${rerun_sdk_SOURCE_DIR} ${rerun_sdk_BINARY_DIR})
+endif()
+
+# Verify that rerun_sdk target exists
+if(NOT TARGET rerun_sdk)
+    message(FATAL_ERROR "rerun_sdk target not found after adding subdirectory")
+endif()
+
+# Get rerun_sdk source directory for include paths (needed for targets that use rerun)
+FetchContent_GetProperties(rerun_sdk)
+if(rerun_sdk_SOURCE_DIR)
+    set(RERUN_SDK_INCLUDE_DIR "${rerun_sdk_SOURCE_DIR}/src" CACHE INTERNAL "Rerun SDK include directory")
+else()
+    # Fallback if not populated yet
+    set(RERUN_SDK_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_deps/rerun_sdk-src/src" CACHE INTERNAL "Rerun SDK include directory")
+endif()
 
 
 find_package(Eigen3 CONFIG REQUIRED)
@@ -41,10 +117,11 @@ add_executable(ceres_exponential_curve_fitting_example src/ceres_examples/ceres_
 target_link_libraries(ceres_exponential_curve_fitting_example PRIVATE Ceres::ceres)
 
 add_executable(bundle_adjuster src/ceres_examples/bundle_adjuster.cpp)
+target_include_directories(bundle_adjuster PRIVATE ${RERUN_SDK_INCLUDE_DIR})
 target_link_libraries(bundle_adjuster PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
-
 add_executable(snavely_reprojection_error src/ceres_examples/snavely_reprojection_error.cpp)
+target_include_directories(snavely_reprojection_error PRIVATE ${RERUN_SDK_INCLUDE_DIR})
 target_link_libraries(snavely_reprojection_error PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
 
@@ -54,9 +131,11 @@ target_link_libraries(simple_snavely_reprojection_error PRIVATE Ceres::ceres ${O
 
 
 add_executable(incremental_SfM  src/ceres_examples/incremental_SfM.cpp)
+target_include_directories(incremental_SfM PRIVATE ${RERUN_SDK_INCLUDE_DIR})
 target_link_libraries(incremental_SfM  PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
 add_executable(virtual_cam_incremental_SfM  src/ceres_examples/virtual_cam_incremental_SfM.cpp)
+target_include_directories(virtual_cam_incremental_SfM PRIVATE ${RERUN_SDK_INCLUDE_DIR})
 target_link_libraries(virtual_cam_incremental_SfM  PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
 
@@ -74,7 +153,8 @@ target_link_libraries(pose_graph_2d PRIVATE absl::flags absl::flags_parse absl::
 
 add_executable(rerun src/rerun_examples/rerun.cpp)
 set_property(TARGET rerun PROPERTY CXX_STANDARD 17)
-target_link_libraries(rerun PRIVATE rerun_sdk  ${OpenCV_LIBS})
+target_include_directories(rerun PRIVATE ${RERUN_SDK_INCLUDE_DIR})
+target_link_libraries(rerun PRIVATE rerun_sdk ${OpenCV_LIBS})
 
 ############################ manif ############################
 add_executable(manif_se2_sam src/manif_examples/se2_sam.cpp)
