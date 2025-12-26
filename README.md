@@ -103,12 +103,13 @@ ln -s /home/$USER/workspace/robotic_notes /home/$USER/anaconda3/envs/robotic_not
 
 Install the python packages:
 ```
-pip3 install rerun-sdk==0.20.3
+pip3 install rerun-sdk
 conda install -c conda-forge opencv
 pip install graphslam
 conda install conda-forge::gtsam
 conda install conda-forge::matplotlib
 conda install conda-forge::plotly
+conda install -c conda-forge jupyterlab
 pip install gradio_rerun
 ```
 

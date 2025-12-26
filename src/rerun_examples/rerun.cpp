@@ -1,4 +1,5 @@
 #include "../collection_adapters.hpp"
+#include "../arguments_parser.hpp"
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include <iostream>
@@ -51,8 +52,23 @@ void simplePointsLogger() {
                               .with_radii(point_sizes));
 }
 
-int main() {
+int main(int argc, char **argv) {
   std::cout << "Rerun SDK Version: " << rerun::version_string() << std::endl;
+
+  // Parse command line arguments
+  ArgumentsParser parser(argc, argv);
+  
+  // Get image path from command line arguments
+  std::string image_path = parser.getArg("--image");
+  if (image_path.empty()) {
+    image_path = parser.getArg("-i");
+  }
+  if (image_path.empty()) {
+    // Default to the original path if no argument provided
+    image_path = "../image.jpg";
+    std::cout << "No image path provided, using default: " << image_path << std::endl;
+    std::cout << "Usage: " << argv[0] << " --image <path> or -i <path>" << std::endl;
+  }
 
   const auto rec = rerun::RecordingStream("rerun_example_cpp");
   rec.spawn().exit_on_failure();
@@ -79,7 +95,6 @@ int main() {
                              rerun::Mat3x3(camera_orientation.data())));
 
   // Read image
-  const auto image_path = "../trump.jpg";
   cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
   if (img.empty()) {
     std::cout << "Could not read the image: " << image_path << std::endl;
