@@ -6,7 +6,7 @@ from rerun.datatypes import Angle, RotationAxisAngle
 
 # Load and preprocess the image
 img = cv.imread(
-    "/home/behnam/anaconda3/envs/robotic_notes/scripts/dataset/colmap_rusty_car/images/0001.jpg")
+    "/home/behnam/workspace/robotic_notes/data/sfm/south-building/images/P1180141.JPG")
 if img is None:
     raise FileNotFoundError("Image not found at the specified path.")
 print("img.shape:", img.shape)
