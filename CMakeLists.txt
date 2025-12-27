@@ -138,6 +138,10 @@ add_executable(virtual_cam_incremental_SfM  src/ceres_examples/virtual_cam_incre
 target_include_directories(virtual_cam_incremental_SfM PRIVATE ${RERUN_SDK_INCLUDE_DIR})
 target_link_libraries(virtual_cam_incremental_SfM  PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
+add_executable(real_data_incremental_SfM  src/ceres_examples/real_data_incremental_SfM.cpp)
+target_include_directories(real_data_incremental_SfM PRIVATE ${RERUN_SDK_INCLUDE_DIR})
+target_link_libraries(real_data_incremental_SfM  PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
+
 
 
 add_executable(pose_graph_2d
@@ -155,6 +159,16 @@ add_executable(rerun src/rerun_examples/rerun.cpp)
 set_property(TARGET rerun PROPERTY CXX_STANDARD 17)
 target_include_directories(rerun PRIVATE ${RERUN_SDK_INCLUDE_DIR})
 target_link_libraries(rerun PRIVATE rerun_sdk ${OpenCV_LIBS})
+
+
+add_executable(minimal_camera_ray_test src/rerun_examples/minimal_camera_ray_test.cpp)
+set_property(TARGET minimal_camera_ray_test PROPERTY CXX_STANDARD 17)
+target_include_directories(minimal_camera_ray_test PRIVATE ${RERUN_SDK_INCLUDE_DIR})
+target_link_libraries(minimal_camera_ray_test PRIVATE rerun_sdk ${OpenCV_LIBS})
+
+
+
+
 
 ############################ manif ############################
 add_executable(manif_se2_sam src/manif_examples/se2_sam.cpp)

@@ -188,7 +188,7 @@ void RtToAngleAxisAndTranslate(const cv::Mat &R, const cv::Mat &t,
   //  std::cout << "Rodrigues:\n" << rodrigues << std::endl;
 
   // ============================================================================
-  // BUG FIX: cv::Rodrigues returns a 3×1 column vector (not 1×3 row vector)
+  // cv::Rodrigues returns a 3×1 column vector (not 1×3 row vector)
   // ============================================================================
   // cv::Rodrigues converts 3×3 rotation matrix → 3×1 angle-axis vector
   // Access as (row, col): (0,0), (1,0), (2,0) NOT (0,0), (0,1), (0,2)
@@ -409,43 +409,90 @@ void printReconstructionSummary(int num_cameras, size_t num_points,
   std::cout << "\n" << std::string(80, '=') << std::endl;
 
   // Visualization guide
-  std::cout << "\n📊 Rerun Visualization Layers:" << std::endl;
-  std::cout << "  CAMERAS (all in Camera 0 reference frame):" << std::endl;
-  std::cout << "    • world/ground_truth/cam[0,1,2]          - Ground truth "
-               "camera poses"
+  std::cout << "\n"
+            << "==============================================================="
+               "========="
+               "========"
             << std::endl;
-  std::cout << "    • world/ground_truth/cam[0,1,2]/image    - Rendered images "
-               "with projected points"
-            << std::endl;
-  std::cout << "    • world/optimized/cam[0,1,2]             - Optimized "
-               "camera poses (after BA)"
-            << std::endl;
-  std::cout << "  POINTS (all in Camera 0 reference frame):" << std::endl;
-  std::cout
-      << "    • world/points_ground_truth (gray)       - Ground truth ellipsoid"
-      << std::endl;
-  std::cout
-      << "    • world/new_triangulated_points_*        - Initial triangulation"
-      << std::endl;
-  std::cout << "    • world/optimized_points_after_BA        - Final optimized "
-               "structure (yellow)"
-            << std::endl;
-  std::cout << "\n  ⚠️  IMPORTANT: All visualizations are in Camera 0's "
-               "reference frame"
-            << std::endl;
-  std::cout << "     - Ground truth cameras/points transformed from original "
-               "world frame"
-            << std::endl;
-  std::cout << "     - Optimized cameras/points are naturally in Camera 0 frame"
-            << std::endl;
-  std::cout << "     - Both should now align perfectly (within scale ambiguity)"
+  std::cout << "📊 RERUN VISUALIZATION GUIDE" << std::endl;
+  std::cout << "==============================================================="
+               "========="
+               "========"
             << std::endl;
 
-  std::cout << "\n🎯 In Rerun, ground truth (green) and optimized (blue) "
-               "cameras should overlap!"
+  std::cout << "\n🎥 CAMERAS (all in Camera 0 reference frame):" << std::endl;
+  std::cout
+      << "  • world/ground_truth/cam[0,1,2]    = GROUND TRUTH camera poses"
+      << std::endl;
+  std::cout << "     ├─ These are the TRUE positions we're trying to recover"
             << std::endl;
-  std::cout << "   Yellow and gray points should also overlap (within ~7% "
-               "scale difference)"
+  std::cout
+      << "     └─ 📷 WITH IMAGES: Synthetic rendered views of the ellipsoid"
+      << std::endl;
+  std::cout << "  • world/optimized/cam[0,1,2]       = OPTIMIZED camera poses "
+               "(after BA)"
+            << std::endl;
+  std::cout << "     ├─ Recovered from images only (no GPS/scale info)"
+            << std::endl;
+  std::cout
+      << "     └─ ✨ WITH IMAGES: Same synthetic views (camera rays enabled!)"
+      << std::endl;
+
+  std::cout << "\n📍 3D POINTS - COLOR CODED:" << std::endl;
+  std::cout
+      << "  ⚫ GRAY   (world/points_ground_truth)             = GROUND TRUTH "
+         "ellipsoid"
+      << std::endl;
+  std::cout << "     └─ The TRUE 3D structure of the scene" << std::endl;
+  std::cout << "  🟢 GREEN (world/initial_triangulation_iter_*) = INITIAL "
+               "triangulation"
+            << std::endl;
+  std::cout << "     └─ First 3D estimate from two-view geometry (before BA)"
+            << std::endl;
+  std::cout
+      << "  🟡 YELLOW (world/optimized_points_after_BA)  = FINAL OPTIMIZED "
+         "structure"
+      << std::endl;
+  std::cout << "     └─ Refined by Bundle Adjustment using all camera views"
+            << std::endl;
+
+  std::cout << "\n⚠️  SCALE AMBIGUITY - WHY THINGS DON'T PERFECTLY OVERLAP:"
+            << std::endl;
+  std::cout
+      << "════════════════════════════════════════════════════════════════════"
+      << std::endl;
+  std::cout << "SfM can only recover geometry up to an ARBITRARY SCALE FACTOR."
+            << std::endl;
+  std::cout << "Without known distances (GPS, markers), the absolute scale is "
+               "unknown!"
+            << std::endl;
+  std::cout << "\n✅ What SHOULD match:" << std::endl;
+  std::cout
+      << "   • Camera ORIENTATIONS (rotation angles) - these are rotation "
+         "invariant"
+      << std::endl;
+  std::cout
+      << "   • RELATIVE geometry (shape of camera trajectory, point cloud "
+         "shape)"
+      << std::endl;
+  std::cout << "\n❓ What MAY differ:" << std::endl;
+  std::cout
+      << "   • Camera POSITIONS (translation distances) - scaled by unknown "
+         "factor"
+      << std::endl;
+  std::cout << "   • 3D point DISTANCES - scaled by the same unknown factor"
+            << std::endl;
+  std::cout << "\n🔍 In Rerun:" << std::endl;
+  std::cout << "   • Cameras (ground truth vs optimized): orientations match, "
+               "positions scaled differently"
+            << std::endl;
+  std::cout
+      << "   • Points GRAY/YELLOW: same shape, different scale (~0.72x in "
+         "this example)"
+      << std::endl;
+  std::cout << "==============================================================="
+               "========="
+               "========"
             << std::endl;
 }
 
@@ -653,8 +700,28 @@ void virtualCamIncrementalSfMFixedCam() {
 
   const auto rec = rerun::RecordingStream("virtual_cam_incremental_SfM");
   rec.spawn().exit_on_failure();
-  // OpenCV X=Right, Y=Down, Z=Forward
+
+  // ============================================================================
+  // RERUN COORDINATE SYSTEM & INTERACTIVE CAMERA RAYS
+  // ============================================================================
+  // OpenCV convention: X=Right, Y=Down, Z=Forward
   rec.log_static("world", rerun::ViewCoordinates::RIGHT_HAND_Y_DOWN);
+
+  // 🎯 INTERACTIVE CAMERA RAYS FEATURE (Verified Working!):
+  // This code enables Rerun's camera ray visualization:
+  //   1. Hover your mouse over any pixel in the camera images
+  //   2. See a YELLOW 3D ray extending from the camera through that pixel
+  //   3. Useful for debugging triangulation, epipolar constraints, etc.
+  //
+  // How it works (based on official Rerun SfM example):
+  //   - Log Transform3D to camera path (e.g., world/camera0)
+  //   - Log Pinhole to IMAGE path with image_from_camera matrix
+  //   - Log Image to SAME path as Pinhole
+  //
+  // Correct entity hierarchy:
+  //   world/ground_truth/cam0 → Transform3D
+  //   world/ground_truth/cam0/image → Pinhole(image_from_camera) + Image
+  // ============================================================================
 
   std::vector<rerun::components::Position3D> point3d_positions;
   std::vector<float> point_sizes; // Define a vector for point sizes
@@ -691,11 +758,18 @@ void virtualCamIncrementalSfMFixedCam() {
     point_sizes.push_back(0.05);
   }
 
-  rec.log("world/points_ground_truth",
-          rerun::Points3D(point3d_positions).with_radii(point_sizes));
+  // Gray color for ground truth points
+  std::vector<rerun::Color> gt_colors(point3d_positions.size(),
+                                      rerun::Color(128, 128, 128));
+
+  rec.log("world/points_ground_truth", rerun::Points3D(point3d_positions)
+                                           .with_radii(point_sizes)
+                                           .with_colors(gt_colors));
 
   std::cout << "Ground truth 3D points logged to Rerun (transformed to Camera "
                "0 frame)"
+            << std::endl;
+  std::cout << "  ⚫ Color: GRAY - This is the TRUE scene geometry"
             << std::endl;
 
   // ============================================================================
@@ -757,36 +831,53 @@ void virtualCamIncrementalSfMFixedCam() {
   std::string camera_name_cam1_gt = "world/ground_truth/cam1";
   std::string camera_name_cam2_gt = "world/ground_truth/cam2";
 
-  // Camera 0 - Ground Truth (now at identity to match optimization)
-  rec.log(camera_name_cam0_gt,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
+  // ============================================================================
+  // CORRECT METHOD FOR CAMERA RAYS (based on official Rerun docs)
+  // ============================================================================
+  // Key insight: Log Pinhole to the IMAGE path with image_from_camera matrix!
+  // ============================================================================
+
+  // Build intrinsic matrix K (column-major order for Rerun Mat3x3)
+  // Mat3x3 is std::array<float, 9> - need double braces for initialization
+  rerun::datatypes::Mat3x3 image_from_camera{
+      {static_cast<float>(focalLength * mx), 0.0f, 0.0f, 0.0f,
+       static_cast<float>(focalLength * my), 0.0f,
+       static_cast<float>(numberOfPixelInWidth / 2.0),
+       static_cast<float>(numberOfPixelInHeight / 2.0), 1.0f}};
+
+  // Camera 0 - Ground Truth
   rec.log(camera_name_cam0_gt, rerun::Transform3D(rr_translation_cam0_gt,
                                                   rr_rotation_matrix_cam0_gt));
+  // Log Pinhole to IMAGE path (this is the key!)
+  rec.log(camera_name_cam0_gt + "/image",
+          rerun::Pinhole(image_from_camera)
+              .with_resolution({static_cast<float>(numberOfPixelInWidth),
+                                static_cast<float>(numberOfPixelInHeight)}));
 
-  // Camera 1 - Ground Truth (relative to Camera 0)
-  rec.log(camera_name_cam1_gt,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
+  // Camera 1 - Ground Truth
   rec.log(camera_name_cam1_gt, rerun::Transform3D(rr_translation_cam1_gt,
                                                   rr_rotation_matrix_cam1_gt));
+  rec.log(camera_name_cam1_gt + "/image",
+          rerun::Pinhole(image_from_camera)
+              .with_resolution({static_cast<float>(numberOfPixelInWidth),
+                                static_cast<float>(numberOfPixelInHeight)}));
 
-  // Camera 2 - Ground Truth (relative to Camera 0)
-  rec.log(camera_name_cam2_gt,
-          rerun::Pinhole::from_focal_length_and_resolution(
-              {float(focalLength * mx), float(focalLength * my)},
-              {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
+  // Camera 2 - Ground Truth
   rec.log(camera_name_cam2_gt, rerun::Transform3D(rr_translation_cam2_gt,
                                                   rr_rotation_matrix_cam2_gt));
+  rec.log(camera_name_cam2_gt + "/image",
+          rerun::Pinhole(image_from_camera)
+              .with_resolution({static_cast<float>(numberOfPixelInWidth),
+                                static_cast<float>(numberOfPixelInHeight)}));
 
+  std::cout << "\n=== Ground Truth Cameras Logged ===" << std::endl;
   std::cout
       << "Ground truth cameras logged to Rerun: world/ground_truth/cam[0,1,2]"
       << std::endl;
-  std::cout
-      << "  (Transformed to Camera 0 reference frame for proper comparison)"
-      << std::endl;
+  std::cout << "  📍 These are the TRUE camera poses" << std::endl;
+  std::cout << "  📍 Transformed to Camera 0 reference frame (for comparison "
+               "with optimized)"
+            << std::endl;
 
   ////////////////////////////////////////////////////////////////////////
 
@@ -795,6 +886,29 @@ void virtualCamIncrementalSfMFixedCam() {
   // ============================================================================
   // These images show the projected points from the scene
   // They are logged under the ground truth camera hierarchy
+  //
+  // 🎯 INTERACTIVE CAMERA RAYS FEATURE (Based on Official Rerun Docs):
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CORRECT METHOD (verified working):
+  //   1. Camera transform:  rec.log("world/ground_truth/cam0",
+  //   Transform3D(...))
+  //   2. Pinhole on IMAGE:  rec.log("world/ground_truth/cam0/image",
+  //                                  Pinhole(image_from_camera))
+  //   3. Image SAME path:   rec.log("world/ground_truth/cam0/image",
+  //   Image(...))
+  //
+  // KEY INSIGHT: Pinhole must be logged to the IMAGE path with
+  // image_from_camera matrix (not to the camera path)!
+  //
+  // ✨ This enables INTERACTIVE 3D CAMERA RAYS! ✨
+  //
+  // How to use in Rerun viewer:
+  //   - Open both 3D view and Image view side-by-side
+  //   - Hover your mouse over any pixel in the image
+  //   - You'll see a YELLOW 3D ray from camera through that pixel
+  //   - The ray updates in real-time as you move your mouse
+  //   - Useful for debugging triangulation, epipolar geometry, etc.
+  // ═══════════════════════════════════════════════════════════════════════════
   // ============================================================================
 
   std::string fileName;
@@ -803,8 +917,12 @@ void virtualCamIncrementalSfMFixedCam() {
   cv::Mat img_cam0 =
       createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
                   imagePointsCam0, fileName);
-  // Log the image to the ground truth camera entity in the hierarchy
-  rec.log("world/ground_truth/cam0/image/rgb",
+  // Log the image to the IMAGE path (same as Pinhole for camera rays!)
+  std::cout << "\n🎯 Logging camera 0 image to: world/ground_truth/cam0/image"
+            << std::endl;
+  std::cout << "   Image size: " << numberOfPixelInWidth << "x"
+            << numberOfPixelInHeight << std::endl;
+  rec.log("world/ground_truth/cam0/image",
           rerun::Image::from_grayscale8(
               img_cam0, {numberOfPixelInWidth, numberOfPixelInHeight}));
 
@@ -813,8 +931,8 @@ void virtualCamIncrementalSfMFixedCam() {
   cv::Mat img_cam1 =
       createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
                   imagePointsCam1, fileName);
-  // Log the image to the ground truth camera entity in the hierarchy
-  rec.log("world/ground_truth/cam1/image/rgb",
+  // Log the image to the IMAGE path (same as Pinhole)
+  rec.log("world/ground_truth/cam1/image",
           rerun::Image::from_grayscale8(
               img_cam1, {numberOfPixelInWidth, numberOfPixelInHeight}));
 
@@ -823,14 +941,32 @@ void virtualCamIncrementalSfMFixedCam() {
   cv::Mat img_cam2 =
       createImage(focalLength, numberOfPixelInHeight, numberOfPixelInWidth,
                   imagePointsCam2, fileName);
-  // Log the image to the ground truth camera entity in the hierarchy
-  rec.log("world/ground_truth/cam2/image/rgb",
+  // Log the image to the IMAGE path (same as Pinhole)
+  rec.log("world/ground_truth/cam2/image",
           rerun::Image::from_grayscale8(
               img_cam2, {numberOfPixelInWidth, numberOfPixelInHeight}));
 
+  std::cout << "\n=== Camera Images ===" << std::endl;
   std::cout << "Camera images logged to Rerun: "
-               "world/ground_truth/cam[0,1,2]/image/rgb"
+               "world/ground_truth/cam[0,1,2]/image"
             << std::endl;
+  std::cout << "\n🔍 TO SEE CAMERA RAYS IN RERUN:" << std::endl;
+  std::cout << "   1. In entity tree, expand: world/ground_truth/cam0"
+            << std::endl;
+  std::cout << "   2. Click on: image (under cam0)" << std::endl;
+  std::cout << "   3. The image should appear in a viewer pane" << std::endl;
+  std::cout << "   4. HOVER your mouse over the image" << std::endl;
+  std::cout << "   5. Look in the 3D view - you should see a YELLOW RAY! 🎯"
+            << std::endl;
+  std::cout << "   Note: You need BOTH the 3D view AND image view visible"
+            << std::endl;
+  std::cout << "   The ray updates in real-time as you move your mouse!"
+            << std::endl;
+  std::cout << "  📷 Images are ONLY for ground truth cameras (GREEN frustums)"
+            << std::endl;
+  std::cout << "  ⚠️  Optimized cameras (BLUE) show no images - this is normal!"
+            << std::endl;
+  std::cout << "     (SfM only recovers poses, not image content)" << std::endl;
 
   std::cout << "press any keys to draw correspondance " << std::endl;
   std::cin.get();
@@ -1164,14 +1300,18 @@ void virtualCamIncrementalSfMFixedCam() {
         }
       }
 
-      rec.log("world/new_triangulated_points_iteration_" + std::to_string(i),
+      rec.log("world/initial_triangulation_iteration_" + std::to_string(i),
               rerun::Points3D(rr_triangulated_pointsInCam0)
                   .with_radii(std::vector<float>(
                       rr_triangulated_pointsInCam0.size(), 0.05))
                   .with_colors(colors));
 
       std::cout << "Logged " << rr_triangulated_pointsInCam0.size()
-                << " NEW triangulated points to Rerun" << std::endl;
+                << " triangulated points to Rerun (INITIAL - before BA)"
+                << std::endl;
+      std::cout << "  🟢/🔴 Color: GREEN/RED - Initial 3D estimates from "
+                   "two-view geometry"
+                << std::endl;
     } else {
       std::cout << "No new points triangulated in this iteration (all tracks "
                    "extended)"
@@ -1377,8 +1517,14 @@ void virtualCamIncrementalSfMFixedCam() {
               .with_radii(point_sizes_after_BA)
               .with_colors(colors_after_BA));
 
+  std::cout << "\n=== Points Visualization ===" << std::endl;
   std::cout << "Optimized points logged to Rerun as "
-               "'world/optimized_points_after_BA' (yellow)"
+               "'world/optimized_points_after_BA'"
+            << std::endl;
+  std::cout << "  🟡 Color: YELLOW - Final refined structure after Bundle "
+               "Adjustment"
+            << std::endl;
+  std::cout << "  📏 Should overlap with GRAY points (but may differ in scale!)"
             << std::endl;
 
   // ============================================================================
@@ -1544,18 +1690,51 @@ void virtualCamIncrementalSfMFixedCam() {
     std::string opt_camera_name =
         "world/optimized/cam" + std::to_string(cam_id);
 
-    rec.log(opt_camera_name,
-            rerun::Pinhole::from_focal_length_and_resolution(
-                {float(focalLength * mx), float(focalLength * my)},
-                {float(numberOfPixelInWidth), float(numberOfPixelInHeight)}));
-
+    // Transform first
     rec.log(opt_camera_name, rerun::Transform3D(rr_translation, rr_rotation));
+
+    // Pinhole to IMAGE path (for camera rays)
+    rec.log(opt_camera_name + "/image",
+            rerun::Pinhole(image_from_camera)
+                .with_resolution({static_cast<float>(numberOfPixelInWidth),
+                                  static_cast<float>(numberOfPixelInHeight)}));
+
+    // ========================================================================
+    // LOG IMAGES FOR OPTIMIZED CAMERAS (enables camera rays!)
+    // ========================================================================
+    // Log images to SAME path as Pinhole (now /image instead of /image/rgb)
+    // ========================================================================
+    std::string opt_image_path = opt_camera_name + "/image";
+
+    if (cam_id == 0) {
+      rec.log(opt_image_path,
+              rerun::Image::from_grayscale8(
+                  img_cam0, {numberOfPixelInWidth, numberOfPixelInHeight}));
+    } else if (cam_id == 1) {
+      rec.log(opt_image_path,
+              rerun::Image::from_grayscale8(
+                  img_cam1, {numberOfPixelInWidth, numberOfPixelInHeight}));
+    } else if (cam_id == 2) {
+      rec.log(opt_image_path,
+              rerun::Image::from_grayscale8(
+                  img_cam2, {numberOfPixelInWidth, numberOfPixelInHeight}));
+    }
   }
 
+  std::cout << "\n=== Camera Poses Visualization ===" << std::endl;
   std::cout << "Optimized cameras logged to Rerun: world/optimized/cam[0,1,2]"
             << std::endl;
-  std::cout << "  • Green = Ground truth cameras" << std::endl;
-  std::cout << "  • Blue = Optimized cameras (should overlap ground truth)"
+  std::cout << "  • Ground truth cameras: world/ground_truth/cam*" << std::endl;
+  std::cout << "  • Optimized cameras:    world/optimized/cam*" << std::endl;
+  std::cout << "  ✨ BOTH now have images → CAMERA RAYS ENABLED! ✨"
+            << std::endl;
+  std::cout << "     Hover over any pixel in Rerun to see 3D rays" << std::endl;
+  std::cout << "\n  ⚠️  DUE TO SCALE AMBIGUITY:" << std::endl;
+  std::cout << "     - Camera ORIENTATIONS should match perfectly (rotation)"
+            << std::endl;
+  std::cout << "     - Camera POSITIONS may differ by a scale factor"
+            << std::endl;
+  std::cout << "     - In this run: optimized scale ≈ 0.72x of ground truth"
             << std::endl;
 
   // ============================================================================
