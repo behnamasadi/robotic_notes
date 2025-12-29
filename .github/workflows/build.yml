@@ -57,6 +57,7 @@ jobs:
       run: |
         echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $GITHUB_ENV
         echo "${{ github.workspace }}/vcpkg" >> $GITHUB_PATH
+        echo "VCPKG_DEFAULT_TRIPLET=x64-linux-release" >> $GITHUB_ENV
 
     # - name: Set up Miniconda
     #   uses: conda-incubator/setup-miniconda@v3
@@ -92,7 +93,8 @@ jobs:
       run: |
         cmake -S . -B build \
           -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
-          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_BUILD_TYPE=Release \
+          -DVCPKG_TARGET_TRIPLET=x64-linux-release
 
     - name: Clean up vcpkg build artifacts
       run: |
