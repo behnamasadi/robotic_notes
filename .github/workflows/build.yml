@@ -13,6 +13,12 @@ jobs:
     timeout-minutes: 150
     
     steps:
+    - name: Check initial disk space
+      run: |
+        df -h
+        echo "Available disk space:"
+        df -h / | tail -1
+
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
@@ -38,6 +44,8 @@ jobs:
           libxrandr-dev \
           ninja-build \
           pkg-config
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
 
     - name: Bootstrap vcpkg
       working-directory: ${{ github.workspace }}
@@ -49,6 +57,7 @@ jobs:
       run: |
         echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $GITHUB_ENV
         echo "${{ github.workspace }}/vcpkg" >> $GITHUB_PATH
+        echo "VCPKG_BINARY_SOURCES=clear;readwrite" >> $GITHUB_ENV
 
     - name: Set up Miniconda
       uses: conda-incubator/setup-miniconda@v3
@@ -70,6 +79,14 @@ jobs:
         conda install -c conda-forge plotly -y
         conda install -c conda-forge jupyterlab -y
         pip install gradio_rerun
+        pip install ahrs
+        conda clean -afy
+        pip cache purge
+
+    - name: Check disk space before CMake
+      run: |
+        df -h
+        du -sh ${{ github.workspace }}/* 2>/dev/null | sort -h | tail -10
 
     - name: Configure CMake
       working-directory: ${{ github.workspace }}
@@ -78,10 +95,34 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DCMAKE_BUILD_TYPE=Release
 
+    - name: Clean up vcpkg build artifacts
+      run: |
+        # Clean up vcpkg buildtrees and downloads to save disk space
+        if [ -d "${{ github.workspace }}/vcpkg/buildtrees" ]; then
+          rm -rf ${{ github.workspace }}/vcpkg/buildtrees
+        fi
+        if [ -d "${{ github.workspace }}/vcpkg/downloads" ]; then
+          rm -rf ${{ github.workspace }}/vcpkg/downloads
+        fi
+        if [ -d "${{ github.workspace }}/build/vcpkg_installed" ]; then
+          find ${{ github.workspace }}/build/vcpkg_installed -name "buildtrees" -type d -exec rm -rf {} + 2>/dev/null || true
+          find ${{ github.workspace }}/build/vcpkg_installed -name "downloads" -type d -exec rm -rf {} + 2>/dev/null || true
+        fi
+        df -h
+
     - name: Build C++ project
       working-directory: ${{ github.workspace }}
       run: |
         cmake --build build --parallel $(nproc)
+
+    - name: Clean up build artifacts (keep only binaries)
+      run: |
+        if [ -d "${{ github.workspace }}/build" ]; then
+          find ${{ github.workspace }}/build -name "*.o" -delete
+          find ${{ github.workspace }}/build -name "*.a" -delete
+          find ${{ github.workspace }}/build -name "CMakeFiles" -type d -exec rm -rf {} + 2>/dev/null || true
+        fi
+        df -h
 
     - name: Verify build
       working-directory: ${{ github.workspace }}
