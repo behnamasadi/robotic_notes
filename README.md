@@ -4,7 +4,9 @@
 ![Ubuntu](https://github.com/behnamasadi/robotic_notes/actions/workflows/build.yml/badge.svg)
 ![alt text](https://img.shields.io/badge/license-BSD-blue.svg)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/behnamasadi/robotic_notes)
+<!-- 
 ![GitHub Release](https://img.shields.io/github/v/release/behnamasadi/robotic_notes)
+-->
 ![GitHub Repo stars](https://img.shields.io/github/stars/behnamasadi/robotic_notes)
 ![GitHub forks](https://img.shields.io/github/forks/behnamasadi/robotic_notes)
 
@@ -56,7 +58,26 @@ git submodule update --remote vcpkg
 
 This will fetch the latest changes from the vcpkg repository and update the submodule to the latest commit.
 
-Note: When using vcpkg in manifest mode (with `vcpkg.json`), you don't need to run `vcpkg update`. Instead, modify your `vcpkg.json` file and run `cmake` again, which will automatically install the updated packages.
+**Important:** After updating vcpkg, it will show as modified in `git status` because the submodule is now pointing to a different commit than what's recorded in the parent repository. To persist this update:
+
+```
+git add vcpkg
+git commit -m "Update vcpkg submodule to latest version"
+```
+
+To check the status of your submodules:
+```
+git submodule status
+```
+
+If you see a `+` prefix, it means the submodule has new commits that aren't recorded in the parent repository yet.
+
+To reset vcpkg back to the commit recorded in the parent repository (if you don't want the update):
+```
+git submodule update vcpkg
+```
+
+**Note:** When using vcpkg in manifest mode (with `vcpkg.json`), you don't need to run `vcpkg update`. Instead, modify your `vcpkg.json` file and run `cmake` again, which will automatically install the updated packages. However, updating the vcpkg submodule itself can bring bug fixes and new features to the vcpkg tool.
 
 set the path:
 
