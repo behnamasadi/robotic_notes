@@ -275,13 +275,13 @@ target_link_libraries(pose_graph_2d PRIVATE absl::flags absl::flags_parse absl::
 add_executable(rerun src/rerun_examples/rerun.cpp)
 set_property(TARGET rerun PROPERTY CXX_STANDARD 17)
 target_include_directories(rerun PRIVATE ${RERUN_SDK_INCLUDE_DIR})
-target_link_libraries(rerun PRIVATE rerun_sdk ${OpenCV_LIBS})
+target_link_libraries(rerun PRIVATE rerun_sdk ${OpenCV_LIBS} Eigen3::Eigen)
 
 
 add_executable(minimal_camera_ray_test src/rerun_examples/minimal_camera_ray_test.cpp)
 set_property(TARGET minimal_camera_ray_test PROPERTY CXX_STANDARD 17)
 target_include_directories(minimal_camera_ray_test PRIVATE ${RERUN_SDK_INCLUDE_DIR})
-target_link_libraries(minimal_camera_ray_test PRIVATE rerun_sdk ${OpenCV_LIBS})
+target_link_libraries(minimal_camera_ray_test PRIVATE rerun_sdk ${OpenCV_LIBS} Eigen3::Eigen)
 
 
 

@@ -1,7 +1,7 @@
-#include "../collection_adapters.hpp"
 #include "../arguments_parser.hpp"
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
+#include "../collection_adapters.hpp"
+#include <Eigen/Core>
+#include <Eigen/Dense>
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
   // Parse command line arguments
   ArgumentsParser parser(argc, argv);
-  
+
   // Get image path from command line arguments
   std::string image_path = parser.getArg("--image");
   if (image_path.empty()) {
@@ -66,8 +66,10 @@ int main(int argc, char **argv) {
   if (image_path.empty()) {
     // Default to the original path if no argument provided
     image_path = "../image.jpg";
-    std::cout << "No image path provided, using default: " << image_path << std::endl;
-    std::cout << "Usage: " << argv[0] << " --image <path> or -i <path>" << std::endl;
+    std::cout << "No image path provided, using default: " << image_path
+              << std::endl;
+    std::cout << "Usage: " << argv[0] << " --image <path> or -i <path>"
+              << std::endl;
   }
 
   const auto rec = rerun::RecordingStream("rerun_example_cpp");
