@@ -52,7 +52,8 @@ def update_node(node, dx):
 
 # g2o_file = os.path.abspath("./data/slam/input_INTEL_g2o.g2o")
 # g2o_file = os.path.abspath("./data/slam/input_M3500_g2o.g2o")
-g2o_file = os.path.abspath("/home/behnam/workspace/robotic_notes/data/slam/input_MITb_g2o.g2o")
+g2o_file = os.path.abspath(
+    "/home/behnam/workspace/robotic_notes/data/slam/input_MITb_g2o.g2o")
 
 
 nodes, edges = load_2d_g2o(filename=g2o_file)
@@ -62,7 +63,7 @@ x_cords = [node["state"][0] for node in nodes]
 y_cords = [node["state"][1] for node in nodes]
 theta = [node["state"][2] for node in nodes]
 
-plt.plot(x_cords, y_cords, color="blue")
+plt.plot(x_cords, y_cords, color="blue", label="Before optimization")
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.title('Nodes from g2o file')
@@ -218,9 +219,10 @@ x_cords = [node["state"][0] for node in nodes]
 y_cords = [node["state"][1] for node in nodes]
 theta = [node["state"][2] for node in nodes]
 
-plt.plot(x_cords, y_cords, color="red")
+plt.plot(x_cords, y_cords, color="red", label="After optimization")
 # plt.xlabel('X')
 # plt.ylabel('Y')
 # plt.title('Nodes from g2o file')
 plt.grid(True)
+plt.legend()
 plt.show()

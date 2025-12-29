@@ -66,21 +66,14 @@ xhost +local: docker inspect --format='{{ .Config.Hostname }}' $containerId
 then:
 
 
-```bash
-# 1. Allow all Docker containers to access your X server (only local/rootless Docker)
-xhost +local:docker
-
-# 2. Run the container with the correct X11 setup
-docker run -it --rm \
-  --privileged \
+```
+docker run -it --privileged \
   --env=LOCAL_USER_ID="$(id -u)" \
-  --env=DISPLAY=$DISPLAY \
-  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
   -v /home/behnam:/home/behnam:rw \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -e DISPLAY=$DISPLAY \
   --network host \
-  --name ros2 \
-  osrf/ros:jazzy-desktop-full
-  
+  --name=ros2 osrf/ros:jazzy-desktop-full
 ```
 
 ### Installation directly on your machine

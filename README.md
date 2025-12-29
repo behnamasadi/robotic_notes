@@ -1,5 +1,16 @@
 # Installation and Requirement 
 
+
+![Ubuntu](https://github.com/behnamasadi/robotic_notes/actions/workflows/build.yml/badge.svg)
+![alt text](https://img.shields.io/badge/license-BSD-blue.svg)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/behnamasadi/robotic_notes)
+![GitHub Release](https://img.shields.io/github/v/release/behnamasadi/robotic_notes)
+![GitHub Repo stars](https://img.shields.io/github/stars/behnamasadi/robotic_notes)
+![GitHub forks](https://img.shields.io/github/forks/behnamasadi/robotic_notes)
+
+
+
+
 ### C++ Dependencies
 
 

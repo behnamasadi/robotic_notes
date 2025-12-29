@@ -21,3 +21,5 @@ __pycache__/
 .env
 # Ignore editor-specific files
 .idea/
+# Ignore temp junk files
+**/junk/
