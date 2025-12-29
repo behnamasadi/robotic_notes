@@ -9,6 +9,10 @@ on:
 
 jobs:
   build:
+    # For faster builds with OpenCV, consider using larger runners (requires GitHub subscription):
+    # Standard runner: 2-core CPU, 7GB RAM
+    # Larger runner: 4-core CPU, 14GB RAM (2x faster for parallel builds like OpenCV)
+    # To use larger runner, change to: runs-on: ubuntu-latest-4-cores
     runs-on: ubuntu-latest
     timeout-minutes: 150
     
@@ -46,6 +50,18 @@ jobs:
           pkg-config
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
+
+    - name: Cache vcpkg packages
+      uses: actions/cache@v4
+      id: vcpkg-cache
+      with:
+        path: |
+          ${{ github.workspace }}/build/vcpkg_installed
+          ${{ github.workspace }}/vcpkg/downloads
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}-${{ hashFiles('**/vcpkg.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}-
+          ${{ runner.os }}-vcpkg-
 
     - name: Bootstrap vcpkg
       working-directory: ${{ github.workspace }}
@@ -96,18 +112,15 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release \
           -DVCPKG_TARGET_TRIPLET=x64-linux-release
 
-    - name: Clean up vcpkg build artifacts
+    - name: Clean up vcpkg build artifacts (keep cached packages)
       run: |
-        # Clean up vcpkg buildtrees and downloads to save disk space
+        # Clean up vcpkg buildtrees to save disk space
+        # Keep downloads/ and build/vcpkg_installed/ for caching
         if [ -d "${{ github.workspace }}/vcpkg/buildtrees" ]; then
           rm -rf ${{ github.workspace }}/vcpkg/buildtrees
         fi
-        if [ -d "${{ github.workspace }}/vcpkg/downloads" ]; then
-          rm -rf ${{ github.workspace }}/vcpkg/downloads
-        fi
         if [ -d "${{ github.workspace }}/build/vcpkg_installed" ]; then
           find ${{ github.workspace }}/build/vcpkg_installed -name "buildtrees" -type d -exec rm -rf {} + 2>/dev/null || true
-          find ${{ github.workspace }}/build/vcpkg_installed -name "downloads" -type d -exec rm -rf {} + 2>/dev/null || true
         fi
         df -h
 
