@@ -95,12 +95,19 @@ sudo apt-get install -y bison flex build-essential cmake autoconf autoconf-archi
 
 These dependencies are needed for vcpkg to build packages like `gettext`, `gperf`, `cairo` (with x11 feature), `at-spi2-core`, `gtk3`, `libxcrypt`, and other C++ libraries. The `libltdl-dev` package provides libtool development files required by `libxcrypt`. The `ninja-build` and `pkg-config` packages are required for meson-based builds.
 
+**Note:** The CMakeLists.txt is configured to build only release versions of vcpkg packages (not debug) to reduce build time and disk usage. This means you'll only see `-- Configuring x64-linux-rel` and not `-- Configuring x64-linux-dbg` when building. If you need debug builds, you can override this by setting `-DVCPKG_TARGET_TRIPLET=x64-linux` when running cmake.
+
 Now you can run:
 
 
 ```
-cmake -S . -B build   -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake -S . -B build \
+  -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DVCPKG_TARGET_TRIPLET=x64-linux-release
 ```
+
+The `VCPKG_TARGET_TRIPLET=x64-linux-release` option ensures vcpkg only builds release packages, which significantly reduces build time (especially for large packages like OpenCV) and disk space usage. This is already configured in CMakeLists.txt, but you can explicitly set it as shown above.
 
 
 ```
