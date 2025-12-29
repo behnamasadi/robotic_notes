@@ -90,10 +90,10 @@ Setting `VCPKG_ROOT` tells vcpkg where your vcpkg instance is located.
 Install required system dependencies for vcpkg (on Linux):
 
 ```
-sudo apt-get install -y bison flex build-essential cmake autoconf autoconf-archive automake libtool libx11-dev libxft-dev libxext-dev libxtst-dev libxrandr-dev ninja-build pkg-config
+sudo apt-get install -y bison flex build-essential cmake autoconf autoconf-archive automake libtool libltdl-dev libx11-dev libxft-dev libxext-dev libxtst-dev libxrandr-dev ninja-build pkg-config
 ```
 
-These dependencies are needed for vcpkg to build packages like `gettext`, `gperf`, `cairo` (with x11 feature), `at-spi2-core`, `gtk3`, and other C++ libraries. The `ninja-build` and `pkg-config` packages are required for meson-based builds.
+These dependencies are needed for vcpkg to build packages like `gettext`, `gperf`, `cairo` (with x11 feature), `at-spi2-core`, `gtk3`, `libxcrypt`, and other C++ libraries. The `libltdl-dev` package provides libtool development files required by `libxcrypt`. The `ninja-build` and `pkg-config` packages are required for meson-based builds.
 
 Now you can run:
 

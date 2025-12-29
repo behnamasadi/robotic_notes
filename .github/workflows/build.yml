@@ -30,6 +30,7 @@ jobs:
           autoconf-archive \
           automake \
           libtool \
+          libltdl-dev \
           libx11-dev \
           libxft-dev \
           libxext-dev \
