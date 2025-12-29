@@ -12,7 +12,9 @@ CMakeLists.txt.user
 .pkl
 *.gz
 *egg-info*
+# Build directories and files, but not GitHub workflows
 *build*
+!.github/workflows/*.yml
 # Ignore compiled Python bytecode files
 *.pyc
 # Ignore Python cache directories
