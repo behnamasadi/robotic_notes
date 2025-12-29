@@ -58,29 +58,29 @@ jobs:
         echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $GITHUB_ENV
         echo "${{ github.workspace }}/vcpkg" >> $GITHUB_PATH
 
-    - name: Set up Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: '3.13'
-        environment-name: robotic_notes
-        activate-environment: robotic_notes
+    # - name: Set up Miniconda
+    #   uses: conda-incubator/setup-miniconda@v3
+    #   with:
+    #     auto-update-conda: true
+    #     python-version: '3.13'
+    #     environment-name: robotic_notes
+    #     activate-environment: robotic_notes
 
-    - name: Install Python dependencies
-      shell: bash -l {0}
-      run: |
-        conda activate robotic_notes
-        pip install rerun-sdk
-        conda install -c conda-forge opencv -y
-        pip install graphslam
-        conda install -c conda-forge gtsam -y
-        conda install -c conda-forge matplotlib -y
-        conda install -c conda-forge plotly -y
-        conda install -c conda-forge jupyterlab -y
-        pip install gradio_rerun
-        pip install ahrs
-        conda clean -afy
-        pip cache purge
+    # - name: Install Python dependencies
+    #   shell: bash -l {0}
+    #   run: |
+    #     conda activate robotic_notes
+    #     pip install rerun-sdk
+    #     conda install -c conda-forge opencv -y
+    #     pip install graphslam
+    #     conda install -c conda-forge gtsam -y
+    #     conda install -c conda-forge matplotlib -y
+    #     conda install -c conda-forge plotly -y
+    #     conda install -c conda-forge jupyterlab -y
+    #     pip install gradio_rerun
+    #     pip install ahrs
+    #     conda clean -afy
+    #     pip cache purge
 
     - name: Check disk space before CMake
       run: |
@@ -128,10 +128,10 @@ jobs:
       run: |
         echo "=== C++ Build Verification ==="
         ls -la build/
-        echo ""
-        echo "=== Python Environment Verification ==="
-        conda activate robotic_notes
-        python --version
-        python -c "import rerun; print('rerun-sdk:', rerun.__version__)"
-        python -c "import cv2; print('opencv:', cv2.__version__)"
+        # echo ""
+        # echo "=== Python Environment Verification ==="
+        # conda activate robotic_notes
+        # python --version
+        # python -c "import rerun; print('rerun-sdk:', rerun.__version__)"
+        # python -c "import cv2; print('opencv:', cv2.__version__)"
 
