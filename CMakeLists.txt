@@ -12,9 +12,142 @@ else()
 endif()
 message("toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 
+# Configure vcpkg to build only release packages (not debug) to save build time and disk space
+if(NOT DEFINED VCPKG_TARGET_TRIPLET)
+    set(VCPKG_TARGET_TRIPLET "x64-linux-release" CACHE STRING "vcpkg target triplet")
+    message(STATUS "Setting vcpkg triplet to: ${VCPKG_TARGET_TRIPLET} (release only)")
+endif()
+
+# Arrow's config file references OpenSSL::Crypto, so we need to ensure OpenSSL is found
+# before Arrow's config is processed. We'll patch Arrow's config to find OpenSSL first.
+# This is done after vcpkg installs packages, so the config files are available.
 
 find_package(Boost REQUIRED)
 message("Boost_VERSION: " ${Boost_VERSION})
+
+# Ensure Arrow dependencies' targets exist before Arrow is used
+# Arrow's ArrowTargets.cmake references: OpenSSL, Brotli, BZip2, LZ4, Snappy, ZLIB, zstd
+# Create them manually to avoid find_package recursion issues
+set(VCPKG_LIB_DIR "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/lib")
+set(VCPKG_INCLUDE_DIR "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/include")
+
+# OpenSSL targets
+if(NOT TARGET OpenSSL::Crypto AND EXISTS "${VCPKG_LIB_DIR}/libcrypto.a")
+    add_library(OpenSSL::Crypto STATIC IMPORTED)
+    set_target_properties(OpenSSL::Crypto PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libcrypto.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "dl;pthread")
+    add_library(OpenSSL::SSL STATIC IMPORTED)
+    set_target_properties(OpenSSL::SSL PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libssl.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "OpenSSL::Crypto")
+    message(STATUS "Created OpenSSL targets manually")
+endif()
+
+# Brotli targets
+if(NOT TARGET Brotli::brotlienc AND EXISTS "${VCPKG_LIB_DIR}/libbrotlienc.a")
+    add_library(Brotli::brotlienc STATIC IMPORTED)
+    set_target_properties(Brotli::brotlienc PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libbrotlienc.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    add_library(Brotli::brotlidec STATIC IMPORTED)
+    set_target_properties(Brotli::brotlidec PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libbrotlidec.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    add_library(Brotli::brotlicommon STATIC IMPORTED)
+    set_target_properties(Brotli::brotlicommon PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libbrotlicommon.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    message(STATUS "Created Brotli targets manually")
+endif()
+
+# BZip2 target
+if(NOT TARGET BZip2::BZip2 AND EXISTS "${VCPKG_LIB_DIR}/libbz2.a")
+    add_library(BZip2::BZip2 STATIC IMPORTED)
+    set_target_properties(BZip2::BZip2 PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libbz2.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    message(STATUS "Created BZip2 target manually")
+endif()
+
+# LZ4 target
+if(NOT TARGET LZ4::lz4 AND EXISTS "${VCPKG_LIB_DIR}/liblz4.a")
+    add_library(LZ4::lz4 STATIC IMPORTED)
+    set_target_properties(LZ4::lz4 PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/liblz4.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    message(STATUS "Created LZ4 target manually")
+endif()
+
+# Snappy target
+if(NOT TARGET Snappy::snappy-static AND EXISTS "${VCPKG_LIB_DIR}/libsnappy.a")
+    add_library(Snappy::snappy-static STATIC IMPORTED)
+    set_target_properties(Snappy::snappy-static PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libsnappy.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    message(STATUS "Created Snappy target manually")
+endif()
+
+# ZLIB target (usually already exists, but ensure it's there)
+if(NOT TARGET ZLIB::ZLIB AND EXISTS "${VCPKG_LIB_DIR}/libz.a")
+    add_library(ZLIB::ZLIB STATIC IMPORTED)
+    set_target_properties(ZLIB::ZLIB PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libz.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    message(STATUS "Created ZLIB target manually")
+endif()
+
+# zstd target
+if(NOT TARGET zstd::libzstd_static AND EXISTS "${VCPKG_LIB_DIR}/libzstd.a")
+    add_library(zstd::libzstd_static STATIC IMPORTED)
+    set_target_properties(zstd::libzstd_static PROPERTIES
+        IMPORTED_LOCATION "${VCPKG_LIB_DIR}/libzstd.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${VCPKG_INCLUDE_DIR}")
+    message(STATUS "Created zstd target manually")
+endif()
+
+# Threads target (standard CMake, should be available but ensure it's found)
+find_package(Threads REQUIRED)
+
+# Create/update ArrowConfig.cmake (vcpkg Arrow package sometimes doesn't include it)
+# ArrowConfig.cmake is needed for find_package(Arrow) to work
+# We create it with minimal dependencies since we create targets manually above
+# Always regenerate to ensure correct content (overwrites any manual edits)
+set(ARROW_CONFIG_FILE "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/share/arrow/ArrowConfig.cmake")
+set(ARROW_TARGETS_FILE "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/share/arrow/ArrowTargets.cmake")
+if(EXISTS "${ARROW_TARGETS_FILE}")
+    file(WRITE "${ARROW_CONFIG_FILE}" 
+"# ArrowConfig.cmake - Auto-generated to fix missing/broken config file
+# DO NOT EDIT MANUALLY - This file is regenerated by CMakeLists.txt
+set(Arrow_VERSION \"21.0.0\")
+set(Arrow_INCLUDE_DIR \"\${CMAKE_CURRENT_LIST_DIR}/../../include\")
+set(Arrow_LIB_DIR \"\${CMAKE_CURRENT_LIST_DIR}/../../lib\")
+# Dependencies (OpenSSL, Brotli, BZip2, LZ4, Snappy, ZLIB, zstd, Threads) are created
+# manually in main CMakeLists.txt to avoid recursion and missing CONFIG files
+# Just include ArrowTargets which references the manually created targets
+include(\"\${CMAKE_CURRENT_LIST_DIR}/ArrowTargets.cmake\")
+set(Arrow_FOUND TRUE)
+")
+    message(STATUS "Created/updated ArrowConfig.cmake (dependencies created manually in CMakeLists.txt)")
+endif()
+
+# Fix arrow-config.cmake to prevent infinite recursion
+# arrow-config.cmake calls find_package(Arrow CONFIG) which causes recursion with vcpkg
+set(ARROW_CONFIG_DEPRECATED "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/share/arrow/arrow-config.cmake")
+if(EXISTS "${ARROW_CONFIG_DEPRECATED}")
+    file(READ "${ARROW_CONFIG_DEPRECATED}" ARROW_DEPRECATED_CONTENT)
+    # Replace find_package(Arrow CONFIG) with direct include to avoid recursion
+    if(ARROW_DEPRECATED_CONTENT MATCHES "find_package\\(Arrow CONFIG\\)")
+        string(REPLACE 
+            "find_package(Arrow CONFIG)"
+            "include(\"${CMAKE_CURRENT_LIST_DIR}/ArrowConfig.cmake\")"
+            ARROW_DEPRECATED_CONTENT "${ARROW_DEPRECATED_CONTENT}")
+        file(WRITE "${ARROW_CONFIG_DEPRECATED}" "${ARROW_DEPRECATED_CONTENT}")
+        message(STATUS "Patched arrow-config.cmake to prevent recursion")
+    endif()
+endif()
 
 # Ensure CMAKE_TOOLCHAIN_FILE is absolute before rerun_sdk uses it
 # This is critical because rerun_sdk passes it to arrow_cpp, which needs an absolute path
@@ -28,30 +161,13 @@ include(FetchContent)
 FetchContent_Declare(rerun_sdk URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip)
 set(FETCHCONTENT_QUIET OFF)
 
-# Patch rerun_sdk's download_and_build_arrow.cmake to ensure absolute toolchain path
-# This is needed because ExternalProject_Add passes CMAKE_TOOLCHAIN_FILE as-is,
-# and arrow_cpp can't resolve relative paths from its build directory
-FetchContent_GetProperties(rerun_sdk)
-if(NOT rerun_sdk_POPULATED)
-    FetchContent_Populate(rerun_sdk)
-    if(CMAKE_TOOLCHAIN_FILE)
-        get_filename_component(ABS_TOOLCHAIN "${CMAKE_TOOLCHAIN_FILE}" ABSOLUTE)
-        # Read the file
-        file(READ "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" ARROW_CMAKE_CONTENT)
-        # Replace the CMAKE_TOOLCHAIN_FILE variable reference with the absolute path
-        string(REPLACE 
-            "-DCMAKE_TOOLCHAIN_FILE=\${CMAKE_TOOLCHAIN_FILE}"
-            "-DCMAKE_TOOLCHAIN_FILE=${ABS_TOOLCHAIN}"
-            ARROW_CMAKE_CONTENT "${ARROW_CMAKE_CONTENT}")
-        # Write it back
-        file(WRITE "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" "${ARROW_CMAKE_CONTENT}")
-        message(STATUS "Patched rerun_sdk to use absolute toolchain path: ${ABS_TOOLCHAIN}")
-    endif()
-endif()
-
 # Configure rerun_sdk to use Arrow from vcpkg instead of building it
 # This avoids the abseil/GCC 13 compatibility issue
 set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "Disable Arrow download and build to use vcpkg version")
+
+# Note: OpenSSL is in vcpkg.json dependencies and will be installed by vcpkg
+# Arrow requires OpenSSL::Crypto, which will be available when vcpkg processes packages
+# We'll patch Arrow's config to find OpenSSL before it's used (see below after vcpkg install)
 
 # Use FetchContent_Populate and add_subdirectory to ensure target is available
 FetchContent_GetProperties(rerun_sdk)
@@ -59,16 +175,17 @@ if(NOT rerun_sdk_POPULATED)
     FetchContent_Populate(rerun_sdk)
     if(CMAKE_TOOLCHAIN_FILE)
         get_filename_component(ABS_TOOLCHAIN "${CMAKE_TOOLCHAIN_FILE}" ABSOLUTE)
-        # Read the file
-        file(READ "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" ARROW_CMAKE_CONTENT)
-        # Replace the CMAKE_TOOLCHAIN_FILE variable reference with the absolute path
-        string(REPLACE 
-            "-DCMAKE_TOOLCHAIN_FILE=\${CMAKE_TOOLCHAIN_FILE}"
-            "-DCMAKE_TOOLCHAIN_FILE=${ABS_TOOLCHAIN}"
-            ARROW_CMAKE_CONTENT "${ARROW_CMAKE_CONTENT}")
-        # Write it back
-        file(WRITE "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" "${ARROW_CMAKE_CONTENT}")
-        message(STATUS "Patched rerun_sdk to use absolute toolchain path: ${ABS_TOOLCHAIN}")
+        # Patch rerun_sdk's download_and_build_arrow.cmake to ensure absolute toolchain path
+        # Only patch if the file exists (it might not if Arrow is from vcpkg)
+        if(EXISTS "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake")
+            file(READ "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" ARROW_CMAKE_CONTENT)
+            string(REPLACE 
+                "-DCMAKE_TOOLCHAIN_FILE=\${CMAKE_TOOLCHAIN_FILE}"
+                "-DCMAKE_TOOLCHAIN_FILE=${ABS_TOOLCHAIN}"
+                ARROW_CMAKE_CONTENT "${ARROW_CMAKE_CONTENT}")
+            file(WRITE "${rerun_sdk_SOURCE_DIR}/download_and_build_arrow.cmake" "${ARROW_CMAKE_CONTENT}")
+            message(STATUS "Patched rerun_sdk to use absolute toolchain path: ${ABS_TOOLCHAIN}")
+        endif()
     endif()
     # Add the subdirectory to make the target available
     add_subdirectory(${rerun_sdk_SOURCE_DIR} ${rerun_sdk_BINARY_DIR})
@@ -171,13 +288,20 @@ target_link_libraries(minimal_camera_ray_test PRIVATE rerun_sdk ${OpenCV_LIBS})
 
 
 ############################ manif ############################
+# Workaround for manif library missing #include <cassert> in headers
+# Force include cassert before any other headers
+set(MANIF_COMPILE_FLAGS "-include" "cassert")
+
 add_executable(manif_se2_sam src/manif_examples/se2_sam.cpp)
+target_compile_options(manif_se2_sam PRIVATE ${MANIF_COMPILE_FLAGS})
 target_link_libraries(manif_se2_sam PRIVATE MANIF::manif)
 
 add_executable(manif_SE3_examples src/manif_examples/SE3_examples.cpp)
+target_compile_options(manif_SE3_examples PRIVATE ${MANIF_COMPILE_FLAGS})
 target_link_libraries(manif_SE3_examples PRIVATE MANIF::manif)
 
 add_executable(manif_se2_localization src/manif_examples/se2_localization.cpp)
+target_compile_options(manif_se2_localization PRIVATE ${MANIF_COMPILE_FLAGS})
 target_link_libraries(manif_se2_localization PRIVATE MANIF::manif)
 
 

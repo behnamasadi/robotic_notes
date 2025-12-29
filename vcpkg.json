@@ -2,14 +2,35 @@
   "name": "robotic-notes",
   "version-string": "1.0.0",
   "dependencies": [
-    { "name": "boost-iostreams" },
-    { "name": "boost-filesystem" },
-    { "name": "gtk3"   },
-    { "name": "eigen3" },
-    { "name": "opencv" },
-    { "name": "ceres" },
-    { "name": "manif" },
-    { "name": "sophus"},
-    { "name": "arrow" }
+    {
+      "name": "boost-iostreams"
+    },
+    {
+      "name": "boost-filesystem"
+    },
+    {
+      "name": "gtk3"
+    },
+    {
+      "name": "eigen3"
+    },
+    {
+      "name": "opencv"
+    },
+    {
+      "name": "ceres"
+    },
+    {
+      "name": "manif"
+    },
+    {
+      "name": "sophus"
+    },
+    {
+      "name": "arrow"
+    },
+    {
+      "name": "openssl"
+    }
   ]
 }
