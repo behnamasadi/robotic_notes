@@ -143,6 +143,7 @@ conda install conda-forge::matplotlib
 conda install conda-forge::plotly
 conda install -c conda-forge jupyterlab
 pip install gradio_rerun
+pip install ahrs
 ```
 
 
