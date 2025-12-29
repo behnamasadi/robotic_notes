@@ -103,14 +103,24 @@ jobs:
       run: |
         df -h
         du -sh ${{ github.workspace }}/* 2>/dev/null | sort -h | tail -10
+        echo "=== /tmp usage ==="
+        df -h /tmp || true
+
+    - name: Clean /tmp before build
+      run: |
+        sudo rm -rf /tmp/* /tmp/.* 2>/dev/null || true
+        df -h /tmp || true
 
     - name: Configure CMake
       working-directory: ${{ github.workspace }}
       run: |
+        # Verify triplet is set correctly
+        echo "VCPKG_DEFAULT_TRIPLET=${VCPKG_DEFAULT_TRIPLET}"
         cmake -S . -B build \
           -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DCMAKE_BUILD_TYPE=Release \
-          -DVCPKG_TARGET_TRIPLET=x64-linux-release
+          -DVCPKG_TARGET_TRIPLET=x64-linux-release \
+          -DVCPKG_MANIFEST_DIR=${{ github.workspace }}
 
     - name: Clean up vcpkg build artifacts (keep cached packages)
       run: |
@@ -127,7 +137,12 @@ jobs:
     - name: Build C++ project
       working-directory: ${{ github.workspace }}
       run: |
+        # Clean /tmp before starting build
+        sudo find /tmp -type f -mmin +5 -delete 2>/dev/null || true
+        df -h /tmp || true
         cmake --build build --parallel $(nproc)
+        # Clean /tmp after build
+        sudo find /tmp -type f -mmin +1 -delete 2>/dev/null || true
 
     - name: Clean up build artifacts (keep only binaries)
       run: |
