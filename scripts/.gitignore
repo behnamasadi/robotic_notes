@@ -1,4 +1,0 @@
-**/dataset/
-__pycache__/*
-CMakeLists.txt.user
-*.ipynb_checkpoints/*

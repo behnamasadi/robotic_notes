@@ -25,3 +25,6 @@ __pycache__/
 .idea/
 # Ignore temp junk files
 **/junk/
+
+# Ignore machine_hall junk files temporarily
+data/machine_hall/*
