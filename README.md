@@ -151,8 +151,78 @@ conda install conda-forge::plotly
 conda install -c conda-forge jupyterlab
 pip install gradio_rerun
 pip install ahrs
+pip install pyceres
 ```
 
+### Docker Setup (ROS2 Humble + Gazebo Fortress)
+
+A Dockerfile is provided for a complete development environment with ROS2 Humble and Gazebo Fortress pre-installed. This is the recommended way to work with ROS2 and Gazebo integration.
+
+**Build the Docker image:**
+
+```bash
+cd /home/$USER/workspace/robotic_notes
+docker build -t ros2-humble-gazebo-fortress .
+```
+
+**Run the container:**
+
+```bash
+# Basic run
+docker run -it --rm ros2-humble-gazebo-fortress
+
+# With X11 forwarding for GUI applications (rviz2, rqt, Gazebo)
+docker run -it --rm \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  ros2-humble-gazebo-fortress
+
+# With GPU support (for NVIDIA GPUs)
+docker run -it --rm \
+  --gpus all \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  ros2-humble-gazebo-fortress
+
+# With workspace mount
+docker run -it --rm \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v $(pwd):/workspace \
+  ros2-humble-gazebo-fortress
+```
+
+**Delete existing containers:**
+
+```bash
+# List all containers (including stopped ones)
+docker ps -a
+
+# Stop a running container (replace CONTAINER_ID or NAME with your container)
+docker stop CONTAINER_ID_OR_NAME
+
+# Delete a stopped container
+docker rm CONTAINER_ID_OR_NAME
+
+# Force delete a running container
+docker rm -f CONTAINER_ID_OR_NAME
+
+# Delete all stopped containers
+docker container prune
+
+# Delete all containers (stopped and running) - use with caution!
+docker rm -f $(docker ps -aq)
+```
+
+The Dockerfile includes:
+- ROS2 Humble Desktop (full installation)
+- Gazebo Fortress (Gazebo Sim v6)
+- ROS2-Gazebo integration packages (`ros-humble-ros-gz`, `ros-humble-ros-gz-bridge`, etc.)
+- Navigation2, SLAM Toolbox, RViz2, and other common ROS2 packages
+- Development tools and dependencies
+- `gz` command wrapper for backward compatibility (maps `gz sim` → `ign gazebo`)
+
+For detailed installation instructions, usage examples, and troubleshooting, see [ROS2 Gazebo Integration Documentation](docs/ros2_gazebo_integration.md).
 
 
 
