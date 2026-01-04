@@ -6,8 +6,8 @@ import os
 import matplotlib.pyplot as plt
 import math
 import numpy as np
-import os
 import sys
+from pathlib import Path
 
 # np.set_printoptions(threshold=sys.maxsize)
 np.set_printoptions(suppress=True, formatter={
@@ -50,10 +50,27 @@ def update_node(node, dx):
     return node
 
 
-# g2o_file = os.path.abspath("./data/slam/input_INTEL_g2o.g2o")
-# g2o_file = os.path.abspath("./data/slam/input_M3500_g2o.g2o")
-g2o_file = os.path.abspath(
-    "/home/behnam/workspace/robotic_notes/data/slam/input_MITb_g2o.g2o")
+# Get script directory and project root
+script_dir = Path(__file__).resolve().parent
+project_root = script_dir.parent
+data_dir = project_root / "data" / "slam"
+
+# Default g2o file (can be overridden with command-line argument if needed)
+# Available files: input_INTEL_g2o.g2o, input_M3500_g2o.g2o, input_MITb_g2o.g2o
+g2o_file = data_dir / "input_MITb_g2o.g2o"
+
+# Verify the file exists
+if not g2o_file.exists():
+    print(f"Error: G2O file not found at: {g2o_file}")
+    print(f"Script directory: {script_dir}")
+    print(f"Project root: {project_root}")
+    print(f"Data directory: {data_dir}")
+    print(f"Data directory exists: {data_dir.exists()}")
+    if data_dir.exists():
+        available_files = list(data_dir.glob("*.g2o"))
+        if available_files:
+            print(f"Available .g2o files: {[f.name for f in available_files]}")
+    sys.exit(1)
 
 
 nodes, edges = load_2d_g2o(filename=g2o_file)

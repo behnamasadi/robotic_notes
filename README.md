@@ -152,6 +152,7 @@ conda install -c conda-forge jupyterlab
 pip install gradio_rerun
 pip install ahrs
 pip install pyceres
+pip install liegroups
 ```
 
 ### Docker Setup (ROS2 Humble + Gazebo Fortress)
