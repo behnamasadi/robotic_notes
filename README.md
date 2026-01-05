@@ -230,9 +230,9 @@ For detailed installation instructions, usage examples, and troubleshooting, see
 
 # [Lie Group and Lie Algebra](#)
 - [Lie Group and Lie Algebra](docs/lie_group_lie_algebra/index.ipynb)   
-- [manif](docs/manif.ipynb)   
-  * [SE2 localization](docs/se2_localization.ipynb)
-  * [SE2 SAM](docs/se2_sam.ipynb)
+- [manif](docs/slam/manif.ipynb)   
+  * [SE2 localization](docs/slam/se2_localization.ipynb)
+  * [SE2 SAM](docs/slam/se2_sam.ipynb)
 - [Sophus](https://github.com/strasdat/Sophus)  
 
 # [Topology and Configuration of Robot and Space](#)
@@ -265,7 +265,7 @@ For detailed installation instructions, usage examples, and troubleshooting, see
   - [Forward Kinematics for Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#11-forward-kinematics-for-differential-drive-robots)
   - [Inverse Kinematics of Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#12--inverse-kinematics-of-differential-drive-robots)
   - [Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
-- [Nonlinear uncertainty model associated with a robot's position over time (The Banana Distribution is Gaussian)](docs/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
+- [Nonlinear uncertainty model associated with a robot's position over time (The Banana Distribution is Gaussian)](docs/slam/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
 
 # [IMU](#)
 
@@ -433,15 +433,8 @@ For detailed installation instructions, usage examples, and troubleshooting, see
 - [Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)
 - [Pose Graph SLAM](docs/slam/pose_graph_slam.ipynb)
 - [nano-pgo](https://github.com/gisbi-kim/nano-pgo)
-- [Factor Graph vs Pose Graph](docs/slam/factor_graph_vs_pose_graph.md)  
 - [g2o](docs/slam/g2o.md)  
-- [GTSAM](docs/slam/GTSAM.md)  
-  - [Factor Graph - 5 Minutes with Cyrill](docs/slam/GTSAM.md#factor-graph---5-minutes-with-cyrill)  
-  - [Georgia Tech Smoothing and Mapping Library](docs/slam/GTSAM.md#georgia-tech-smoothing-and-mapping-library)  
-  - [iSAM: Incremental Smoothing and Mapping](docs/slam/GTSAM.md#isam--incremental-smoothing-and-mapping)  
-  - [Factor Graph GTSAM iSAM2](docs/slam/factor_graph_gtsam_isam2.ipynb)
-  - [python-graphslam](docs/slam/GTSAM.md#python-graphslam)  
-  - [GTSAM python Tutorial Robust Pose-graph Optimization](docs/slam/GTSAM.md#gtsam-python-tutorial-robust-pose-graph-optimization)  
+- [Factor Graph GTSAM iSAM2](docs/slam/factor_graph_gtsam_isam2.ipynb)  
 - [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
 - [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
 - [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
