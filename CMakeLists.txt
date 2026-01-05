@@ -151,20 +151,37 @@ endif()
 
 # Set Arrow_DIR so CMake can find Arrow's config file
 # This must be done BEFORE rerun_sdk tries to find Arrow
+# Use ARROW_TARGETS_FILE which was set earlier - if it exists, Arrow is installed
 set(ARROW_SHARE_DIR "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/share/arrow")
-if(EXISTS "${ARROW_SHARE_DIR}/ArrowConfig.cmake" OR EXISTS "${ARROW_SHARE_DIR}/ArrowTargets.cmake")
-    set(Arrow_DIR "${ARROW_SHARE_DIR}" CACHE PATH "Arrow config directory")
+if(EXISTS "${ARROW_TARGETS_FILE}")
+    # Arrow is installed, ensure Arrow_DIR is set so CMake can find it
+    # Set in cache so it's visible to all subdirectories (including rerun_sdk)
+    set(Arrow_DIR "${ARROW_SHARE_DIR}" CACHE PATH "Arrow config directory" FORCE)
+    # Also set as a normal variable so it's immediately available
+    set(Arrow_DIR "${ARROW_SHARE_DIR}")
     list(APPEND CMAKE_PREFIX_PATH "${ARROW_SHARE_DIR}")
     message(STATUS "Set Arrow_DIR to: ${Arrow_DIR}")
+    message(STATUS "ArrowConfig.cmake should exist at: ${ARROW_CONFIG_FILE}")
+    
+    # Verify config file exists (we created it above)
+    if(EXISTS "${ARROW_CONFIG_FILE}")
+        message(STATUS "ArrowConfig.cmake exists")
+    else()
+        message(WARNING "ArrowConfig.cmake not found at ${ARROW_CONFIG_FILE} even though ArrowTargets.cmake exists")
+    endif()
     
     # Find Arrow package BEFORE rerun_sdk tries to use it
     # This ensures Arrow is available when rerun_sdk's CMakeLists.txt runs
     find_package(Arrow CONFIG QUIET)
     if(Arrow_FOUND)
-        message(STATUS "Arrow found successfully")
+        message(STATUS "Arrow found successfully before rerun_sdk")
     else()
-        message(WARNING "Arrow not found via find_package, but continuing - rerun_sdk may handle this")
+        message(WARNING "Arrow not found via find_package, but ArrowTargets.cmake exists - rerun_sdk may fail")
+        message(STATUS "Arrow_DIR is: ${Arrow_DIR}")
+        message(STATUS "CMAKE_PREFIX_PATH includes: ${CMAKE_PREFIX_PATH}")
     endif()
+else()
+    message(WARNING "ArrowTargets.cmake not found at ${ARROW_TARGETS_FILE} - Arrow may not be installed by vcpkg")
 endif()
 
 # Ensure CMAKE_TOOLCHAIN_FILE is absolute before rerun_sdk uses it
