@@ -111,6 +111,41 @@ endif()
 # Threads target (standard CMake, should be available but ensure it's found)
 find_package(Threads REQUIRED)
 
+# Workaround for vcpkg absl installation issue where libabsl_log_severity.a is missing
+# This creates a minimal stub library to satisfy CMake's file existence check
+set(ABSL_LOG_SEVERITY_LIB "${VCPKG_LIB_DIR}/libabsl_log_severity.a")
+set(ABSL_TARGETS_FILE "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/share/absl/abslTargets.cmake")
+if(EXISTS "${ABSL_TARGETS_FILE}" AND NOT EXISTS "${ABSL_LOG_SEVERITY_LIB}")
+    # Create a minimal stub C file and compile it to an object, then add to archive
+    set(ABSL_STUB_SRC "${CMAKE_BINARY_DIR}/absl_log_severity_stub.c")
+    set(ABSL_STUB_OBJ "${CMAKE_BINARY_DIR}/absl_log_severity_stub.o")
+    file(WRITE "${ABSL_STUB_SRC}" "/* Stub for missing libabsl_log_severity.a */\nvoid __attribute__((weak)) absl_log_severity_stub(void) {}\n")
+    
+    # Try to compile the stub and create the archive
+    find_program(CC_TOOL ${CMAKE_C_COMPILER} cc gcc)
+    find_program(AR_TOOL ar)
+    if(CC_TOOL AND AR_TOOL)
+        execute_process(
+            COMMAND ${CC_TOOL} -c "${ABSL_STUB_SRC}" -o "${ABSL_STUB_OBJ}"
+            RESULT_VARIABLE CC_RESULT
+            ERROR_QUIET OUTPUT_QUIET
+        )
+        if(CC_RESULT EQUAL 0 AND EXISTS "${ABSL_STUB_OBJ}")
+            execute_process(
+                COMMAND ${AR_TOOL} -rc "${ABSL_LOG_SEVERITY_LIB}" "${ABSL_STUB_OBJ}"
+                RESULT_VARIABLE AR_RESULT
+                ERROR_QUIET OUTPUT_QUIET
+            )
+            if(AR_RESULT EQUAL 0 AND EXISTS "${ABSL_LOG_SEVERITY_LIB}")
+                message(STATUS "Created stub libabsl_log_severity.a to work around vcpkg absl installation issue")
+                message(WARNING "Using stub libabsl_log_severity.a - this is a workaround for vcpkg absl installation bug")
+            endif()
+        endif()
+        # Clean up temporary files
+        file(REMOVE "${ABSL_STUB_SRC}" "${ABSL_STUB_OBJ}")
+    endif()
+endif()
+
 # Create/update ArrowConfig.cmake (vcpkg Arrow package sometimes doesn't include it)
 # ArrowConfig.cmake is needed for find_package(Arrow) to work
 # We create it with minimal dependencies since we create targets manually above
