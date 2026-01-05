@@ -158,8 +158,11 @@ if(EXISTS "${ABSL_TARGETS_FILE}")
     endfunction()
     
     # Create stubs for known missing libraries
+    # vcpkg's absl installation appears to be missing multiple library files
+    # We create stubs for all known missing libraries
     create_absl_stub_lib("libabsl_log_severity.a")
     create_absl_stub_lib("libabsl_raw_logging_internal.a")
+    create_absl_stub_lib("libabsl_spinlock_wait.a")
     
     message(WARNING "Created stub absl libraries - this is a workaround for vcpkg absl installation bug")
 endif()
