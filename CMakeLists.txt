@@ -111,39 +111,57 @@ endif()
 # Threads target (standard CMake, should be available but ensure it's found)
 find_package(Threads REQUIRED)
 
-# Workaround for vcpkg absl installation issue where libabsl_log_severity.a is missing
-# This creates a minimal stub library to satisfy CMake's file existence check
-set(ABSL_LOG_SEVERITY_LIB "${VCPKG_LIB_DIR}/libabsl_log_severity.a")
+# Workaround for vcpkg absl installation issue where multiple absl libraries are missing
+# This creates minimal stub libraries to satisfy CMake's file existence check
+# Known missing libraries: libabsl_log_severity.a, libabsl_raw_logging_internal.a, and potentially others
 set(ABSL_TARGETS_FILE "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/share/absl/abslTargets.cmake")
-if(EXISTS "${ABSL_TARGETS_FILE}" AND NOT EXISTS "${ABSL_LOG_SEVERITY_LIB}")
-    # Create a minimal stub C file and compile it to an object, then add to archive
-    set(ABSL_STUB_SRC "${CMAKE_BINARY_DIR}/absl_log_severity_stub.c")
-    set(ABSL_STUB_OBJ "${CMAKE_BINARY_DIR}/absl_log_severity_stub.o")
-    file(WRITE "${ABSL_STUB_SRC}" "/* Stub for missing libabsl_log_severity.a */\nvoid __attribute__((weak)) absl_log_severity_stub(void) {}\n")
-    
-    # Try to compile the stub and create the archive
-    find_program(CC_TOOL ${CMAKE_C_COMPILER} cc gcc)
-    find_program(AR_TOOL ar)
-    if(CC_TOOL AND AR_TOOL)
-        execute_process(
-            COMMAND ${CC_TOOL} -c "${ABSL_STUB_SRC}" -o "${ABSL_STUB_OBJ}"
-            RESULT_VARIABLE CC_RESULT
-            ERROR_QUIET OUTPUT_QUIET
-        )
-        if(CC_RESULT EQUAL 0 AND EXISTS "${ABSL_STUB_OBJ}")
-            execute_process(
-                COMMAND ${AR_TOOL} -rc "${ABSL_LOG_SEVERITY_LIB}" "${ABSL_STUB_OBJ}"
-                RESULT_VARIABLE AR_RESULT
-                ERROR_QUIET OUTPUT_QUIET
-            )
-            if(AR_RESULT EQUAL 0 AND EXISTS "${ABSL_LOG_SEVERITY_LIB}")
-                message(STATUS "Created stub libabsl_log_severity.a to work around vcpkg absl installation issue")
-                message(WARNING "Using stub libabsl_log_severity.a - this is a workaround for vcpkg absl installation bug")
+if(EXISTS "${ABSL_TARGETS_FILE}")
+    # Function to create a stub library if it's missing
+    function(create_absl_stub_lib lib_name)
+        set(lib_path "${VCPKG_LIB_DIR}/${lib_name}")
+        if(NOT EXISTS "${lib_path}")
+            # Create a minimal stub C file and compile it to an object, then add to archive
+            get_filename_component(lib_basename "${lib_name}" NAME_WE)
+            set(STUB_SRC "${CMAKE_BINARY_DIR}/${lib_basename}_stub.c")
+            set(STUB_OBJ "${CMAKE_BINARY_DIR}/${lib_basename}_stub.o")
+            file(WRITE "${STUB_SRC}" "/* Stub for missing ${lib_name} - vcpkg absl installation workaround */\nvoid __attribute__((weak)) ${lib_basename}_stub(void) {}\n")
+            
+            # Try to compile the stub and create the archive
+            find_program(CC_TOOL ${CMAKE_C_COMPILER} cc gcc)
+            find_program(AR_TOOL ar)
+            if(CC_TOOL AND AR_TOOL)
+                execute_process(
+                    COMMAND ${CC_TOOL} -c "${STUB_SRC}" -o "${STUB_OBJ}"
+                    RESULT_VARIABLE CC_RESULT
+                    ERROR_QUIET OUTPUT_QUIET
+                )
+                if(CC_RESULT EQUAL 0 AND EXISTS "${STUB_OBJ}")
+                    execute_process(
+                        COMMAND ${AR_TOOL} -rc "${lib_path}" "${STUB_OBJ}"
+                        RESULT_VARIABLE AR_RESULT
+                        ERROR_QUIET OUTPUT_QUIET
+                    )
+                    if(AR_RESULT EQUAL 0 AND EXISTS "${lib_path}")
+                        message(STATUS "Created stub ${lib_name} to work around vcpkg absl installation issue")
+                        # Clean up temporary files
+                        file(REMOVE "${STUB_SRC}" "${STUB_OBJ}")
+                        return()
+                    endif()
+                endif()
+                # Clean up on failure
+                file(REMOVE "${STUB_SRC}")
+                if(EXISTS "${STUB_OBJ}")
+                    file(REMOVE "${STUB_OBJ}")
+                endif()
             endif()
         endif()
-        # Clean up temporary files
-        file(REMOVE "${ABSL_STUB_SRC}" "${ABSL_STUB_OBJ}")
-    endif()
+    endfunction()
+    
+    # Create stubs for known missing libraries
+    create_absl_stub_lib("libabsl_log_severity.a")
+    create_absl_stub_lib("libabsl_raw_logging_internal.a")
+    
+    message(WARNING "Created stub absl libraries - this is a workaround for vcpkg absl installation bug")
 endif()
 
 # Create/update ArrowConfig.cmake (vcpkg Arrow package sometimes doesn't include it)
