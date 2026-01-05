@@ -75,19 +75,6 @@ jobs:
         echo "${{ github.workspace }}/vcpkg" >> $GITHUB_PATH
         echo "VCPKG_DEFAULT_TRIPLET=x64-linux-release" >> $GITHUB_ENV
 
-    - name: Verify Arrow cache integrity
-      working-directory: ${{ github.workspace }}
-      continue-on-error: true
-      run: |
-        # Check if cached Arrow installation is complete
-        ARROW_LIB="${{ github.workspace }}/build/vcpkg_installed/x64-linux-release/lib/libarrow.a"
-        ARROW_CONFIG="${{ github.workspace }}/build/vcpkg_installed/x64-linux-release/share/arrow/ArrowTargets.cmake"
-        if [ -f "$ARROW_CONFIG" ] && [ ! -f "$ARROW_LIB" ]; then
-          echo "WARNING: Arrow config exists but library is missing. Clearing corrupted cache..."
-          rm -rf "${{ github.workspace }}/build/vcpkg_installed/x64-linux-release/share/arrow"
-          rm -rf "${{ github.workspace }}/build/vcpkg_installed/x64-linux-release/lib/libarrow*"
-        fi
-
     - name: Check disk space before CMake
       run: |
         df -h
@@ -105,30 +92,10 @@ jobs:
       run: |
         # Verify triplet is set correctly
         echo "VCPKG_DEFAULT_TRIPLET=${VCPKG_DEFAULT_TRIPLET}"
-        # Run CMake configure - if it fails due to missing Arrow, we'll handle it
-        if ! cmake -S . -B build \
+        cmake -S . -B build \
           -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DCMAKE_BUILD_TYPE=Release \
-          -DVCPKG_TARGET_TRIPLET=x64-linux-release \
-          -DVCPKG_MANIFEST_DIR=${{ github.workspace }}; then
-          echo "CMake configure failed. Checking Arrow installation..."
-          # Check if Arrow library is missing
-          ARROW_LIB="${{ github.workspace }}/build/vcpkg_installed/x64-linux-release/lib/libarrow.a"
-          if [ ! -f "$ARROW_LIB" ]; then
-            echo "Arrow library missing. Removing corrupted Arrow installation and retrying..."
-            rm -rf "${{ github.workspace }}/build/vcpkg_installed/x64-linux-release/share/arrow" || true
-            rm -rf "${{ github.workspace }}/build/vcpkg_installed/x64-linux-release/lib/libarrow*" || true
-            # Retry CMake configure - it will reinstall Arrow
-            cmake -S . -B build \
-              -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
-              -DCMAKE_BUILD_TYPE=Release \
-              -DVCPKG_TARGET_TRIPLET=x64-linux-release \
-              -DVCPKG_MANIFEST_DIR=${{ github.workspace }}
-          else
-            echo "Arrow library exists, but CMake still failed. Re-raising error..."
-            exit 1
-          fi
-        fi
+          -DVCPKG_TARGET_TRIPLET=x64-linux-release
 
     - name: Clean up vcpkg build artifacts (keep cached packages)
       run: |
@@ -166,10 +133,7 @@ jobs:
       run: |
         echo "=== C++ Build Verification ==="
         ls -la build/
-        # echo ""
-        # echo "=== Python Environment Verification ==="
-        # conda activate robotic_notes
-        # python --version
-        # python -c "import rerun; print('rerun-sdk:', rerun.__version__)"
-        # python -c "import cv2; print('opencv:', cv2.__version__)"
+        echo ""
+        echo "=== Built executables ==="
+        find build -type f -executable -name "*" ! -name "*.so" ! -name "*.a" | head -20
 
