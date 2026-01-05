@@ -149,6 +149,24 @@ if(EXISTS "${ARROW_CONFIG_DEPRECATED}")
     endif()
 endif()
 
+# Set Arrow_DIR so CMake can find Arrow's config file
+# This must be done BEFORE rerun_sdk tries to find Arrow
+set(ARROW_SHARE_DIR "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux-release/share/arrow")
+if(EXISTS "${ARROW_SHARE_DIR}/ArrowConfig.cmake" OR EXISTS "${ARROW_SHARE_DIR}/ArrowTargets.cmake")
+    set(Arrow_DIR "${ARROW_SHARE_DIR}" CACHE PATH "Arrow config directory")
+    list(APPEND CMAKE_PREFIX_PATH "${ARROW_SHARE_DIR}")
+    message(STATUS "Set Arrow_DIR to: ${Arrow_DIR}")
+    
+    # Find Arrow package BEFORE rerun_sdk tries to use it
+    # This ensures Arrow is available when rerun_sdk's CMakeLists.txt runs
+    find_package(Arrow CONFIG QUIET)
+    if(Arrow_FOUND)
+        message(STATUS "Arrow found successfully")
+    else()
+        message(WARNING "Arrow not found via find_package, but continuing - rerun_sdk may handle this")
+    endif()
+endif()
+
 # Ensure CMAKE_TOOLCHAIN_FILE is absolute before rerun_sdk uses it
 # This is critical because rerun_sdk passes it to arrow_cpp, which needs an absolute path
 if(CMAKE_TOOLCHAIN_FILE)
