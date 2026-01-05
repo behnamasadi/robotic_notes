@@ -196,9 +196,17 @@ include(FetchContent)
 FetchContent_Declare(rerun_sdk URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip)
 set(FETCHCONTENT_QUIET OFF)
 
-# Configure rerun_sdk to use Arrow from vcpkg instead of building it
-# This avoids the abseil/GCC 13 compatibility issue
-set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "Disable Arrow download and build to use vcpkg version")
+# Configure rerun_sdk to use Arrow from vcpkg if available, otherwise let it build Arrow
+# Check if Arrow is actually installed - if not, let rerun_sdk build it
+if(EXISTS "${ARROW_TARGETS_FILE}")
+    # Arrow is installed by vcpkg, use it
+    set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "Disable Arrow download and build to use vcpkg version")
+    message(STATUS "Arrow found in vcpkg, disabling rerun_sdk Arrow build")
+else()
+    # Arrow is NOT installed, let rerun_sdk build it
+    set(RERUN_DOWNLOAD_AND_BUILD_ARROW ON CACHE BOOL "Enable Arrow download and build since vcpkg version not available")
+    message(STATUS "Arrow NOT found in vcpkg, enabling rerun_sdk Arrow build")
+endif()
 
 # Note: OpenSSL is in vcpkg.json dependencies and will be installed by vcpkg
 # Arrow requires OpenSSL::Crypto, which will be available when vcpkg processes packages
