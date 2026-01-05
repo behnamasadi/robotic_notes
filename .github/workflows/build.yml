@@ -36,6 +36,7 @@ jobs:
           flex \
           build-essential \
           cmake \
+          make \
           autoconf \
           autoconf-archive \
           automake \
@@ -74,6 +75,7 @@ jobs:
         echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $GITHUB_ENV
         echo "${{ github.workspace }}/vcpkg" >> $GITHUB_PATH
         echo "VCPKG_DEFAULT_TRIPLET=x64-linux-release" >> $GITHUB_ENV
+        echo "VCPKG_FORCE_SYSTEM_BINARIES=0" >> $GITHUB_ENV
 
     - name: Check disk space before CMake
       run: |
@@ -92,6 +94,13 @@ jobs:
       run: |
         # Verify triplet is set correctly
         echo "VCPKG_DEFAULT_TRIPLET=${VCPKG_DEFAULT_TRIPLET}"
+        # Verify build tools are available
+        which cmake
+        which make
+        which ninja
+        cmake --version
+        make --version || true
+        ninja --version || true
         cmake -S . -B build \
           -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DCMAKE_BUILD_TYPE=Release \
