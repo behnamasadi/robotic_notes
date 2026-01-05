@@ -26,6 +26,10 @@ find_package(Threads REQUIRED)
 # ------------------------------------------------------------------
 # Rerun SDK via FetchContent (use vcpkg's Arrow)
 # ------------------------------------------------------------------
+# Configure rerun_sdk to use vcpkg's Arrow instead of downloading it
+# Must be set before FetchContent_Declare
+set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "" FORCE)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -33,9 +37,6 @@ FetchContent_Declare(
     URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
-
-# Configure rerun_sdk to use vcpkg's Arrow instead of downloading it
-set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(rerun_sdk)
 
