@@ -114,6 +114,71 @@ The `VCPKG_TARGET_TRIPLET=x64-linux-release` option ensures vcpkg only builds re
 cmake --build build --parallel
 ```
 
+### Testing CI/CD Locally
+
+You can test the GitHub Actions workflow locally before pushing using [`act`](https://github.com/nektos/act), which runs GitHub Actions workflows in Docker containers.
+
+**Prerequisites:**
+- Docker installed and running
+- `act` installed (check with `which act`)
+
+**Install `act` (if not already installed):**
+```bash
+# On Linux/macOS
+curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+
+# Or using package managers
+# Ubuntu/Debian
+sudo apt-get install act
+
+# macOS
+brew install act
+```
+
+**Quick test (CMake configuration only):**
+```bash
+cd /home/$USER/workspace/robotic_notes
+# Test just the CMake configuration step (dry run)
+act -j build -s GITHUB_TOKEN=dummy --dryrun
+```
+
+**Full workflow test (takes 30+ minutes):**
+```bash
+cd /home/$USER/workspace/robotic_notes
+# Run the full workflow
+act workflow_dispatch \
+  -W . \
+  --container-architecture linux/amd64 \
+  -P ubuntu-latest=catthehacker/ubuntu:act-latest \
+  --verbose
+```
+
+**Test specific job:**
+```bash
+# Run just the build job
+act -j build -W . \
+  --container-architecture linux/amd64 \
+  -P ubuntu-latest=catthehacker/ubuntu:act-latest
+```
+
+**Notes:**
+- First run will download Docker images (can be large, ~10GB+)
+- Full build takes 30+ minutes as it builds all dependencies from scratch
+- Uses your local files, so you can test changes immediately
+- Some steps may behave slightly differently than on GitHub Actions
+
+**Faster alternative - test CMake configuration manually:**
+```bash
+cd /home/$USER/workspace/robotic_notes
+# Clean build directory
+rm -rf build
+# Run the same CMake command as CI/CD
+cmake -S . -B build \
+  -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DVCPKG_TARGET_TRIPLET=x64-linux-release
+```
+
 To build the `rerun`, just comment everything in the `CMakeLists.txt`  and only leave this part:
 
 ```
