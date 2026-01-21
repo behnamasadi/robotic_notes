@@ -28,19 +28,23 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
+          bison \
+          flex \
           build-essential \
           cmake \
-          ninja-build \
-          pkg-config \
           autoconf \
           autoconf-archive \
           automake \
           libtool \
-          bison \
-          flex \
+          libltdl-dev \
           libx11-dev \
           libxft-dev \
-          libxext-dev
+          libxext-dev \
+          libxtst-dev \
+          libxrandr-dev \
+          libxi-dev \
+          ninja-build \
+          pkg-config
         sudo apt-get clean
 
     - name: Cache vcpkg
@@ -60,6 +64,11 @@ jobs:
           ./vcpkg/bootstrap-vcpkg.sh
         fi
 
+    - name: Set vcpkg environment
+      run: |
+        echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $GITHUB_ENV
+        echo "VCPKG_DEFAULT_TRIPLET=x64-linux-release" >> $GITHUB_ENV
+
     - name: Configure CMake
       run: |
         cmake -S . -B build \
@@ -68,19 +77,19 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DVCPKG_TARGET_TRIPLET=x64-linux-release
 
-    - name: Build
+    - name: Build project
       run: cmake --build build --parallel 2
 
-    - name: List executables
+    - name: List built executables
       run: |
-        echo "Built executables:"
-        find build -type f -executable | grep -E '(ceres|manif|sophus|rerun)' || true
+        echo "=== Built C++ executables ==="
+        find build -type f -executable -name "ceres_*" -o -name "manif_*" -o -name "sophus_*" -o -name "rerun" -o -name "*SfM" -o -name "bundle_adjuster" -o -name "pose_graph_2d" | sort
 
-    - name: Upload artifacts
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       if: success()
       with:
-        name: build-artifacts
+        name: robotic-notes-executables
         path: |
           build/ceres_*
           build/manif_*
@@ -88,4 +97,9 @@ jobs:
           build/rerun
           build/*SfM
           build/bundle_adjuster
+          build/snavely_reprojection_error
+          build/simple_snavely_reprojection_error
+          build/pose_graph_2d
+          build/minimal_camera_ray_test
         retention-days: 7
+        if-no-files-found: warn
