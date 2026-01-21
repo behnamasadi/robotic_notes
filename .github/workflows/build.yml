@@ -9,195 +9,77 @@ on:
 
 jobs:
   build:
-    # For faster builds with OpenCV, consider using larger runners (requires GitHub subscription):
-    # Standard runner: 2-core CPU, 7GB RAM
-    # Larger runner: 4-core CPU, 14GB RAM (2x faster for parallel builds like OpenCV)
-    # To use larger runner, change to: runs-on: ubuntu-latest-4-cores
-    runs-on: ubuntu-latest
-    timeout-minutes: 150
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
     
     steps:
-    - name: Check initial disk space
-      run: |
-        df -h
-        echo "Available disk space:"
-        df -h / | tail -1
-
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
         submodules: recursive
 
+    - name: Free up disk space
+      run: |
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo apt-get clean
+        df -h
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          bison \
-          flex \
           build-essential \
           cmake \
-          make \
-          autoconf \
-          autoconf-archive \
-          automake \
-          libtool \
-          libltdl-dev \
-          libx11-dev \
-          libxft-dev \
-          libxext-dev \
-          libxtst-dev \
-          libxrandr-dev \
           ninja-build \
-          pkg-config
+          pkg-config \
+          autoconf \
+          automake \
+          libtool
         sudo apt-get clean
-        sudo rm -rf /var/lib/apt/lists/*
 
-    - name: Cache vcpkg packages
+    - name: Cache vcpkg
       uses: actions/cache@v4
-      id: vcpkg-cache
       with:
         path: |
+          ${{ github.workspace }}/vcpkg
           ${{ github.workspace }}/build/vcpkg_installed
-          ${{ github.workspace }}/vcpkg/downloads
-        key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}-${{ hashFiles('**/vcpkg.lock') }}
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
         restore-keys: |
-          ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json') }}-
           ${{ runner.os }}-vcpkg-
 
     - name: Bootstrap vcpkg
-      working-directory: ${{ github.workspace }}
       run: |
-        chmod +x ./vcpkg/bootstrap-vcpkg.sh
-        ./vcpkg/bootstrap-vcpkg.sh
-
-    - name: Set vcpkg environment variables
-      run: |
-        echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $GITHUB_ENV
-        echo "${{ github.workspace }}/vcpkg" >> $GITHUB_PATH
-        echo "VCPKG_DEFAULT_TRIPLET=x64-linux-release" >> $GITHUB_ENV
-        echo "VCPKG_FORCE_SYSTEM_BINARIES=0" >> $GITHUB_ENV
-
-    - name: Verify and fix vcpkg packages
-      working-directory: ${{ github.workspace }}
-      run: |
-        # Simple solution: Try CMake configure and fix any missing library errors
-        python3 << 'EOF'
-        from pathlib import Path
-        import subprocess, re, shutil
-        
-        vcpkg = Path("build/vcpkg_installed/x64-linux-release")
-        if not vcpkg.exists():
-            exit(0)
-        
-        # Try a test CMake configure to catch errors
-        test_build = Path("build_test")
-        test_build.mkdir(exist_ok=True)
-        
-        try:
-            result = subprocess.run(
-                ["cmake", "-S", ".", "-B", str(test_build),
-                 "-DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake",
-                 "-DVCPKG_TARGET_TRIPLET=x64-linux-release"],
-                capture_output=True, text=True, timeout=60
-            )
-            
-            # Parse CMake errors for missing libraries
-            incomplete = set()
-            for line in result.stderr.split('\n'):
-                if 'references the file' in line and 'but this file does not exist' in line:
-                    # Extract package name from error
-                    # Error format: "CMake Error at .../share/PACKAGE/PACKAGETargets.cmake"
-                    match = re.search(r'share/([^/]+)/.*Targets\.cmake', line)
-                    if match:
-                        pkg = match.group(1)
-                        print(f"Found incomplete package: {pkg}")
-                        incomplete.add(pkg)
-            
-            # Remove incomplete packages
-            for pkg in incomplete:
-                print(f"Removing: {pkg}")
-                shutil.rmtree(vcpkg / "share" / pkg, ignore_errors=True)
-                for lib in (vcpkg / "lib").glob(f"*{pkg}*"):
-                    if lib.is_file():
-                        lib.unlink()
-            
-            if incomplete:
-                print(f"Removed {len(incomplete)} incomplete package(s)")
-        except subprocess.TimeoutExpired:
-            print("CMake test timed out, skipping verification")
-        except Exception as e:
-            print(f"Verification error: {e}")
-        finally:
-            shutil.rmtree(test_build, ignore_errors=True)
-        EOF
-
-    - name: Check disk space before CMake
-      run: |
-        df -h
-        du -sh ${{ github.workspace }}/* 2>/dev/null | sort -h | tail -10
-        echo "=== /tmp usage ==="
-        df -h /tmp || true
-
-    - name: Clean /tmp before build
-      run: |
-        sudo rm -rf /tmp/* /tmp/.* 2>/dev/null || true
-        df -h /tmp || true
+        if [ ! -f vcpkg/vcpkg ]; then
+          chmod +x ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/bootstrap-vcpkg.sh
+        fi
 
     - name: Configure CMake
-      working-directory: ${{ github.workspace }}
       run: |
-        # Verify triplet is set correctly
-        echo "VCPKG_DEFAULT_TRIPLET=${VCPKG_DEFAULT_TRIPLET}"
-        # Verify build tools are available
-        which cmake
-        which make
-        which ninja
-        cmake --version
-        make --version || true
-        ninja --version || true
         cmake -S . -B build \
-          -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -G Ninja \
           -DCMAKE_BUILD_TYPE=Release \
-          -DVCPKG_TARGET_TRIPLET=x64-linux-release \
-          -DCMAKE_POLICY_DEFAULT_CMP0167=NEW
+          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DVCPKG_TARGET_TRIPLET=x64-linux-release
 
-    - name: Clean up vcpkg build artifacts (keep cached packages)
+    - name: Build
+      run: cmake --build build --parallel 2
+
+    - name: List executables
       run: |
-        # Clean up vcpkg buildtrees to save disk space
-        # Keep downloads/ and build/vcpkg_installed/ for caching
-        if [ -d "${{ github.workspace }}/vcpkg/buildtrees" ]; then
-          rm -rf ${{ github.workspace }}/vcpkg/buildtrees
-        fi
-        if [ -d "${{ github.workspace }}/build/vcpkg_installed" ]; then
-          find ${{ github.workspace }}/build/vcpkg_installed -name "buildtrees" -type d -exec rm -rf {} + 2>/dev/null || true
-        fi
-        df -h
+        echo "Built executables:"
+        find build -type f -executable | grep -E '(ceres|manif|sophus|rerun)' || true
 
-    - name: Build C++ project
-      working-directory: ${{ github.workspace }}
-      run: |
-        # Clean /tmp before starting build
-        sudo find /tmp -type f -mmin +5 -delete 2>/dev/null || true
-        df -h /tmp || true
-        cmake --build build --parallel $(nproc)
-        # Clean /tmp after build
-        sudo find /tmp -type f -mmin +1 -delete 2>/dev/null || true
-
-    - name: Clean up build artifacts (keep only binaries)
-      run: |
-        if [ -d "${{ github.workspace }}/build" ]; then
-          find ${{ github.workspace }}/build -name "*.o" -delete
-          find ${{ github.workspace }}/build -name "*.a" -delete
-          find ${{ github.workspace }}/build -name "CMakeFiles" -type d -exec rm -rf {} + 2>/dev/null || true
-        fi
-        df -h
-
-    - name: Verify build
-      working-directory: ${{ github.workspace }}
-      run: |
-        echo "=== C++ Build Verification ==="
-        ls -la build/
-        echo ""
-        echo "=== Built executables ==="
-        find build -type f -executable -name "*" ! -name "*.so" ! -name "*.a" | head -20
-
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: build-artifacts
+        path: |
+          build/ceres_*
+          build/manif_*
+          build/sophus_*
+          build/rerun
+          build/*SfM
+          build/bundle_adjuster
+        retention-days: 7
