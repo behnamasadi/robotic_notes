@@ -80,51 +80,55 @@ jobs:
     - name: Verify and fix vcpkg packages
       working-directory: ${{ github.workspace }}
       run: |
-        # Simple solution: Find all library paths in Targets.cmake and verify they exist
+        # Simple solution: Try CMake configure and fix any missing library errors
         python3 << 'EOF'
         from pathlib import Path
-        import re, shutil
+        import subprocess, re, shutil
         
         vcpkg = Path("build/vcpkg_installed/x64-linux-release")
         if not vcpkg.exists():
             exit(0)
         
-        incomplete = set()
+        # Try a test CMake configure to catch errors
+        test_build = Path("build_test")
+        test_build.mkdir(exist_ok=True)
         
-        for targets in (vcpkg / "share").rglob("*Targets.cmake"):
-            pkg = targets.parent.name
-            content = targets.read_text()
+        try:
+            result = subprocess.run(
+                ["cmake", "-S", ".", "-B", str(test_build),
+                 "-DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake",
+                 "-DVCPKG_TARGET_TRIPLET=x64-linux-release"],
+                capture_output=True, text=True, timeout=60
+            )
             
-            # Find all absolute paths to .a or .so files in the Targets.cmake
-            # This catches patterns like: "/path/to/lib/libXXX.a"
-            for match in re.finditer(r'["\']([^"\']*lib[^"\']*\.(?:a|so))["\']', content):
-                lib_str = match.group(1)
-                lib_path = Path(lib_str)
-                
-                # Resolve relative paths
-                if not lib_path.is_absolute():
-                    lib_path = (vcpkg / lib_str).resolve()
-                else:
-                    lib_path = lib_path.resolve()
-                
-                # Only check files within vcpkg directory
-                if str(vcpkg.resolve()) in str(lib_path) and lib_path.suffix in ['.a', '.so']:
-                    if not lib_path.exists():
-                        print(f"Missing library: {lib_path} (package: {pkg})")
+            # Parse CMake errors for missing libraries
+            incomplete = set()
+            for line in result.stderr.split('\n'):
+                if 'references the file' in line and 'but this file does not exist' in line:
+                    # Extract package name from error
+                    # Error format: "CMake Error at .../share/PACKAGE/PACKAGETargets.cmake"
+                    match = re.search(r'share/([^/]+)/.*Targets\.cmake', line)
+                    if match:
+                        pkg = match.group(1)
+                        print(f"Found incomplete package: {pkg}")
                         incomplete.add(pkg)
-                        break
-        
-        # Remove incomplete packages
-        for pkg in incomplete:
-            print(f"Removing incomplete package: {pkg}")
-            shutil.rmtree(vcpkg / "share" / pkg, ignore_errors=True)
-            # Clean up library files
-            for lib in (vcpkg / "lib").glob(f"*{pkg}*"):
-                if lib.is_file():
-                    lib.unlink()
-        
-        if incomplete:
-            print(f"Removed {len(incomplete)} incomplete package(s)")
+            
+            # Remove incomplete packages
+            for pkg in incomplete:
+                print(f"Removing: {pkg}")
+                shutil.rmtree(vcpkg / "share" / pkg, ignore_errors=True)
+                for lib in (vcpkg / "lib").glob(f"*{pkg}*"):
+                    if lib.is_file():
+                        lib.unlink()
+            
+            if incomplete:
+                print(f"Removed {len(incomplete)} incomplete package(s)")
+        except subprocess.TimeoutExpired:
+            print("CMake test timed out, skipping verification")
+        except Exception as e:
+            print(f"Verification error: {e}")
+        finally:
+            shutil.rmtree(test_build, ignore_errors=True)
         EOF
 
     - name: Check disk space before CMake
