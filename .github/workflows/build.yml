@@ -77,6 +77,27 @@ jobs:
         echo "VCPKG_DEFAULT_TRIPLET=x64-linux-release" >> $GITHUB_ENV
         echo "VCPKG_FORCE_SYSTEM_BINARIES=0" >> $GITHUB_ENV
 
+    - name: Verify and fix vcpkg packages
+      working-directory: ${{ github.workspace }}
+      run: |
+        # Verify cached packages are complete
+        # Check for common missing files that indicate incomplete installation
+        if [ -d "build/vcpkg_installed/x64-linux-release" ]; then
+          echo "Checking vcpkg installed packages for completeness..."
+          
+          # Check if zstd library exists when cmake files reference it
+          if [ -f "build/vcpkg_installed/x64-linux-release/share/zstd/zstdTargets.cmake" ]; then
+            if [ ! -f "build/vcpkg_installed/x64-linux-release/lib/libzstd.a" ] && \
+               [ ! -f "build/vcpkg_installed/x64-linux-release/lib/libzstd.so" ]; then
+              echo "ERROR: zstd library missing but cmake files exist. Removing incomplete zstd installation."
+              rm -rf build/vcpkg_installed/x64-linux-release/share/zstd
+              rm -rf build/vcpkg_installed/x64-linux-release/lib/libzstd*
+              rm -rf build/vcpkg_installed/x64-linux-release/include/zstd
+              echo "zstd will be reinstalled during CMake configuration"
+            fi
+          fi
+        fi
+
     - name: Check disk space before CMake
       run: |
         df -h
@@ -104,7 +125,8 @@ jobs:
         cmake -S . -B build \
           -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DCMAKE_BUILD_TYPE=Release \
-          -DVCPKG_TARGET_TRIPLET=x64-linux-release
+          -DVCPKG_TARGET_TRIPLET=x64-linux-release \
+          -DCMAKE_POLICY_DEFAULT_CMP0167=NEW
 
     - name: Clean up vcpkg build artifacts (keep cached packages)
       run: |
