@@ -1,25 +1,3 @@
-# import gtsam
-# import numpy as np
-# import math
-
-# # Create an empty nonlinear factor graph
-# graph = gtsam.NonlinearFactorGraph()
-
-# # Add a prior on pose x1 (key 1)
-# prior_mean = gtsam.Pose2(0.0, 0.0, 0.0)  # (x, y, theta)
-# prior_noise = gtsam.noiseModel.Diagonal.Sigmas(np.array([0.3, 0.3, 0.1]))
-# graph.add(gtsam.PriorFactorPose2(1, prior_mean, prior_noise))
-
-# # Odometry measurement: move forward 2m
-# odometry = gtsam.Pose2(2.0, 0.0, 0.0)
-# odometry_noise = gtsam.noiseModel.Diagonal.Sigmas(np.array([0.2, 0.2, 0.1]))
-
-# # Add two odometry (Between) factors
-# graph.add(gtsam.BetweenFactorPose2(1, 2, odometry, odometry_noise))
-# graph.add(gtsam.BetweenFactorPose2(2, 3, odometry, odometry_noise))
-
-# print("Factor Graph:")
-# graph.print()
 
 import numpy as np
 import matplotlib.pyplot as plt
