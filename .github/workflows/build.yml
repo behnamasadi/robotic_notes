@@ -33,8 +33,14 @@ jobs:
           ninja-build \
           pkg-config \
           autoconf \
+          autoconf-archive \
           automake \
-          libtool
+          libtool \
+          bison \
+          flex \
+          libx11-dev \
+          libxft-dev \
+          libxext-dev
         sudo apt-get clean
 
     - name: Cache vcpkg
