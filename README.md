@@ -28,57 +28,6 @@ cd /home/$USER/workspace/robotic_notes
 git submodule update --init --recursive
 ```
 
-If you need to add vcpkg as a submodule (if not already configured):
-
-```
-cd /home/$USER/workspace/robotic_notes
-git submodule add https://github.com/microsoft/vcpkg.git vcpkg
-```
-
-Then run the bootstrap script. On Windows:
-
-```
-.\vcpkg\bootstrap-vcpkg.bat
-```
-
-On bash:
-
-```
-./vcpkg/bootstrap-vcpkg.sh
-```
-
-The bootstrap script performs prerequisite checks and downloads the vcpkg executable.
-
-To update vcpkg to the latest version (when using as a submodule):
-
-```
-cd /home/$USER/workspace/robotic_notes
-git submodule update --remote vcpkg
-```
-
-This will fetch the latest changes from the vcpkg repository and update the submodule to the latest commit.
-
-**Important:** After updating vcpkg, it will show as modified in `git status` because the submodule is now pointing to a different commit than what's recorded in the parent repository. To persist this update:
-
-```
-git add vcpkg
-git commit -m "Update vcpkg submodule to latest version"
-```
-
-To check the status of your submodules:
-```
-git submodule status
-```
-
-If you see a `+` prefix, it means the submodule has new commits that aren't recorded in the parent repository yet.
-
-To reset vcpkg back to the commit recorded in the parent repository (if you don't want the update):
-```
-git submodule update vcpkg
-```
-
-**Note:** When using vcpkg in manifest mode (with `vcpkg.json`), you don't need to run `vcpkg update`. Instead, modify your `vcpkg.json` file and run `cmake` again, which will automatically install the updated packages. However, updating the vcpkg submodule itself can bring bug fixes and new features to the vcpkg tool.
-
 set the path:
 
 ```
@@ -93,9 +42,6 @@ Install required system dependencies for vcpkg (on Linux):
 sudo apt-get install -y bison flex build-essential cmake autoconf autoconf-archive automake libtool libltdl-dev libx11-dev libxft-dev libxext-dev libxtst-dev libxrandr-dev ninja-build pkg-config
 ```
 
-These dependencies are needed for vcpkg to build packages like `gettext`, `gperf`, `cairo` (with x11 feature), `at-spi2-core`, `gtk3`, `libxcrypt`, and other C++ libraries. The `libltdl-dev` package provides libtool development files required by `libxcrypt`. The `ninja-build` and `pkg-config` packages are required for meson-based builds.
-
-**Note:** The CMakeLists.txt is configured to build only release versions of vcpkg packages (not debug) to reduce build time and disk usage. This means you'll only see `-- Configuring x64-linux-rel` and not `-- Configuring x64-linux-dbg` when building. If you need debug builds, you can override this by setting `-DVCPKG_TARGET_TRIPLET=x64-linux` when running cmake.
 
 Now you can run:
 
@@ -113,82 +59,6 @@ The `VCPKG_TARGET_TRIPLET=x64-linux-release` option ensures vcpkg only builds re
 ```
 cmake --build build --parallel
 ```
-
-### Testing CI/CD Locally
-
-You can test the GitHub Actions workflow locally before pushing using [`act`](https://github.com/nektos/act), which runs GitHub Actions workflows in Docker containers.
-
-**Prerequisites:**
-- Docker installed and running
-- `act` installed (check with `which act`)
-
-**Install `act` (if not already installed):**
-```bash
-# On Linux/macOS
-curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
-
-# Or using package managers
-# Ubuntu/Debian
-sudo apt-get install act
-
-# macOS
-brew install act
-```
-
-**Quick test (CMake configuration only):**
-```bash
-cd /home/$USER/workspace/robotic_notes
-# Test just the CMake configuration step (dry run)
-act -j build -s GITHUB_TOKEN=dummy --dryrun
-```
-
-**Full workflow test (takes 30+ minutes):**
-```bash
-cd /home/$USER/workspace/robotic_notes
-# Run the full workflow
-act workflow_dispatch \
-  -W . \
-  --container-architecture linux/amd64 \
-  -P ubuntu-latest=catthehacker/ubuntu:act-latest \
-  --verbose
-```
-
-**Test specific job:**
-```bash
-# Run just the build job
-act -j build -W . \
-  --container-architecture linux/amd64 \
-  -P ubuntu-latest=catthehacker/ubuntu:act-latest
-```
-
-**Notes:**
-- First run will download Docker images (can be large, ~10GB+)
-- Full build takes 30+ minutes as it builds all dependencies from scratch
-- Uses your local files, so you can test changes immediately
-- Some steps may behave slightly differently than on GitHub Actions
-
-**Faster alternative - test CMake configuration manually:**
-```bash
-cd /home/$USER/workspace/robotic_notes
-# Clean build directory
-rm -rf build
-# Run the same CMake command as CI/CD
-cmake -S . -B build \
-  -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DVCPKG_TARGET_TRIPLET=x64-linux-release
-```
-
-To build the `rerun`, just comment everything in the `CMakeLists.txt`  and only leave this part:
-
-```
-include(FetchContent)
-FetchContent_Declare(rerun_sdk URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip)
-FetchContent_MakeAvailable(rerun_sdk)
-```
-
-**Note:** Building `arrow_cpp` (which is a dependency of rerun_sdk) can take a very long time and may fail with compilation errors (e.g., abseil build failures with newer GCC versions like GCC 13). If you encounter build errors with arrow_cpp, comment out all other code in `CMakeLists.txt` and only keep the rerun SDK part above. Also install the rerun server via:
-
 
 ### Python Dependencies
 
@@ -220,84 +90,13 @@ pip install pyceres
 pip install liegroups
 ```
 
-### Docker Setup (ROS2 Humble + Gazebo Fortress)
-
-A Dockerfile is provided for a complete development environment with ROS2 Humble and Gazebo Fortress pre-installed. This is the recommended way to work with ROS2 and Gazebo integration.
-
-**Build the Docker image:**
-
-```bash
-cd /home/$USER/workspace/robotic_notes
-docker build -t ros2-humble-gazebo-fortress .
-```
-
-**Run the container:**
-
-```bash
-# Basic run
-docker run -it --rm ros2-humble-gazebo-fortress
-
-# With X11 forwarding for GUI applications (rviz2, rqt, Gazebo)
-docker run -it --rm \
-  -e DISPLAY=$DISPLAY \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  ros2-humble-gazebo-fortress
-
-# With GPU support (for NVIDIA GPUs)
-docker run -it --rm \
-  --gpus all \
-  -e DISPLAY=$DISPLAY \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  ros2-humble-gazebo-fortress
-
-# With workspace mount
-docker run -it --rm \
-  -e DISPLAY=$DISPLAY \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v $(pwd):/workspace \
-  ros2-humble-gazebo-fortress
-```
-
-**Delete existing containers:**
-
-```bash
-# List all containers (including stopped ones)
-docker ps -a
-
-# Stop a running container (replace CONTAINER_ID or NAME with your container)
-docker stop CONTAINER_ID_OR_NAME
-
-# Delete a stopped container
-docker rm CONTAINER_ID_OR_NAME
-
-# Force delete a running container
-docker rm -f CONTAINER_ID_OR_NAME
-
-# Delete all stopped containers
-docker container prune
-
-# Delete all containers (stopped and running) - use with caution!
-docker rm -f $(docker ps -aq)
-```
-
-The Dockerfile includes:
-- ROS2 Humble Desktop (full installation)
-- Gazebo Fortress (Gazebo Sim v6)
-- ROS2-Gazebo integration packages (`ros-humble-ros-gz`, `ros-humble-ros-gz-bridge`, etc.)
-- Navigation2, SLAM Toolbox, RViz2, and other common ROS2 packages
-- Development tools and dependencies
-- `gz` command wrapper for backward compatibility (maps `gz sim` → `ign gazebo`)
-
-For detailed installation instructions, usage examples, and troubleshooting, see [ROS2 Gazebo Integration Documentation](docs/ros2_gazebo_integration.md).
-
-
 
 
 # [Lie Group and Lie Algebra](#)
-- [Lie Group and Lie Algebra](docs/lie_group_lie_algebra/index.ipynb)   
-- [manif](docs/slam/manif.ipynb)   
-  * [SE2 localization](docs/slam/se2_localization.ipynb)
-  * [SE2 SAM](docs/slam/se2_sam.ipynb)
+- [Lie Group and Lie Algebra](docs/lie_group_lie_algebra.ipynb)   
+- [manif](docs/manif.ipynb)   
+  * [SE2 localization](docs/se2_localization.ipynb)
+  * [SE2 SAM](docs/se2_sam.ipynb)
 - [Sophus](https://github.com/strasdat/Sophus)  
 
 # [Topology and Configuration of Robot and Space](#)
@@ -330,7 +129,7 @@ For detailed installation instructions, usage examples, and troubleshooting, see
   - [Forward Kinematics for Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#11-forward-kinematics-for-differential-drive-robots)
   - [Inverse Kinematics of Differential Drive Robots](docs/differential_drive_robots_and_wheel_odometry.md#12--inverse-kinematics-of-differential-drive-robots)
   - [Odometry-based](docs/differential_drive_robots_and_wheel_odometry.md#2-odometry-based)
-- [Nonlinear uncertainty model associated with a robot's position over time (The Banana Distribution is Gaussian)](docs/slam/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
+- [Nonlinear uncertainty model associated with a robot's position over time (The Banana Distribution is Gaussian)](docs/nonlinear_uncertainty_model_associated_with_robot_position_banana_shape_.ipynb)
 
 # [IMU](#)
 
@@ -474,38 +273,36 @@ For detailed installation instructions, usage examples, and troubleshooting, see
 - [MarsLogger](docs/mars_logger.md)
 
 # [State Estimation](#)
-- [Bayes filter](docs/state_estimation.md#bayes-filter)
-- [Extended Kalman Filter](docs/state_estimation.md#extended-kalman-filter)
-- [EKF Implementations](docs/state_estimation.md#ekf-implementations)
-- [EKF for Differential Drive Robot](docs/state_estimation.md#ekf-for-differential-drive-robot)
-- [EKF](docs/ekf.ipynb)
-- [Invariant extended Kalman filter EKF](https://en.wikipedia.org/wiki/Invariant_extended_Kalman_filter)  
+- [Bayes Filter](docs/bayes_filter.ipynb)
+- [Kalman Filter](docs/kalman_filter.ipynb)
+- [Extended Kalman Filter](docs/extended_kalman_filter.ipynb)
+- [Extended Kalman Filter for Differential Drive Robot](docs/extended_kalman_filter.ipynb#EKF-for-Differential-Drive-Robot)
+- [Error Estate Extended Kalman Filter](docs/error_estate_extended_kalman_filter_vio.ipynb)
+- [Error State Extended Kalman Filter(IMU, a GNSS, and a LiDAR)](https://github.com/enginBozkurt/Error-State-Extended-Kalman-Filter)  
 - [Multi-State Constraint Kalman Filter (MSCKF)](https://docs.openvins.com/namespaceov__msckf.html)  
-- [STATE ESTIMATION FOR ROBOTICS](docs/state_estimation.md#state-estimation-for-robotics)  
-- [FilterPy](docs/state_estimation.md#filterpy)  
 - [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/pdf/1711.02508)
-- [Error State Kalman Filter (ESKF)](https://github.com/je310/ESKF?tab=readme-ov-file)
-- [Error State Extended Kalman Filter EFK ES](https://notanymike.github.io/Error-State-Extended-Kalman-Filter/)  
-- [Error-State-Extended-Kalman-Filter(IMU, a GNSS, and a LiDAR)](https://github.com/enginBozkurt/Error-State-Extended-Kalman-Filter)  
 
 
 # [Bag of Words](#)
 - [FBOW (Fast Bag of Words)](https://github.com/rmsalinas/fbow)
 - [AnyLoc: Towards Universal Visual Place Recognition](https://github.com/AnyLoc/AnyLoc)
 
+# [Rerun](#)
+- [Rerun](docs/rerun.ipynb)
+
 
 # [SLAM](#)
-- [Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/slam/active_exposure_control_HDR_environments.md)
-- [Pose Graph SLAM](docs/slam/pose_graph_slam.ipynb)
+- [Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/active_exposure_control_HDR_environments.md)
+- [Pose Graph SLAM from Scratch](docs/pose_graph_slam.ipynb)
 - [nano-pgo](https://github.com/gisbi-kim/nano-pgo)
-- [g2o](docs/slam/g2o.md)  
-- [Factor Graph GTSAM iSAM2](docs/slam/factor_graph_gtsam_isam2.ipynb)  
+- [g2o](docs/g2o.md)  
+- [Factor Graph GTSAM iSAM2](docs/factor_graph_gtsam_isam2.ipynb)  
 - [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
 - [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
 - [Hierarchical, multi-resolution volumetric mapping (wavemap)](https://github.com/ethz-asl/wavemap)  
 - [kiss-icp](https://github.com/PRBonn/kiss-icp?tab=readme-ov-file)  
 - [TagSLAM SLAM with tags](https://berndpfrommer.github.io/tagslam_web/)  
-- [OpenDroneMap](docs/slam/open_drone_map.md)  
+- [OpenDroneMap](docs/open_drone_map.md)  
 - [Interactive SLAM](https://github.com/SMRT-AIST/interactive_slam)  
 - [Volumetric TSDF Fusion of Multiple Depth Maps](https://github.com/andyzeng/tsdf-fusion)  
 - [Euclidean Signed Distance Field (ESDF)](https://github.com/HKUST-Aerial-Robotics/FIESTA?tab=readme-ov-file)  
@@ -513,11 +310,23 @@ For detailed installation instructions, usage examples, and troubleshooting, see
 - [Multisensor-aided Inertial Navigation System (MINS)](https://github.com/rpng/MINS)  
 - [GLOMAP explained](https://www.youtube.com/watch?v=lYC-oMSCNOE)
 - [Zero-Shot Point Cloud Registration](https://github.com/MIT-SPARK/BUFFER-X)
+- [Add Apriltag to loop closure](https://berndpfrommer.github.io/tagslam_web/)
+- [Navtech Radar SLAM](https://github.com/gisbi-kim/navtech-radar-slam)
 
 
-#  Ceres Non-linear Least Squares
+# [Shape Analysis](#)
+- [Procrustes Analysis](shape_analysis.ipynb#procrustes-analysis)
+- [Wahba's Problem](shape_analysis.ipynb#wahba-s-problem)
+- [Quaternion Estimator Algorithm (QUEST)](shape_analysis.ipynb#quaternion-estimator-algorithm--quest-)
+- [Kabsch Algorithm](shape_analysis.ipynb#kabsch-algorithm)
+- [Umeyama Algorithm](shape_analysis.ipynb#umeyama-algorithm)
+- [Iterative Closest Point (ICP)](shape_analysis.ipynb#iterative-closest-point--icp-)
 
 
+
+# [Ceres](#)
+- [Non-linear Least Squares](docs/ceres.ipynb#Residuals-for-Bundle-Adjustment)
+- [Bundle Adjustment with Ceres](docs/ceres.ipynb#Residuals-for-Bundle-Adjustment)
 
 
 # [Visual and Inertial Odometry VIO](#)
@@ -525,8 +334,8 @@ For detailed installation instructions, usage examples, and troubleshooting, see
 - [Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)  
 - [HybVIO](https://github.com/SpectacularAI/HybVIO/t)  
 - [SVO Pro](https://github.com/uzh-rpg/rpg_svo_pro_open)  
-- [OpenVINS](docs/slam/open_vins.md)  
-  - [OpenVINS Multi-Camera Extension](docs/slam/open_vins.md#openvins-multi-camera-extension)  
+- [OpenVINS](docs/open_vins.md)  
+  - [OpenVINS Multi-Camera Extension](docs/open_vins.md#openvins-multi-camera-extension)  
   - [Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)  
   - [IMU Propagation Derivations openvin](https://docs.openvins.com/propagation.html)  
 - [Error State Kalman Filter VIO (ESKF-VIO)](docs/eskf_vio.ipynb)
@@ -534,41 +343,32 @@ For detailed installation instructions, usage examples, and troubleshooting, see
 - [3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)  
 
 # [SLAM Benchmark ](#)
-- [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/slam/visual_Inertial_SLAM_comparison.md)  
+- [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/visual_Inertial_SLAM_comparison.md)  
 - [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
 - [ETH3D](https://www.eth3d.net/slam_overview)  
 - [rvp group](https://rvp-group.net/slam-dataset.html)  
 
-# Lidar and IMU LIO
-- [A Stereo Event Camera Dataset for Driving Scenarios DSEC](docs/slam/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)  
-- [FAST-LIO (Fast LiDAR-Inertial Odometry)](docs/slam/lidar_and_imu.md#fast-lio--fast-lidar-inertial-odometry-)  
-- [incremental Generalized Iterative Closest Point (GICP) based tightly-coupled LiDAR-inertial odometry (LIO), iG-LIO](docs/slam/lidar_and_imu.md#incremental-generalized-iterative-closest-point--gicp--based-tightly-coupled-lidar-inertial-odometry--lio---ig-lio)  
-- [Direct LiDAR-Inertial Odometry: Lightweight LIO with Continuous-Time Motion Correction](docs/slam/lidar_and_imu.md#direct-lidar-inertial-odometry--lightweight-lio-with-continuous-time-motion-correction)  
-- [Robust Real-time LiDAR-inertial Initialization](docs/slam/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)  
-- [CT-LIO: Continuous-Time LiDAR-Inertial Odometry](docs/slam/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)  
+
+# [Lidar and IMU LIO](#)
+- [A Stereo Event Camera Dataset for Driving Scenarios DSEC](docs/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)  
+- [FAST-LIO (Fast LiDAR-Inertial Odometry)](docs/lidar_and_imu.md#fast-lio--fast-lidar-inertial-odometry-)  
+- [incremental Generalized Iterative Closest Point (GICP) based tightly-coupled LiDAR-inertial odometry (LIO), iG-LIO](docs/lidar_and_imu.md#incremental-generalized-iterative-closest-point--gicp--based-tightly-coupled-lidar-inertial-odometry--lio---ig-lio)  
+- [Direct LiDAR-Inertial Odometry: Lightweight LIO with Continuous-Time Motion Correction](docs/lidar_and_imu.md#direct-lidar-inertial-odometry--lightweight-lio-with-continuous-time-motion-correction)  
+- [Robust Real-time LiDAR-inertial Initialization](docs/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)  
+- [CT-LIO: Continuous-Time LiDAR-Inertial Odometry](docs/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)  
 - [Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)  
 - [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM/tree/ros2)  
 - [GLIM](https://github.com/koide3/glim)  
 - [Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
 
 
-# Radar SLAM
-- [Navtech-Radar-SLAM](https://github.com/gisbi-kim/navtech-radar-slam)
-
-
-
-## Add Apriltag to loop closure
-
-Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
-
-
-
 
 
 # [Structure-from-Motion](#)
+- [Structure from Motion from Scratch](docs/sfm.ipynb)
 - [Robust Rotation Averaging](https://www.youtube.com/watch?v=oAR-LMStRS4)
 - [Bundler](https://www.cs.cornell.edu/~snavely/bundler/bundler-v0.4-manual.html)
-- [Noah Snavely Reprojection Error](docs/slam/noah_snavely_reprojection_error.ipynb)
+- [Noah Snavely Reprojection Error](docs/noah_snavely_reprojection_error.ipynb)
 - [Global Structure-from-Motion Revisited](https://arxiv.org/pdf/2407.20219)
 - [LightGlue](https://github.com/cvg/LightGlue)
 - [DenseSFM](https://github.com/tsattler/visuallocalizationbenchmark)
@@ -576,18 +376,16 @@ Refs: [1](https://berndpfrommer.github.io/tagslam_web/)
 - [image-matching-webui](https://huggingface.co/spaces/Realcat/image-matching-webui)
 
 
-
-
 # [Deep Learning based SLAM](#)
-- [Gaussian Splatting](docs/slam/gaussian_splatting.md)  
+- [Gaussian Splatting](docs/gaussian_splatting.md)  
 - [GANeRF](https://github.com/barbararoessle/ganerf)  
 - [DSAC*](https://github.com/vislearn/dsacstar)  
 - [Tracking Any Point (TAP)](https://github.com/google-deepmind/tapnet)  
 - [image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)  
 - [Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)  
 - [Hierarchical Localization](https://github.com/cvg/Hierarchical-Localization)  
-- [instant-ngp](docs/slam/instant_ngp.md)  
-- [NeRF-SLAM](docs/slam/NeRF-SLAM.md)  
+- [instant-ngp](docs/instant_ngp.md)  
+- [NeRF-SLAM](docs/NeRF-SLAM.md)  
 - [DROID-SLAM](https://github.com/princeton-vl/DROID-SLAM?tab=readme-ov-file)  
 - [ACE0](https://github.com/nianticlabs/acezero)  
 - [A Hierarchical 3D Gaussian Representation for Real-Time Rendering of Very Large Datasets](https://arxiv.org/pdf/2406.12080)  - 
