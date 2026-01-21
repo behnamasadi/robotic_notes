@@ -332,7 +332,7 @@ pip install liegroups
 # [Visual and Inertial Odometry VIO](#)
 
 - [Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)  
-- [HybVIO](https://github.com/SpectacularAI/HybVIO/t)  
+- [HybVIO](https://github.com/SpectacularAI/HybVIO/)  
 - [SVO Pro](https://github.com/uzh-rpg/rpg_svo_pro_open)  
 - [OpenVINS](docs/open_vins.md)  
   - [OpenVINS Multi-Camera Extension](docs/open_vins.md#openvins-multi-camera-extension)  
