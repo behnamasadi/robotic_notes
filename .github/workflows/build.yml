@@ -80,7 +80,7 @@ jobs:
     - name: Verify and fix vcpkg packages
       working-directory: ${{ github.workspace }}
       run: |
-        # Simple solution: Check Targets.cmake files for missing libraries
+        # Simple solution: Find all library paths in Targets.cmake and verify they exist
         python3 << 'EOF'
         from pathlib import Path
         import re, shutil
@@ -90,13 +90,27 @@ jobs:
             exit(0)
         
         incomplete = set()
+        
         for targets in (vcpkg / "share").rglob("*Targets.cmake"):
             pkg = targets.parent.name
-            with open(targets) as f:
-                # Find library paths in Targets.cmake
-                for match in re.findall(r'["\']([^"\']*lib[^"\']*\.(?:a|so))["\']', f.read()):
-                    lib = vcpkg / match if not Path(match).is_absolute() else Path(match)
-                    if not lib.exists() and str(lib).startswith(str(vcpkg)):
+            content = targets.read_text()
+            
+            # Find all absolute paths to .a or .so files in the Targets.cmake
+            # This catches patterns like: "/path/to/lib/libXXX.a"
+            for match in re.finditer(r'["\']([^"\']*lib[^"\']*\.(?:a|so))["\']', content):
+                lib_str = match.group(1)
+                lib_path = Path(lib_str)
+                
+                # Resolve relative paths
+                if not lib_path.is_absolute():
+                    lib_path = (vcpkg / lib_str).resolve()
+                else:
+                    lib_path = lib_path.resolve()
+                
+                # Only check files within vcpkg directory
+                if str(vcpkg.resolve()) in str(lib_path) and lib_path.suffix in ['.a', '.so']:
+                    if not lib_path.exists():
+                        print(f"Missing library: {lib_path} (package: {pkg})")
                         incomplete.add(pkg)
                         break
         
@@ -104,10 +118,9 @@ jobs:
         for pkg in incomplete:
             print(f"Removing incomplete package: {pkg}")
             shutil.rmtree(vcpkg / "share" / pkg, ignore_errors=True)
-            for lib in (vcpkg / "lib").glob(f"lib{pkg}*"):
-                lib.unlink()
-            if pkg.startswith("boost_"):
-                for lib in (vcpkg / "lib").glob(f"libboost_{pkg[6:]}*"):
+            # Clean up library files
+            for lib in (vcpkg / "lib").glob(f"*{pkg}*"):
+                if lib.is_file():
                     lib.unlink()
         
         if incomplete:
