@@ -80,23 +80,39 @@ jobs:
     - name: Verify and fix vcpkg packages
       working-directory: ${{ github.workspace }}
       run: |
-        # Verify cached packages are complete
-        # Check for common missing files that indicate incomplete installation
-        if [ -d "build/vcpkg_installed/x64-linux-release" ]; then
-          echo "Checking vcpkg installed packages for completeness..."
-          
-          # Check if zstd library exists when cmake files reference it
-          if [ -f "build/vcpkg_installed/x64-linux-release/share/zstd/zstdTargets.cmake" ]; then
-            if [ ! -f "build/vcpkg_installed/x64-linux-release/lib/libzstd.a" ] && \
-               [ ! -f "build/vcpkg_installed/x64-linux-release/lib/libzstd.so" ]; then
-              echo "ERROR: zstd library missing but cmake files exist. Removing incomplete zstd installation."
-              rm -rf build/vcpkg_installed/x64-linux-release/share/zstd
-              rm -rf build/vcpkg_installed/x64-linux-release/lib/libzstd*
-              rm -rf build/vcpkg_installed/x64-linux-release/include/zstd
-              echo "zstd will be reinstalled during CMake configuration"
-            fi
-          fi
-        fi
+        # Simple solution: Check Targets.cmake files for missing libraries
+        python3 << 'EOF'
+        from pathlib import Path
+        import re, shutil
+        
+        vcpkg = Path("build/vcpkg_installed/x64-linux-release")
+        if not vcpkg.exists():
+            exit(0)
+        
+        incomplete = set()
+        for targets in (vcpkg / "share").rglob("*Targets.cmake"):
+            pkg = targets.parent.name
+            with open(targets) as f:
+                # Find library paths in Targets.cmake
+                for match in re.findall(r'["\']([^"\']*lib[^"\']*\.(?:a|so))["\']', f.read()):
+                    lib = vcpkg / match if not Path(match).is_absolute() else Path(match)
+                    if not lib.exists() and str(lib).startswith(str(vcpkg)):
+                        incomplete.add(pkg)
+                        break
+        
+        # Remove incomplete packages
+        for pkg in incomplete:
+            print(f"Removing incomplete package: {pkg}")
+            shutil.rmtree(vcpkg / "share" / pkg, ignore_errors=True)
+            for lib in (vcpkg / "lib").glob(f"lib{pkg}*"):
+                lib.unlink()
+            if pkg.startswith("boost_"):
+                for lib in (vcpkg / "lib").glob(f"libboost_{pkg[6:]}*"):
+                    lib.unlink()
+        
+        if incomplete:
+            print(f"Removed {len(incomplete)} incomplete package(s)")
+        EOF
 
     - name: Check disk space before CMake
       run: |
