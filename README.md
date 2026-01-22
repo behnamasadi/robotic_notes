@@ -277,7 +277,7 @@ pip install liegroups
 - [Kalman Filter](docs/kalman_filter.ipynb)
 - [Extended Kalman Filter](docs/extended_kalman_filter.ipynb)
 - [Extended Kalman Filter for Differential Drive Robot](docs/extended_kalman_filter.ipynb#EKF-for-Differential-Drive-Robot)
-- [Error Estate Extended Kalman Filter](docs/error_estate_extended_kalman_filter_vio.ipynb)
+- [Error State Extended Kalman Filter](docs/error_state_extended_kalman_filter_vio.ipynb)
 - [Error State Extended Kalman Filter(IMU, a GNSS, and a LiDAR)](https://github.com/enginBozkurt/Error-State-Extended-Kalman-Filter)  
 - [Multi-State Constraint Kalman Filter (MSCKF)](https://docs.openvins.com/namespaceov__msckf.html)  
 - [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/pdf/1711.02508)
