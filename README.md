@@ -347,6 +347,7 @@ pip install liegroups
 - [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
 - [ETH3D](https://www.eth3d.net/slam_overview)  
 - [rvp group](https://rvp-group.net/slam-dataset.html)  
+- [M3DGR: A Multi-sensor, Multi-scenario and Massive-baseline SLAM Dataset for Ground Robots](https://github.com/sjtuyinjie/M3DGR)  
 
 
 # [Lidar and IMU LIO](#)
@@ -360,6 +361,7 @@ pip install liegroups
 - [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM/tree/ros2)  
 - [GLIM](https://github.com/koide3/glim)  
 - [Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
+- [Fast LiDAR SLAM](https://github.com/93won/lidar_odometry)
 
 
 
@@ -408,6 +410,11 @@ pip install liegroups
 - [MAGiC-SLAM: Multi-Agent Gaussian Globally Consistent SLAM](https://vladimiryugay.github.io/magic_slam/index.html)  
 - [Speedy MASt3R](https://arxiv.org/html/2503.10017v1)  
 - [CURL-MAP](https://github.com/SenseRoboticsLab/CURL-MAP)  
+- [Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3)  
+- [SLAM3R Real-Time Dense Scene Reconstruction from Monocular RGB Videos](https://github.com/PKU-VCL-3DV/SLAM3R)  
+- [Human3R: Everyone Everywhere All at Once](https://github.com/fanegg/Human3R)  
+- [Describe Anything, Anywhere, at Any Moment (DAAAM)](https://github.com/MIT-SPARK/DAAAM)  
+- [Generative View Stitching](https://github.com/andrewsonga/generative_view_stitching)  
 
 
 # [Gaussian Splat](#)
@@ -440,7 +447,8 @@ pip install liegroups
 - [Awesome-LiDAR-Camera-Calibration](https://github.com/Deephome/Awesome-LiDAR-Camera-Calibration)  
 
 
-
+# [Courses](#)
+- [MIT16.485 - Visual Navigation for Autonomous Vehicles](https://vnav.mit.edu/)  
 
 
 # [E-Books and Refs](#)
