@@ -359,7 +359,7 @@ pip install liegroups
 - [CT-LIO: Continuous-Time LiDAR-Inertial Odometry](docs/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)  
 - [Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)  
 - [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM/tree/ros2)  
-- [GLIM](https://github.com/koide3/glim)  
+- [GLIM - versatile and extensible range-based 3D mapping framework](https://github.com/koide3/glim)  
 - [Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
 - [Fast LiDAR SLAM](https://github.com/93won/lidar_odometry)
 
@@ -373,6 +373,7 @@ pip install liegroups
 - [Noah Snavely Reprojection Error](docs/noah_snavely_reprojection_error.ipynb)
 - [Global Structure-from-Motion Revisited](https://arxiv.org/pdf/2407.20219)
 - [LightGlue](https://github.com/cvg/LightGlue)
+- [XRefine: Attention-Guided Keypoint Match Refinement](https://github.com/boschresearch/xrefine)
 - [DenseSFM](https://github.com/tsattler/visuallocalizationbenchmark)
 - [Pixel-Perfect Structure-from-Motion](https://github.com/cvg/pixel-perfect-sfm)
 - [image-matching-webui](https://huggingface.co/spaces/Realcat/image-matching-webui)
@@ -415,6 +416,7 @@ pip install liegroups
 - [Human3R: Everyone Everywhere All at Once](https://github.com/fanegg/Human3R)  
 - [Describe Anything, Anywhere, at Any Moment (DAAAM)](https://github.com/MIT-SPARK/DAAAM)  
 - [Generative View Stitching](https://github.com/andrewsonga/generative_view_stitching)  
+- [Thinking with Camera: A Unified Multimodal Model for Camera-Centric Understanding and Generation (ICLR 2026)](https://github.com/KangLiao929/Puffin)  
 
 
 # [Gaussian Splat](#)
