@@ -343,6 +343,7 @@ pip install liegroups
 - [3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)  
 
 # [SLAM Benchmark ](#)
+- [Hilti x Trimble SLAM Challenge 2026](https://hilti-trimble-challenge.com/)  
 - [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/visual_Inertial_SLAM_comparison.md)  
 - [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
 - [ETH3D](https://www.eth3d.net/slam_overview)  
