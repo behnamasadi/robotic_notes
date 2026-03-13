@@ -63,9 +63,8 @@ cmake --build build --parallel
 ### Python Dependencies
 
 ```
-conda create -n robotic_notes
+conda create -n robotic_notes  python=3.12 -y
 conda activate robotic_notes
-conda install python=3.13
 cd /home/$USER/anaconda3/envs/robotic_notes/
 ```
 
@@ -77,18 +76,22 @@ ln -s /home/$USER/workspace/robotic_notes /home/$USER/anaconda3/envs/robotic_not
 
 Install the python packages:
 ```
-pip3 install rerun-sdk
 conda install -c conda-forge opencv
 pip install graphslam
 conda install conda-forge::gtsam
 conda install conda-forge::matplotlib
 conda install conda-forge::plotly
 conda install -c conda-forge jupyterlab
-pip install gradio_rerun
 pip install ahrs
 pip install pyceres
 pip install liegroups
+pip install "rerun-sdk==0.29.2"
+pip install "gradio_rerun==0.29.2"
+pip install "gradio==6.5.1"
 ```
+
+
+
 
 
 
@@ -289,6 +292,7 @@ pip install liegroups
 
 # [Rerun](#)
 - [Rerun](docs/rerun.ipynb)
+- [gradio-rerun viewer](docs/gradio_rerun_viewer.md)
 
 
 # [SLAM](#)
