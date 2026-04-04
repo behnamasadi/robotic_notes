@@ -34,7 +34,7 @@ rr.log(
 # Get path relative to script location
 script_dir = Path(__file__).resolve().parent
 image_path = (
-    script_dir / "../../data/sfm/south-building/images/P1180141.JPG").resolve()
+    script_dir / "images/P1180141.JPG").resolve()
 img = cv2.imread(str(image_path))
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
