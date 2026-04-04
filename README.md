@@ -85,9 +85,11 @@ conda install -c conda-forge jupyterlab
 pip install ahrs
 pip install pyceres
 pip install liegroups
-pip install "rerun-sdk==0.29.2"
+pip install rerun-sdk[notebook]==0.29.2
 pip install "gradio_rerun==0.29.2"
 pip install "gradio==6.5.1"
+pip install ipykernel
+pip install jupyterlab
 ```
 
 
