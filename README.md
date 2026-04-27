@@ -97,6 +97,19 @@ pip install jupyterlab
 
 
 
+# [Robotic System Design & Design Patterns](#)
+- [Robotic System Design & Design Patterns](docs/robotic_system_design.md)
+  * [High-Level Architecture of a Humanoid Robot](docs/robotic_system_design.md#1-high-level-architecture-of-a-humanoid-robot)
+  * [Perception Pipeline: Consistency, Robustness, Synchronization](docs/robotic_system_design.md#2-perception-pipeline-consistency-robustness-synchronization)
+  * [High-Frequency Sensor Pipelines in C++](docs/robotic_system_design.md#3-high-frequency-sensor-pipelines-in-c)
+  * [Concurrency & Real-Time: SPMC Sensor Distribution](docs/robotic_system_design.md#4-concurrency--real-time-spmc-sensor-distribution)
+  * [Task Execution: State Machine vs Behavior Tree](docs/robotic_system_design.md#5-task-execution-state-machine-vs-behavior-tree)
+  * [Debugging a Regressing Perception Model in Production](docs/robotic_system_design.md#6-debugging-a-regressing-perception-model-in-production)
+  * [Time Synchronization](docs/robotic_system_design.md#7-time-synchronization)
+  * [Safety & Fault Tolerance](docs/robotic_system_design.md#8-safety--fault-tolerance)
+  * [Logging, Observability & Replay](docs/robotic_system_design.md#9-logging-observability--replay)
+
+
 # [Lie Group and Lie Algebra](#)
 - [Lie Group and Lie Algebra](docs/lie_group_lie_algebra.ipynb)   
 - [manif](docs/manif.ipynb)   
