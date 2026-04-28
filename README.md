@@ -55,6 +55,17 @@ cmake -S . -B build \
 
 The `VCPKG_TARGET_TRIPLET=x64-linux-release` option ensures vcpkg only builds release packages, which significantly reduces build time (especially for large packages like OpenCV) and disk space usage. This is already configured in CMakeLists.txt, but you can explicitly set it as shown above.
 
+The Rerun C++ SDK (and its Arrow dependency) is **disabled by default** because the SDK is downloaded and built via `FetchContent`, which is heavy. The Python `rerun-sdk` package covers the same use cases for the notebooks. To opt in and build the rerun-dependent C++ targets, add the following flags:
+
+```
+cmake -S . -B build \
+  -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DVCPKG_TARGET_TRIPLET=x64-linux-release \
+  -DBUILD_RERUN_EXAMPLES=ON \
+  -DVCPKG_MANIFEST_FEATURES=rerun
+```
+
 
 ```
 cmake --build build --parallel
