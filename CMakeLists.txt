@@ -126,7 +126,23 @@ target_link_libraries(manif_se2_localization PRIVATE MANIF::manif)
 add_executable(sophus_examples src/sophus_examples/useSophus.cpp)
 target_link_libraries(sophus_examples PRIVATE Sophus::Sophus)
 
-# Camera examples (Linux-only: V4L2 zero-copy capture)
+# Camera examples
+# Conceptual zero-copy demo (portable, no kernel APIs)
+add_executable(zero_copy_concept src/camera_examples/zero_copy_concept.cpp)
+target_compile_features(zero_copy_concept PRIVATE cxx_std_20)
+target_link_libraries(zero_copy_concept PRIVATE Threads::Threads)
+
+# Single-producer multi-consumer frame fan-out (portable)
+add_executable(spmc src/camera_examples/spmc.cpp)
+target_compile_features(spmc PRIVATE cxx_std_20)
+target_link_libraries(spmc PRIVATE Threads::Threads)
+
+# Disruptor-style SPMC ring buffer (portable)
+add_executable(spmc_ring src/camera_examples/spmc_ring.cpp)
+target_compile_features(spmc_ring PRIVATE cxx_std_20)
+target_link_libraries(spmc_ring PRIVATE Threads::Threads)
+
+# V4L2 zero-copy capture (Linux only)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_executable(v4l2_zero_copy_capture src/camera_examples/v4l2_zero_copy_capture.cpp)
     target_compile_features(v4l2_zero_copy_capture PRIVATE cxx_std_20)
