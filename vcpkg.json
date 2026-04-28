@@ -27,10 +27,15 @@
       "name": "sophus"
     },
     {
-      "name": "arrow"
-    },
-    {
       "name": "openssl"
     }
-  ]
+  ],
+  "features": {
+    "rerun": {
+      "description": "Dependencies for building Rerun C++ SDK examples",
+      "dependencies": [
+        "arrow"
+      ]
+    }
+  }
 }

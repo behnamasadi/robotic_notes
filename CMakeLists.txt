@@ -12,6 +12,11 @@ endif()
 set(VCPKG_TARGET_TRIPLET "x64-linux-release" CACHE STRING "")
 
 # ------------------------------------------------------------------
+# Options
+# ------------------------------------------------------------------
+option(BUILD_RERUN_EXAMPLES "Download Rerun C++ SDK and build rerun-dependent targets" OFF)
+
+# ------------------------------------------------------------------
 # Dependencies via vcpkg
 # ------------------------------------------------------------------
 find_package(Boost REQUIRED COMPONENTS iostreams filesystem)
@@ -20,25 +25,28 @@ find_package(OpenCV CONFIG REQUIRED)
 find_package(Ceres CONFIG REQUIRED)
 find_package(manif CONFIG REQUIRED)
 find_package(Sophus CONFIG REQUIRED)
-find_package(Arrow CONFIG REQUIRED)
 find_package(Threads REQUIRED)
 
 # ------------------------------------------------------------------
 # Rerun SDK via FetchContent (use vcpkg's Arrow)
 # ------------------------------------------------------------------
-# Configure rerun_sdk to use vcpkg's Arrow instead of downloading it
-# Must be set before FetchContent_Declare
-set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "" FORCE)
+if(BUILD_RERUN_EXAMPLES)
+    find_package(Arrow CONFIG REQUIRED)
 
-include(FetchContent)
+    # Configure rerun_sdk to use vcpkg's Arrow instead of downloading it
+    # Must be set before FetchContent_Declare
+    set(RERUN_DOWNLOAD_AND_BUILD_ARROW OFF CACHE BOOL "" FORCE)
 
-FetchContent_Declare(
-    rerun_sdk
-    URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip
-    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-)
+    include(FetchContent)
 
-FetchContent_MakeAvailable(rerun_sdk)
+    FetchContent_Declare(
+        rerun_sdk
+        URL https://github.com/rerun-io/rerun/releases/latest/download/rerun_cpp_sdk.zip
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    )
+
+    FetchContent_MakeAvailable(rerun_sdk)
+endif()
 
 # ------------------------------------------------------------------
 # Executables
@@ -57,20 +65,22 @@ target_link_libraries(ceres_example PRIVATE Ceres::ceres)
 add_executable(ceres_exponential_curve_fitting_example src/ceres_examples/ceres_exponential_curve_fitting_example.cpp)
 target_link_libraries(ceres_exponential_curve_fitting_example PRIVATE Ceres::ceres)
 
-add_executable(bundle_adjuster src/ceres_examples/bundle_adjuster.cpp)
-target_link_libraries(bundle_adjuster PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
+if(BUILD_RERUN_EXAMPLES)
+    add_executable(bundle_adjuster src/ceres_examples/bundle_adjuster.cpp)
+    target_link_libraries(bundle_adjuster PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
-add_executable(snavely_reprojection_error src/ceres_examples/snavely_reprojection_error.cpp)
-target_link_libraries(snavely_reprojection_error PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
+    add_executable(snavely_reprojection_error src/ceres_examples/snavely_reprojection_error.cpp)
+    target_link_libraries(snavely_reprojection_error PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
-add_executable(incremental_SfM src/ceres_examples/incremental_SfM.cpp)
-target_link_libraries(incremental_SfM PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
+    add_executable(incremental_SfM src/ceres_examples/incremental_SfM.cpp)
+    target_link_libraries(incremental_SfM PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
-add_executable(virtual_cam_incremental_SfM src/ceres_examples/virtual_cam_incremental_SfM.cpp)
-target_link_libraries(virtual_cam_incremental_SfM PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
+    add_executable(virtual_cam_incremental_SfM src/ceres_examples/virtual_cam_incremental_SfM.cpp)
+    target_link_libraries(virtual_cam_incremental_SfM PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
 
-add_executable(real_data_incremental_SfM src/ceres_examples/real_data_incremental_SfM.cpp)
-target_link_libraries(real_data_incremental_SfM PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
+    add_executable(real_data_incremental_SfM src/ceres_examples/real_data_incremental_SfM.cpp)
+    target_link_libraries(real_data_incremental_SfM PRIVATE Ceres::ceres ${OpenCV_LIBS} rerun_sdk)
+endif()
 
 add_executable(simple_snavely_reprojection_error src/ceres_examples/simple_snavely_reprojection_error.cpp)
 target_link_libraries(simple_snavely_reprojection_error PRIVATE Ceres::ceres ${OpenCV_LIBS})
@@ -86,11 +96,13 @@ add_executable(pose_graph_2d
 target_link_libraries(pose_graph_2d PRIVATE Ceres::ceres absl::flags absl::flags_parse absl::log absl::log_initialize)
 
 # Rerun examples
-add_executable(rerun src/rerun_examples/rerun.cpp)
-target_link_libraries(rerun PRIVATE rerun_sdk ${OpenCV_LIBS} Eigen3::Eigen)
+if(BUILD_RERUN_EXAMPLES)
+    add_executable(rerun src/rerun_examples/rerun.cpp)
+    target_link_libraries(rerun PRIVATE rerun_sdk ${OpenCV_LIBS} Eigen3::Eigen)
 
-add_executable(minimal_camera_ray_test src/rerun_examples/minimal_camera_ray_test.cpp)
-target_link_libraries(minimal_camera_ray_test PRIVATE rerun_sdk ${OpenCV_LIBS} Eigen3::Eigen)
+    add_executable(minimal_camera_ray_test src/rerun_examples/minimal_camera_ray_test.cpp)
+    target_link_libraries(minimal_camera_ray_test PRIVATE rerun_sdk ${OpenCV_LIBS} Eigen3::Eigen)
+endif()
 
 # manif examples (workaround for missing <cassert> in older manif versions)
 set(MANIF_EXTRA_FLAGS "")
