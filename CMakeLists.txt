@@ -113,3 +113,9 @@ target_link_libraries(manif_se2_localization PRIVATE MANIF::manif)
 # Sophus
 add_executable(sophus_examples src/sophus_examples/useSophus.cpp)
 target_link_libraries(sophus_examples PRIVATE Sophus::Sophus)
+
+# Camera examples (Linux-only: V4L2 zero-copy capture)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_executable(v4l2_zero_copy_capture src/camera_examples/v4l2_zero_copy_capture.cpp)
+    target_compile_features(v4l2_zero_copy_capture PRIVATE cxx_std_20)
+endif()
