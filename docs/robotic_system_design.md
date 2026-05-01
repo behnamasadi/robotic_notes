@@ -224,6 +224,10 @@ difference between "works on a laptop" and "works on the robot".
   source of priority inversion and missed control deadlines. Use
   `std::scoped_lock` on the *smallest possible* critical section.
 
+A runnable end-to-end zero-copy capture pipeline — plain-C++
+pool/producer/consumer first, then the same pattern over V4L2 `mmap` —
+is documented in [Zero-Copy Camera Capture](../src/camera_examples/README.md).
+
 ---
 
 ## 4. Concurrency & Real-Time: SPMC Sensor Distribution
@@ -291,6 +295,16 @@ consumers every 16 ms; the slowest consumer (visualizer doing GPU
 upload) would block the others through priority inversion. Even with
 `SCHED_FIFO`, the futex syscall is in the tens of microseconds — fine
 for control-plane messages, wasteful per frame.
+
+Two implementations of the SPMC fan-out pattern are documented and
+runnable:
+
+- [Per-consumer queue SPMC](../src/camera_examples/SPMC.md) — simpler
+  baseline with one bounded queue per consumer; each consumer paces
+  itself independently.
+- [Disruptor-style SPMC ring buffer](../src/camera_examples/SPMC_RING.md)
+  — single shared ring, lock-free, overwrite-oldest semantics. The right
+  default for high-rate sensor streams.
 
 ---
 
