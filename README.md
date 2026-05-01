@@ -311,7 +311,7 @@ pip install jupyterlab
 - [Quaternion kinematics for the error-state Kalman filter](https://arxiv.org/pdf/1711.02508)
 
 
-# [Bag of Words](#)
+# [Place Recognition](#)
 - [FBOW (Fast Bag of Words)](https://github.com/rmsalinas/fbow)
 - [AnyLoc: Towards Universal Visual Place Recognition](https://github.com/AnyLoc/AnyLoc)
 
