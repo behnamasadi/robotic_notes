@@ -110,17 +110,15 @@ pip install jupyterlab
 
 # [Robotic System Design & Design Patterns](#)
 - [Robotic System Design & Design Patterns](docs/robotic_system_design.md)
-  * [High-Level Architecture of a Humanoid Robot](docs/robotic_system_design.md#1-high-level-architecture-of-a-humanoid-robot)
-  * [Perception Pipeline: Consistency, Robustness, Synchronization](docs/robotic_system_design.md#2-perception-pipeline-consistency-robustness-synchronization)
-  * [High-Frequency Sensor Pipelines in C++](docs/robotic_system_design.md#3-high-frequency-sensor-pipelines-in-c)
-    + Examples: [zero-copy concept](src/camera_examples/zero_copy_concept.cpp), [V4L2 `mmap` capture](src/camera_examples/v4l2_zero_copy_capture.cpp) — see the [walkthrough](src/camera_examples/README.md)
-  * [Concurrency & Real-Time: SPMC Sensor Distribution](docs/robotic_system_design.md#4-concurrency--real-time-spmc-sensor-distribution)
-    + Examples: [per-consumer queue SPMC](src/camera_examples/spmc.cpp) ([walkthrough](src/camera_examples/SPMC.md)), [Disruptor-style SPMC ring buffer](src/camera_examples/spmc_ring.cpp) ([walkthrough](src/camera_examples/SPMC_RING.md))
-  * [Task Execution: State Machine vs Behavior Tree](docs/robotic_system_design.md#5-task-execution-state-machine-vs-behavior-tree)
-  * [Debugging a Regressing Perception Model in Production](docs/robotic_system_design.md#6-debugging-a-regressing-perception-model-in-production)
-  * [Time Synchronization](docs/robotic_system_design.md#7-time-synchronization)
-  * [Safety & Fault Tolerance](docs/robotic_system_design.md#8-safety--fault-tolerance)
-  * [Logging, Observability & Replay](docs/robotic_system_design.md#9-logging-observability--replay)
+  * [1. High-Level Architecture of a Humanoid Robot](docs/robotic_system_design.md#1-high-level-architecture-of-a-humanoid-robot)
+  * [2. Perception Pipeline: Consistency, Robustness, Synchronization](docs/robotic_system_design.md#2-perception-pipeline-consistency-robustness-synchronization)
+  * [3. High-Frequency Sensor Pipelines in C++](docs/robotic_system_design.md#3-high-frequency-sensor-pipelines-in-c)
+  * [4. Concurrency & Real-Time: SPMC Sensor Distribution](docs/robotic_system_design.md#4-concurrency--real-time-spmc-sensor-distribution)
+  * [5. Task Execution: State Machine vs Behavior Tree](docs/robotic_system_design.md#5-task-execution-state-machine-vs-behavior-tree)
+  * [6. Debugging a Regressing Perception Model in Production](docs/robotic_system_design.md#6-debugging-a-regressing-perception-model-in-production)
+  * [7. Time Synchronization](docs/robotic_system_design.md#7-time-synchronization)
+  * [8. Safety & Fault Tolerance](docs/robotic_system_design.md#8-safety--fault-tolerance)
+  * [9. Logging, Observability & Replay](docs/robotic_system_design.md#9-logging-observability--replay)
 
 
 # [Lie Group and Lie Algebra](#)
@@ -146,8 +144,6 @@ pip install jupyterlab
 - [Non-Holonomic Constraints, Pfaffian Constraints and Holonomic Constraints](docs/non_holonomic_pfaffian_constraint.ipynb)
 
 
-# [Aerial Robotics](#)
-- [Aerial Robotics](docs/aerial_robotics.md#aerial-robotics)
 
 # [PX4](#)
 - [PX4](docs/px4.md)
@@ -204,9 +200,7 @@ pip install jupyterlab
   * [Kalibr IMU Noise Parameters in Practice](docs/imu.ipynb#kalibr-imu-noise-parameters-in-practice)
 - [IMU Noise Model](docs/imu.ipynb#imu-noise-model)
 - [The standard deviation of the discrete-time noise process](docs/imu.ipynb#the-standard-deviation-of-the-discrete-time-noise-process)
-    + [Example:](docs/imu.ipynb#example-)
-    + [Example:](docs/imu.ipynb#example--1)
-    + [Note:](docs/imu.ipynb#note-)
+
 
 # [Apriltag](#)
 - [Apriltag](docs/apriltag.md#apriltag)
@@ -305,7 +299,7 @@ pip install jupyterlab
 - [MarsLogger](docs/mars_logger.md)
 
 # [State Estimation](#)
-- [Probability Review](docs/probability_review.ipynb) — marginals/conditionals, probability vs likelihood, conditional Gaussians (foundational primer)
+- [Probability Review (Marginals/conditionals, probability vs likelihood, conditional Gaussians ) ](docs/probability_review.ipynb)(foundational primer)
 - [Bayes Filter](docs/bayes_filter.ipynb)
 - [Maximum A-Posteriori (MAP) Estimation](docs/map.ipynb)
 - [Kalman Filter](docs/kalman_filter.ipynb)
@@ -330,7 +324,7 @@ pip install jupyterlab
 - [Active Exposure Control for Robust Visual Odometry in HDR Environments](docs/active_exposure_control_HDR_environments.md)
 - [Pose Graph SLAM from Scratch](docs/pose_graph_slam.ipynb)
 - [nano-pgo](https://github.com/gisbi-kim/nano-pgo)
-- [g2o](docs/g2o.md)  
+- [General Graph Optimization g2o explained](docs/g2o.md)  
 - [Factor Graphs, Bayes Trees, and iSAM2 (with GTSAM)](docs/factor_graph.ipynb)  
 - [Resilient Autonomy in Perceptually-degraded Environments](https://www.youtube.com/watch?v=L0PQKxU8cps)  
 - [HBA Large-Scale LiDAR Mapping Module](https://github.com/hku-mars/HBA)  
