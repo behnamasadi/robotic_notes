@@ -1,242 +1,449 @@
-## Installation
+# ROS 2 — Docker-based workflow
 
-- Jazzy Jalisco (May 2029, Ubuntu Linux - Noble Numbat (24.04))
+This guide assumes you **never install ROS 2 on the host**. Everything (CLI, build, GUI tools like RViz/Gazebo, packages) runs inside a container. Your ROS 2 workspace lives on the host and is bind-mounted into the container so edits and `colcon build` artefacts persist.
 
-### Docker
+- Distribution: **Jazzy Jalisco** (May 2024 → May 2029, Ubuntu 24.04 Noble Numbat base)
+- Image: `osrf/ros:jazzy-desktop-full` (includes RViz2, demos, Gazebo bindings)
 
+---
+
+## 0. Which distro should you actually use?
+
+Honest answer: **Humble is still the most mainstream** in mid-2026. Jazzy is newer, has a longer support window, and is what this guide targets — but if you're following tutorials or integrating off-the-shelf robot stacks, Humble currently has the larger ecosystem.
+
+| Distro | Released | EOL | Mainstream status |
+|---|---|---|---|
+| **Humble** | May 2022 | May 2027 | **Still the default.** Most tutorials, most third-party drivers (TurtleBot, Clearpath, Husarion, UR, Franka), most Nav2 / MoveIt2 examples, most Stack Overflow answers |
+| Iron | May 2023 | Nov 2024 | EOL — don't use |
+| **Jazzy** | May 2024 | May 2029 | **Newest LTS, growing adoption,** but ecosystem is still catching up. A few niche drivers haven't been ported yet |
+| Rolling | continuous | — | Dev branch, not for production |
+
+### When each makes sense
+
+- **Pick Humble** if you'll be following tutorials, integrating off-the-shelf robot stacks, or want the broadest "it just works" package coverage. Safe default.
+- **Pick Jazzy** if you're starting fresh, want the longest support window (2029), and have verified the specific drivers you need exist on Jazzy.
+
+### Switching this guide to Humble
+
+It's mostly a search-and-replace:
+
+| Jazzy | Humble |
+|---|---|
+| `osrf/ros:jazzy-desktop-full` | `osrf/ros:humble-desktop-full` |
+| `ros-jazzy-<pkg>` | `ros-humble-<pkg>` |
+| `/opt/ros/jazzy/setup.bash` | `/opt/ros/humble/setup.bash` |
+| Gazebo Harmonic, `gz sim` | Gazebo Fortress, `ign gazebo` |
+| Ubuntu 24.04 base | Ubuntu 22.04 base |
+
+Everything else (Dockerfile structure, colcon, launch files, bridges) is identical.
+
+---
+
+## 1. Pull the image
+
+```bash
+docker pull osrf/ros:jazzy-desktop-full
 ```
-docker pull osrf/ros:jazzy-desktop
+
+Variants:
+- `ros:jazzy-ros-core` — minimum runtime, no tools
+- `ros:jazzy-ros-base` — runtime + common ROS packages
+- `osrf/ros:jazzy-desktop` — adds RViz, demos, tutorials
+- `osrf/ros:jazzy-desktop-full` — adds simulation, perception, extra tools
+
+## 2. Allow GUI access from the container
+
+Run on the **host** once per login session (X11):
+
+```bash
+xhost +local:docker
 ```
 
-allow GUI
+Then `xhost -local:docker` when done if you want to revoke.
 
+For Wayland, either run an XWayland-backed terminal or use `xhost +SI:localuser:root`.
+
+## 3. Run a persistent container
+
+Create the workspace on the host first:
+
+```bash
+mkdir -p ~/ros2_ws/src
 ```
-export containerId=$(docker ps -l -q)
-```
 
-and 
+Start a long-lived container named `ros2`:
 
-```
-xhost +local: docker inspect --format='{{ .Config.Hostname }}' $containerId
-```
-
-
-then:
-
-
-```
+```bash
 docker run -it --privileged \
-  --env=LOCAL_USER_ID="$(id -u)" \
-  -v /home/behnam:/home/behnam:rw \
-  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
-  -e DISPLAY=$DISPLAY \
+  --name ros2 \
   --network host \
-  --name=ros2 osrf/ros:jazzy-desktop-full
+  --ipc host \
+  --pid host \
+  -e DISPLAY=$DISPLAY \
+  -e QT_X11_NO_MITSHM=1 \
+  -e XDG_RUNTIME_DIR=/tmp/runtime-root \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -v $HOME/ros2_ws:/root/ros2_ws:rw \
+  -v $HOME/.ros:/root/.ros:rw \
+  --device /dev/dri:/dev/dri \
+  osrf/ros:jazzy-desktop-full \
+  bash
 ```
 
+Flag rationale:
 
+| Flag | Why |
+|---|---|
+| `--network host` | DDS discovery uses multicast; `host` mode avoids NAT issues |
+| `--ipc host` | Lets DDS use shared-memory transport with host-side processes |
+| `--privileged` + `--device /dev/dri` | GPU/DRM access for RViz, Gazebo |
+| `-v ~/ros2_ws:/root/ros2_ws` | Workspace persists outside the container |
+| `-v ~/.ros:/root/.ros` | Logs and bag files persist |
+| `-e DISPLAY` + X11 socket | GUI apps (RViz2, rqt) render on host |
 
-## Configuration
+Re-attach later (without recreating):
 
+```bash
+docker start -ai ros2          # start + attach
+docker exec -it ros2 bash      # extra shell while it runs
+```
+
+## 4. NVIDIA GPU (optional)
+
+Install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/) on the host, then add to `docker run`:
+
+```bash
+  --gpus all \
+  -e NVIDIA_DRIVER_CAPABILITIES=all \
+```
+
+## 5. USB / serial / camera / CAN devices
+
+Pass the specific device, not `--privileged`, in production:
+
+```bash
+  --device=/dev/ttyUSB0 \
+  --device=/dev/video0 \
+  --device=/dev/can0 \
+  --group-add dialout \
+```
+
+---
+
+## 6. Extending the image with a Dockerfile
+
+Don't `apt install` inside a running container — bake it in. A typical project layout:
 
 ```
-source /opt/ros/$ROS_DISTRO/setup.sh
+ros2_ws/
+├── docker/
+│   ├── Dockerfile
+│   └── entrypoint.sh
+├── docker-compose.yml
+└── src/
+    └── <your_packages>/
+```
+
+**`docker/Dockerfile`**
+
+```dockerfile
+FROM osrf/ros:jazzy-desktop-full
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# System deps your nodes need
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      python3-colcon-common-extensions \
+      python3-rosdep \
+      python3-vcstool \
+      ros-jazzy-nav2-bringup \
+      ros-jazzy-slam-toolbox \
+      ros-jazzy-rmw-cyclonedds-cpp \
+      git wget vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Use Cyclone DDS (more reliable on Linux than the default rmw)
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+# Workspace lives where the host mounts it
+WORKDIR /root/ros2_ws
+
+# Auto-source ROS in every interactive shell
+RUN echo 'source /opt/ros/jazzy/setup.bash' >> /root/.bashrc \
+ && echo '[ -f /root/ros2_ws/install/setup.bash ] && source /root/ros2_ws/install/setup.bash' >> /root/.bashrc
+
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["bash"]
+```
+
+**`docker/entrypoint.sh`**
+
+```bash
+#!/usr/bin/env bash
+set -e
+source /opt/ros/jazzy/setup.bash
+if [ -f /root/ros2_ws/install/setup.bash ]; then
+  source /root/ros2_ws/install/setup.bash
+fi
+exec "$@"
+```
+
+Build and run:
+
+```bash
+docker build -t ros2-dev -f docker/Dockerfile .
+docker run -it --rm --net host --ipc host \
+  -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -v $PWD:/root/ros2_ws ros2-dev
+```
+
+---
+
+## 7. Docker Compose for multi-container setups
+
+`docker-compose.yml` — separates simulator, navigation, and developer shell:
+
+```yaml
+services:
+  dev:
+    build: { context: ., dockerfile: docker/Dockerfile }
+    image: ros2-dev
+    network_mode: host
+    ipc: host
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_DOMAIN_ID=42
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ./:/root/ros2_ws
+      - ~/.ros:/root/.ros
+    stdin_open: true
+    tty: true
+    command: bash
+
+  nav2:
+    image: ros2-dev
+    network_mode: host
+    ipc: host
+    environment:
+      - ROS_DOMAIN_ID=42
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    command: ros2 launch nav2_bringup tb3_simulation_launch.py
+```
+
+```bash
+docker compose up -d nav2     # start navigation in background
+docker compose run --rm dev   # interactive dev shell
+```
+
+---
+
+## 8. ROS 2 ↔ ROS 1 bridge (also Dockerized)
+
+Run a noetic container alongside the jazzy one, bridged with `ros1_bridge`. Both must share `--network host` and use a compatible DDS config.
+
+```bash
+# ROS 1 side
+docker run -it --rm --network host --ipc host \
+  -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  --name ros1 ros:noetic-perception-focal bash
+
+# Bridge container (has both noetic + foxy/galactic — use the matching tag)
+docker run -it --rm --network host --ipc host \
+  --name bridge ros:galactic-ros1-bridge \
+  ros2 run ros1_bridge dynamic_bridge
+```
+
+> Note: there is no official Jazzy↔Noetic bridge image; the bridge stops at Galactic/Humble on the ROS 2 side. For Jazzy, run a Humble bridge container in between, or migrate the ROS 1 nodes.
+
+---
+
+## 9. ROS 2 inside the container
+
+Everything below runs **inside** `docker exec -it ros2 bash`.
+
+### Verify
+
+```bash
+source /opt/ros/$ROS_DISTRO/setup.bash
 printenv | grep -i ROS
+ros2 doctor
 ```
 
+### Domain ID
 
-### Domain ID.
-As the default middleware that ROS 2 uses for communication is DDS. In DDS, you can have different logical networks share a physical network is known as the `Domain ID`. ROS 2 nodes on the same domain can freely discover and send messages to each other. All ROS 2 nodes use domain ID 0 by default. 
+DDS partitions logical networks via `Domain ID`. Nodes on the same ID discover each other; default is 0.
 
-```
+```bash
 export ROS_DOMAIN_ID=<your_domain_id>
 ```
 
-### ROS_AUTOMATIC_DISCOVERY_RANGE
-By default, ROS 2 communication is not limited to localhost. `ROS_AUTOMATIC_DISCOVERY_RANGE` environment variable allows you to limit ROS 2 discovery range
+Set it in the Dockerfile or compose file so every container in the project agrees.
 
+### `ROS_AUTOMATIC_DISCOVERY_RANGE`
+
+Limit DDS discovery scope. Useful when many containers share `--network host` on the same LAN:
+
+```bash
+export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST   # or SUBNET, SYSTEM_DEFAULT
+```
+
+### QoS (Quality of Service)
+
+DDS QoS controls *what gets buffered, what gets dropped, and what guarantees exist between endpoints*. It does **not** throttle the publisher. Critical for high-rate sensor topics (cameras, LiDAR, IMU) where a slow consumer would otherwise build up unbounded latency. See [`ros2_qos.md`](./ros2_qos.md) for the full breakdown — sensor profile, publisher/subscriber compatibility rules, and the silent-failure gotcha when a default-QoS subscriber tries to connect to a `BEST_EFFORT` publisher.
 
 ### Remapping
 
-```
+```bash
 ros2 run turtlesim turtle_teleop_key
-```
-will publish `/turtle1/cmd_vel` 
+# publishes /turtle1/cmd_vel
 
+ros2 run turtlesim turtle_teleop_key --ros-args \
+  --remap turtle1/cmd_vel:=turtle2/cmd_vel
 
-we can remap the the topic:
-```
-ros2 run turtlesim turtle_teleop_key --ros-args --remap turtle1/cmd_vel:=turtle2/cmd_vel
-```
-will publish `/turtle2/cmd_vel` 
-
-this will rename the node itself:
-```
 ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
 ```
 
+### Inspect a message type
 
-to see the message definition:
-
-```
+```bash
 ros2 interface show geometry_msgs/msg/Twist
 ```
-will give you 
-
 
 ```
-    Vector3  linear
-            float64 x
-            float64 y
-            float64 z
-    Vector3  angular
-            float64 x
-            float64 y
-            float64 z
+Vector3  linear
+        float64 x
+        float64 y
+        float64 z
+Vector3  angular
+        float64 x
+        float64 y
+        float64 z
 ```
 
-Load parameter file on node startup
+### Load a parameter file
 
-```
+```bash
 ros2 run <package_name> <executable_name> --ros-args --params-file <file_name>
 ```
-  
-### Launching nodes
 
-      
+---
 
-## Colcon
+## 10. Colcon (inside the container)
 
-Installation:
+Already installed via the Dockerfile above. Build the mounted workspace:
+
+```bash
+cd /root/ros2_ws
+colcon build --symlink-install
+source install/setup.bash
 ```
-sudo apt install python3-colcon-common-extensions
-```
-If you do not want to build a specific package place an empty file named `COLCON_IGNORE` in the directory and it will not be indexed.
 
+`--symlink-install` symlinks Python/launch/config files so edits on the host take effect without rebuilding.
 
-### specify a package to build
-or you can specify your package
+Place `COLCON_IGNORE` in any package directory to skip it.
 
-```
+### Build a single package
+
+```bash
 colcon build --packages-select <my_package>
 ```
 
-### sending cmake arguments
+### Pass CMake args
 
-```
-colcon build --cmake-args -DCeres_DIR=/home/$USER/usr/lib/cmake/Ceres/    -Dabsl_DIR=/home/$USER/usr/lib/cmake/absl/ --packages-select slam_toolbox
-```
-
-
-
-#### Underlay
-An underlay workspace is a workspace that has already been built and sourced.
-
-
-```
-source /opt/ros/$ROS_DISTRO/setup.sh
+```bash
+colcon build --cmake-args \
+  -DCeres_DIR=/opt/ceres/lib/cmake/Ceres/ \
+  -Dabsl_DIR=/opt/absl/lib/cmake/absl/ \
+  --packages-select slam_toolbox
 ```
 
-#### Overlay
+### Underlay vs. overlay
 
-An overlay workspace is where you are actively developing or testing new ROS 2 packages, on top of the existing underlay.
-```
-source ~/ros2_ws/install/setup.bash
-```
+- **Underlay** — pre-built workspace already sourced (the ROS distro itself):
+  ```bash
+  source /opt/ros/$ROS_DISTRO/setup.bash
+  ```
+- **Overlay** — your workspace built on top:
+  ```bash
+  source /root/ros2_ws/install/setup.bash
+  ```
 
-By sourcing both the underlay and the overlay, your environment will recognize both the ROS 2 core packages (underlay) and any new or updated packages you have built in the overlay
+The Dockerfile entrypoint sources both automatically.
 
+### Resolve dependencies
 
-#### Resolve dependencies
+From the workspace root:
 
-In the root of your workspace:
-
-```
+```bash
+rosdep update
 rosdep install -i --from-path src --rosdistro $ROS_DISTRO -y
 ```
 
-1. `--from-paths` src specifies the path to check for package.xml files to resolve keys for
-2. `-y` means to default yes to all prompts from the package manager to install without prompts
-3. `--ignore-src` means to ignore installing dependencies, even if a rosdep key exists, if the package itself is also in the workspace.
+Flags:
+1. `--from-paths src` — scan `package.xml` files for keys
+2. `-y` — non-interactive
+3. `--ignore-src` — skip keys already provided by packages in this workspace
 
+`rosdep` is not a package manager; it maps rosdep keys to the host's package manager (apt on Ubuntu). Keys are documented in [REP-149](https://ros.org/reps/rep-0149.html).
 
-`rosdep` is not a package manager, it uses its own knowledge of the system and the dependencies to find the appropriate package to install on a particular platform.  e.g. apt on Debian/Ubuntu
+#### `<depend>`
+Build- and run-time. Use this for C++ deps when in doubt.
 
-The dependencies in the package.xml file are generally referred to as `rosdep keys`, more [here](https://ros.org/reps/rep-0149.html)
-
-##### <depend>
-These are dependencies that should be provided at both build time and run time for your package.
-For C++ packages, if in doubt, use this tag.
-
-
-#### <build_depend>
-If you only use a particular dependency for building your package, and not at execution time, for example
-
-```
-  <build_depend>gtest</build_depend>
-  <build_depend>ament_cmake</build_depend>
-
+#### `<build_depend>`
+Build only.
+```xml
+<build_depend>gtest</build_depend>
+<build_depend>ament_cmake</build_depend>
 ```
 
-#### <build_export_depend>
-
-It is used when a dependency is needed not only during the build phase of the package but also needs to be made available for other packages that depend on this package. This is especially important if your package **exposes some headers** or libraries that other packages might use at build time.
-
-
-examples:  If your package uses a header-only library such as Eigen3
-
-```
-  <build_export_depend>Eigen3</build_export_depend>
+#### `<build_export_depend>`
+Needed at build time *and* exposed to downstream packages (e.g. through public headers).
+```xml
+<build_export_depend>Eigen3</build_export_depend>
 ```
 
-#### <exec_depend>
-This tag declares dependencies for shared libraries, executables, Python modules, launch scripts and other files required when running your package. For packages with launch files, it is a good idea to add an exec_depend dependency on the ros2launch package in your package’s package.xml:
-
-```
+#### `<exec_depend>`
+Runtime only — shared libs, Python modules, launch scripts.
+```xml
 <exec_depend>ros2launch</exec_depend>
 ```
-This helps make sure that the ros2 launch command is available after building your package. It also ensures that all launch file formats are recognized.
 
+#### Where keys come from
+1. ROS packages — [`rosdistro/<distro>/distribution.yaml`](https://github.com/ros/rosdistro)
+2. apt deps — [`rosdep/base.yaml`](https://github.com/ros/rosdistro/blob/master/rosdep/base.yaml)
+3. Python deps — [`rosdep/python.yaml`](https://github.com/ros/rosdistro/blob/master/rosdep/python.yaml)
 
+---
 
-#### How to find packages that goes into package.xml
+## 11. Packages
 
-1. For ROS-based: find a list of all released ROS packages `https://github.com/ros/rosdistro/<distro>/distribution.yaml`
-2. For non-ROS package: for [apt system dependencies](https://github.com/ros/rosdistro/blob/master/rosdep/base.yaml) and for [Python dependencies](https://github.com/ros/rosdistro/blob/master/rosdep/python.yaml)
+Build system: `ament`. Build tool: `colcon`.
 
+**CMake package layout (minimum):**
+- `CMakeLists.txt`
+- `include/<package_name>/` — public headers
+- `package.xml`
+- `src/`
 
+**Python package layout (minimum):**
+- `package.xml`
+- `resource/<package_name>` — marker file
+- `setup.cfg` — required for `ros2 run` to find executables
+- `setup.py`
+- `<package_name>/__init__.py`
 
-### Package
-Package creation in ROS 2 uses `ament` as its **build system** and `colcon` as its **build tool**
+Create:
 
-ROS 2  `CMake` package minimum required contents:
-
-- CMakeLists.txt file that describes how to build the code within the package
-- include/<package_name> directory containing the public headers for the package
-- package.xml file containing meta information about the package
-- src directory containing the source code for the package
-
-
-
-ROS 2 `Python` package minimum required contents:
-
-
-- package.xml file containing meta information about the package
-- resource/<package_name> marker file for the package
-- setup.cfg is required when a package has executables, so ros2 run can find them
-- setup.py containing instructions for how to install the package
-- <package_name> - a directory with the same name as your package, used by ROS 2 tools to find your package, contains __init__.py
-
-
-
+```bash
+ros2 pkg create --build-type ament_cmake   --license Apache-2.0 <package_name>
+ros2 pkg create --build-type ament_python  --license Apache-2.0 <package_name>
 ```
-ros2 pkg create --build-type ament_cmake --license Apache-2.0 <package_name>
-```
-or 
 
-```
-ros2 pkg create --build-type ament_python --license Apache-2.0 <package_name>
-```
 ```
 ros2 pkg
   create       Create a new ROS 2 package
@@ -246,32 +453,31 @@ ros2 pkg
   xml          Output the XML of the package manifest or a specific tag
 ```
 
+### Workspaces
+A workspace can contain any number of packages. **Packages cannot be nested.**
 
+Refs: [Colcon tutorial](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Colcon-Tutorial.html)
 
-### Workspace 
+---
 
-A single workspace can contain as many packages. You **cannot** have nested packages.
+## 12. Xacro
+Refs: [Using Xacro](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Using-Xacro-to-Clean-Up-a-URDF-File.html)
 
+---
 
-Refs [1](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Colcon-Tutorial.html)
+## 13. Launch files
 
-## Using Xacro
-
-
-Refs: [1](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Using-Xacro-to-Clean-Up-a-URDF-File.html)
-
-
-## Creating a launch file
-Launch files written in Python, XML, or YAML
+Written in Python, XML, or YAML. Launched with `ros2 launch <package> <file>`.
 
 ### Python launch file
 
-launch file name needs to end with `launch.py` to be recognized and autocompleted by ros2 launch.
-launch file should define the generate_launch_description() function which returns a launch.LaunchDescription()
+Filename must end in `launch.py`. Define `generate_launch_description()` returning a `LaunchDescription`.
 
-```
+```python
 import launch
 import launch_ros.actions
+from launch import LaunchDescription
+from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
@@ -279,13 +485,13 @@ def generate_launch_description():
             package='turtlesim',
             namespace='turtlesim1',
             executable='turtlesim_node',
-            name='sim'
+            name='sim',
         ),
         Node(
             package='turtlesim',
             namespace='turtlesim2',
             executable='turtlesim_node',
-            name='sim'
+            name='sim',
         ),
         Node(
             package='turtlesim',
@@ -294,24 +500,20 @@ def generate_launch_description():
             remappings=[
                 ('/input/pose', '/turtlesim1/turtle1/pose'),
                 ('/output/cmd_vel', '/turtlesim2/turtle1/cmd_vel'),
-            ]
-        )
+            ],
+        ),
     ])
 ```
 
-When launching the two turtlesim nodes, the only difference between them is their namespace values. Unique namespaces allow the system to start two nodes without node name or topic name conflicts. Both turtles in this system receive commands over the same topic and publish their pose over the same topic.
+Unique namespaces let two `turtlesim_node`s coexist:
 
 ```
-ros2 node list
+$ ros2 node list
 /mimic
 /turtlesim1/sim
 /turtlesim2/sim
-```
 
-and
- 
-```
-ros2 topic list 
+$ ros2 topic list
 /parameter_events
 /rosout
 /turtlesim1/turtle1/cmd_vel
@@ -322,102 +524,92 @@ ros2 topic list
 /turtlesim2/turtle1/pose
 ```
 
+Install the launch file from `setup.py`:
 
-
-
-
-
-After creating launch file you need to update the `setup.py` to install them, for instance add this: 
-
-```
+```python
 ('share/' + package_name + '/launch', ['launch/turtlesim_mimic_launch.py']),
 ```
 
-so you get this:
-
+i.e.
+```python
+data_files=[
+    ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
+    ('share/' + package_name, ['package.xml']),
+    ('share/' + package_name + '/launch', ['launch/turtlesim_mimic_launch.py']),
+]
 ```
-    data_files=[
-        ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/launch', ['launch/turtlesim_mimic_launch.py']),
-    ]
-```
 
-or you can add all launch files:
+Or glob all launch files:
 
-
-```
+```python
 import os
 from glob import glob
 
-    data_files=[
-        ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
-
-    ]
+data_files=[
+    ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
+    ('share/' + package_name, ['package.xml']),
+    (os.path.join('share', package_name, 'launch'),
+     glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
+]
 ```
 
 ### C++ launch file
-adjusting the `CMakeLists.txt` file by adding:
 
-```
-# Install launch files.
-install(DIRECTORY
-  launch
+In `CMakeLists.txt`:
+
+```cmake
+install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}/
 )
 ```
 
-and in the `launch/my_script_launch.py`
+`launch/my_script_launch.py`:
 
-```
+```python
 import launch
 import launch_ros.actions
 
 def generate_launch_description():
     return launch.LaunchDescription([
         launch_ros.actions.Node(
-            package='cpp_pubsub',
-            executable='talker',
-            name='talker'),
+            package='cpp_pubsub', executable='talker',   name='talker'),
         launch_ros.actions.Node(
-            package='cpp_pubsub',
-            executable='listener',
-            name='talker'),            
-  ])
+            package='cpp_pubsub', executable='listener', name='listener'),
+    ])
 ```
 
-### Managing launch file
-Refs: [1](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Using-ROS2-Launch-For-Large-Projects.html)
-
-
-
-[Architecture of launch](https://github.com/ros2/launch/blob/humble/launch/doc/source/architecture.rst)
-
-
-Refs: [1](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html), [2](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-system.html)
-
 ### Substitutions
-Launch files are used to start nodes, and services and execute processes. This set of actions may have arguments, which affect their behavior. Substitutions can be used in arguments to provide more flexibility when describing reusable launch files.
+Argument values resolved at launch time — useful for reusable launch files.
 
 ### Event handlers
-Launch in ROS 2 is a system that executes and manages user-defined processes. It is responsible for monitoring the state of processes it launched, as well as reporting and reacting to changes in the state of those processes. These changes are called events and can be handled by registering an event handler with the launch system.
+The launch system tracks process state and reacts to events; register handlers to act on start/exit/output.
 
+Refs: [Creating launch files](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html), [Large projects](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Using-ROS2-Launch-For-Large-Projects.html), [Architecture](https://github.com/ros2/launch/blob/humble/launch/doc/source/architecture.rst)
 
-## Nav2 - ROS 2 Navigation Stack
+---
 
-Refs [1](https://neobotix-docs.de/ros/ros2/autonomous_navigation.html#:~:text=Nav2%20is%20the%20navigation%20stack,it%20provides%20to%20the%20user.), [2](https://github.com/ros-navigation/navigation2)
+## 14. Nav2
 
+Run via the bundled launch (image must include `ros-jazzy-nav2-bringup`):
 
+```bash
+ros2 launch nav2_bringup tb3_simulation_launch.py
+```
 
+Refs: [Nav2 docs](https://docs.nav2.org/), [navigation2 repo](https://github.com/ros-navigation/navigation2)
 
+---
 
-## teleop_twist_keyboard
+## 15. teleop_twist_keyboard
 
-In `ROS2`'s `teleop_twist_keyboard`, the keys on the keyboard are mapped to specific movements by publishing messages to the `/cmd_vel` topic. These messages contain geometry messages of type `Twist`, which is a data structure that consists of two vectors: `linear` and `angular` velocities.
+Install (already in extended image if added):
 
-Here's how the key mappings work in terms of movement:
+```bash
+apt install -y ros-jazzy-teleop-twist-keyboard
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+Publishes `geometry_msgs/Twist` on `/cmd_vel` (`linear` + `angular` vectors).
 
 ```
    u    i    o
@@ -425,54 +617,37 @@ Here's how the key mappings work in terms of movement:
    m    ,    .
 ```
 
-### Breakdown of movement commands:
+- `i` — forward (linear.x +)
+- `,` — backward (linear.x −)
+- `j` — turn left (angular.z +)
+- `l` — turn right (angular.z −)
+- `u` — forward + left
+- `o` — forward + right
+- `m` — backward + left
+- `.` — backward + right
+- `k` — stop (zero everything)
 
-- `i`: Move forward (linear velocity along the x-axis, no angular velocity).
-- `,`: Move backward (linear velocity along the x-axis, but in the opposite direction, negative).
-- `j`: Turn left (positive angular velocity around the z-axis, no linear velocity).
-- `l`: Turn right (negative angular velocity around the z-axis, no linear velocity).
-- `u`: Move forward while turning left (combination of linear x velocity and angular z velocity).
-- `o`: Move forward while turning right (combination of linear x velocity and negative angular z velocity).
-- `m`: Move backward while turning left (combination of negative linear x velocity and positive angular z velocity).
-- `.`: Move backward while turning right (combination of negative linear x velocity and negative angular z velocity).
-- `k`: Stop (no movement, both linear and angular velocities are set to zero).
+Combinations like `u`/`o` set both linear and angular components for arc motion.
 
-### How it works:
-- Each key corresponds to a specific combination of linear and angular velocities. When you press a key, a `Twist` message is published, which controls the robot's velocity. For example:
-  - If you press `i`, the robot's `linear.x` is set to a positive value (move forward).
-  - If you press `j`, the robot's `angular.z` is set to a positive value (turn left).
-  - The combination keys like `u` and `o` adjust both the `linear` and `angular` values to move in a curve.
+---
 
-##  ROS 2 to ROS 1 using ROS bridge
+## 16. Useful container shortcuts
 
-enable access to xhost from the container
+```bash
+# Stop / start the persistent dev container
+docker stop ros2 && docker start -ai ros2
+
+# Open another shell into a running container
+docker exec -it ros2 bash
+
+# Tail logs (e.g. for a launched container)
+docker logs -f nav2
+
+# Wipe and rebuild a workspace from scratch
+docker exec -it ros2 bash -c \
+  'cd /root/ros2_ws && rm -rf build install log && colcon build --symlink-install'
+
+# Record a bag from the host filesystem (mounted volume)
+docker exec -it ros2 bash -c \
+  'cd /root/.ros && ros2 bag record -a -o run_$(date +%s)'
 ```
-xhost +
-```
-
-Run docker and open bash shell
-
-```
-docker run -it --privileged \
-  --env=LOCAL_USER_ID="$(id -u)" \
-  -v /home/behnam:/home/behnam:rw \
-  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
-  -e DISPLAY=$DISPLAY \
-  --network host \
-  --name=ros1 ros:noetic-perception-focal bash
-```
-
-- `--privileged`: Grants extended privileges to the container, necessary for ROS applications that require access to specific hardware or kernel functions.
-
-- `--env=LOCAL_USER_ID="$(id -u)"`: Passes your local user ID into the container as an environment variable, helpful for maintaining file ownership consistency.
-
-- `-v /tmp/.X11-unix:/tmp/.X11-unix:ro`: Mounts the X11 socket with read-only access for graphical applications.
-
-- `-e DISPLAY=$DISPLAY`: Sets the display environment variable so that GUI applications can access your X server.
-
-
-
-
-
-
-

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>ros2_qos_examples_py</name>
+  <version>0.1.0</version>
+  <description>QoS demos in Python: SensorDataQoS publisher and subscriber.</description>
+  <maintainer email="behnam.asadi@gmail.com">Behnam Asadi</maintainer>
+  <license>Apache-2.0</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
