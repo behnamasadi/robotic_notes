@@ -241,6 +241,7 @@ pip install jupyterlab
 - [Configuration](docs/ros2.md#configuration)
   * [Domain ID.](docs/ros2.md#domain-id)
   * [ROS_AUTOMATIC_DISCOVERY_RANGE](docs/ros2.md#ros-automatic-discovery-range)
+  * [QoS (Quality of Service)](docs/ros2.md#qos-quality-of-service) → full doc: [ros2_qos.md](docs/ros2_qos.md)
   * [Remapping](docs/ros2.md#remapping)
   * [Launching nodes](docs/ros2.md#launching-nodes)
 - [Colcon](docs/ros2.md#colcon)
