@@ -1,0 +1,51 @@
+name: robotic_notes
+
+# Single dev service. The ROS 2 distro and Gazebo pairing are picked from .env
+# at build time AND at runtime, so switching distros is a one-line change.
+#
+#   docker compose build           # rebuild with current .env values
+#   docker compose run --rm dev    # one-off interactive shell
+#   docker compose up -d dev       # leave a long-lived container
+#
+# To rebuild for a different distro: edit .env, then `docker compose build`.
+
+services:
+  dev:
+    build:
+      context: .
+      args:
+        ROS_DISTRO: ${ROS_DISTRO:-humble}
+        GZ_PKG:     ${GZ_PKG:-ignition-fortress}
+        GZ_VERSION: ${GZ_VERSION:-fortress}
+        USERNAME:   ${USERNAME:-behnam}
+        USER_UID:   ${USER_UID:-1000}
+        USER_GID:   ${USER_GID:-1000}
+    image: robotic_notes:${ROS_DISTRO:-humble}
+    network_mode: host
+    ipc: host
+    privileged: true
+    environment:
+      ROS_DOMAIN_ID:              ${ROS_DOMAIN_ID:-42}
+      GZ_VERSION:                 ${GZ_VERSION:-fortress}
+      GZ_CMD:                     ${GZ_CMD:-ign gazebo}
+      DISPLAY:                    ${DISPLAY}
+      QT_X11_NO_MITSHM:           1
+      XDG_RUNTIME_DIR:            /tmp/runtime-${USERNAME:-behnam}
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES:     all
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - .:/workspace
+      - ~/.ros:/home/${USERNAME:-behnam}/.ros
+    devices:
+      - /dev/dri:/dev/dri
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
+    command: bash
