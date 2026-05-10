@@ -1,288 +1,239 @@
-## Building PX4
+# PX4 Autopilot — Building, SITL, and ROS 2
 
-On Ubuntu 22.04, ROS2 `humble`  and Gazebo `Harmonic` (`gz sim --version`)
+Tested stack: **Ubuntu 22.04 + ROS 2 Humble + Gazebo Harmonic** (`gz sim --version` reports 8.x).
 
+Notes:
+- PX4 deprecated *Gazebo Classic* in favor of *modern Gazebo* (Harmonic/Garden) — use `gz_*` build targets, not `gazebo-classic`.
+- The matching ROS 2 binding for Harmonic is `ros-humble-ros-gzharmonic` (not the default `ros-humble-ros-gz`, which is built against Fortress on Humble).
 
+## 1. Clone PX4
+
+```bash
+git clone --recursive https://github.com/PX4/PX4-Autopilot.git
+cd PX4-Autopilot
+bash ./Tools/setup/ubuntu.sh    # installs build deps
 ```
-git clone https://github.com/PX4/PX4-Autopilot.git --recursive
-```
 
+If you skip `--recursive`, run `git submodule update --init --recursive` afterwards — the simulation worlds and airframes live in submodules.
 
-##  Build (Using a Simulator)
+## 2. Build for SITL
 
-Gazebo SITL (Software In The Loop)
+Quick start with the X500 quadcopter and Gazebo Harmonic:
 
-Run the followings:
-```
+```bash
 make px4_sitl gz_x500
 ```
 
-The full syntax to call make with a particular configuration and initialization file is:
-```
-make [VENDOR_][MODEL][_VARIANT] [VIEWER_MODEL_DEBUGGER_WORLD]
-```
+This compiles PX4 for the SITL target, then launches `gz sim` with the X500 world.
 
-### VENDOR_MODEL_VARIANT: (also known as CONFIGURATION_TARGET)
-
-- VENDOR: `px4`, `aerotenna`, `airmind`, etc
-- MODEL: The board model "model": `sitl`, `fmu-v2`, `fmu-v3`, `fmu-v4`, `fmu-v5`, `navio2`, etc.
-- VARIANT: particular configurations,Most commonly this is default, and may be omitted.
-
-
-list of all available `CONFIGURATION_TARGET` options:
+### Build target syntax
 
 ```
+make [VENDOR_]MODEL[_VARIANT] [VIEWER_MODEL_DEBUGGER_WORLD]
+```
+
+**`CONFIGURATION_TARGET`** (`VENDOR_MODEL_VARIANT`):
+- `VENDOR`: `px4`, `aerotenna`, `airmind`, `holybro`, …
+- `MODEL`: board model — `sitl`, `fmu-v5`, `fmu-v6x`, `navio2`, …
+- `VARIANT`: optional, usually `default` (omitted).
+
+List every available target:
+
+```bash
 make list_config_targets
 ```
 
-### VIEWER_MODEL_DEBUGGER_WORLD
+**`VIEWER_MODEL_DEBUGGER_WORLD`** — joined by underscores; missing fields are skipped:
+- `VIEWER`: `gz` (modern Gazebo), `jmavsim`, `none`
+- `MODEL`: vehicle model — `x500`, `rover`, `standard_vtol`, … Sets `PX4_SIM_MODEL`.
+- `DEBUGGER`: `none`, `ide`, `gdb`, `lldb`, `valgrind`, `callgrind`
+- `WORLD`: world name (e.g. `default`, `baylands`, `windy`)
 
-- VIEWER: `gz`, `gazebo`, `jmavsim`, `none`. if you want to launch PX4 and wait for a simulator (jmavsim, Gazebo, Gazebo Classic, or some other simulator). For example, `make px4_sitl none_iris` launches PX4 without a simulator (but with the iris airframe).
+Example:
 
+```bash
+make px4_sitl none_iris      # PX4 only, no simulator (jmavsim airframe loaded)
 ```
-make px4_sitl jmavsim
-```
 
-- MODEL: The vehicle model to use (e.g. `iris` (default), `rover`, `tailsitter`, etc). The environment variable PX4_SIM_MODEL will be set to the selected model
+Refs: [PX4 build targets](https://docs.px4.io/main/en/dev_setup/building_px4.html#px4-make-build-targets).
 
-- WORLD: (Gazebo Classic only).
+### Selecting a world
 
+Either via the build target string or the `PX4_GZ_WORLD` env var:
 
-
-Refs: [1](https://docs.px4.io/main/en/dev_setup/building_px4.html#px4-make-build-targets)
-
-
-
-You can also specify the world using the `PX4_GZ_WORLD` environment variable:
-
-```
+```bash
 PX4_GZ_WORLD=windy make px4_sitl gz_x500
 ```
 
-List of some of the avilable vehicles
+Available worlds live in `Tools/simulation/gz/worlds/`. To pull in extra worlds at runtime:
 
-- `make px4_sitl gz_x500`
-- `make px4_sitl gz_x500_depth`
-- `make px4_sitl gz_x500_vision`
-- `make px4_sitl gz_x500_lidar`
-- `make px4_sitl gz_standard_vtol`
-- `make px4_sitl gz_rc_cessna`
-- `make px4_sitl gz_advanced_plane`
-- `make px4_sitl gz_r1_rover`
-- `make px4_sitl gz_rover_ackermann`
-
-All vehicle models (and worlds) are included as a submodule from the Gazebo Models Repository repository.
-
-
-Refs: [1](https://docs.px4.io/main/en/sim_gazebo_gz/#running-the-simulation)
-
-### Standalone Mode
-In this mode PX4 SITL and Gazebo are started separately in their own terminals.
-
-```
-cd ~/workspace/PX4-Autopilot/Tools/simulation/gz/
-python simulation-gazebo
-```
-or 
-
-```
-python simulation-gazebo --world walls
+```bash
+export GZ_SIM_RESOURCE_PATH=$PWD/Tools/simulation/gz/worlds:$GZ_SIM_RESOURCE_PATH
 ```
 
+### Common vehicle targets
 
-then 
-
-
-
+```bash
+make px4_sitl gz_x500
+make px4_sitl gz_x500_depth         # X500 with depth camera
+make px4_sitl gz_x500_vision        # X500 with monocular camera
+make px4_sitl gz_x500_lidar         # X500 with 2D lidar
+make px4_sitl gz_standard_vtol
+make px4_sitl gz_rc_cessna
+make px4_sitl gz_advanced_plane
+make px4_sitl gz_r1_rover
+make px4_sitl gz_rover_ackermann
 ```
+
+All vehicle and world models are pulled in as a submodule from [PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models).
+
+Refs: [PX4 simulation with Gazebo](https://docs.px4.io/main/en/sim_gazebo_gz/#running-the-simulation).
+
+### Standalone mode (PX4 and Gazebo in separate terminals)
+
+```bash
+# Terminal 1 — start Gazebo
+cd ~/workspace/PX4-Autopilot/Tools/simulation/gz
+python3 simulation-gazebo                 # default world
+python3 simulation-gazebo --world walls   # specific world
+```
+
+```bash
+# Terminal 2 — start PX4 attached to the running Gazebo
 PX4_GZ_STANDALONE=1 make px4_sitl gz_x500
 ```
 
-more [here](https://docs.px4.io/main/en/sim_gazebo_gz/gazebo_models.html#basic-usage)
+Refs: [Standalone mode](https://docs.px4.io/main/en/sim_gazebo_gz/gazebo_models.html#basic-usage).
 
+---
 
+## 3. ROS 2 integration
 
-## ROS2
+PX4 talks to ROS 2 over uXRCE-DDS, which needs an agent running on the ROS 2 side and the client baked into the PX4 firmware (default since v1.14).
 
+### 3.1 Build and run the uXRCE-DDS Agent
 
-```
+```bash
 git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git
 cd Micro-XRCE-DDS-Agent
-mkdir build
-cd build
+mkdir build && cd build
 cmake ..
-make
+make -j$(nproc)
 sudo make install
-sudo ldconfig /usr/local/lib/
-```
-installation:
-
-```
-make -j20 install DESTDIR=~/
+sudo ldconfig
 ```
 
-LD_LIBRARY_PATH=~/usr/local/lib
+Run the agent (matches the default PX4 SITL UDP port 8888):
 
-```
-cd ~/usr/local/bin
-
-./MicroXRCEAgent udp4 -p 8888
+```bash
+MicroXRCEAgent udp4 -p 8888
 ```
 
+### 3.2 Build the PX4 ROS 2 packages
 
-First
+```bash
+mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
+git clone https://github.com/PX4/px4_msgs.git
+git clone https://github.com/PX4/px4_ros_com.git
 
-```
-cd ~/ros2_ws/src/
-```
-
-then 
-
-```
-git clone git@github.com:PX4/px4_msgs.git
-git@github.com:PX4/px4_ros_com.git
-```
-
-and finally:
-
-```
-cd ~/ros2_ws/
-colcon build
-```
- 
-
-
-```
-gz topic -i -t /world/default/model/x500_lidar_0/link/link/sensor/lidar_2d_v2/scan/points
+cd ~/ros2_ws
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install
+source install/setup.bash
 ```
 
-/world/default/model/x500_lidar_0/link/link/sensor/lidar_2d_v2/scan
+`px4_msgs` defines the uORB-flavored message types; `px4_ros_com` provides example nodes (`sensor_combined_listener`, `offboard_control`, etc.).
 
+### 3.3 Verify the link
 
+With PX4 SITL + the agent running, topics should appear:
 
+```bash
+ros2 topic list | grep fmu      # /fmu/in/... and /fmu/out/...
+ros2 topic echo /fmu/out/vehicle_status
+```
 
+Refs: [PX4 ROS 2 user guide (Humble)](https://docs.px4.io/main/en/ros2/user_guide.html#humble).
 
+---
 
-# Remove the wrong version (for Ignition Fortress)
+## 4. Bridging Gazebo sensor topics to ROS 2
+
+Sensor data published *inside Gazebo* (camera, lidar, IMU on the simulated airframe) is **not** automatically forwarded to ROS 2 — the uXRCE-DDS link only carries PX4-internal uORB topics. Use `ros_gz_bridge` for raw simulator sensors.
+
+Install the Harmonic-matched bridge:
+
+```bash
+# If you previously installed the Fortress version, remove it first
 sudo apt remove ros-humble-ros-gz
-
-# Install the version for Gazebo Garden
 sudo apt install ros-humble-ros-gzharmonic
+```
 
+Inspect what Gazebo publishes:
 
+```bash
+gz topic -l
+gz topic -i -t /world/default/model/x500_lidar_0/link/lidar_sensor/sensor/lidar/scan
+```
 
+Bridge an example camera topic:
 
+```bash
+ros2 run ros_gz_bridge parameter_bridge \
+  /world/default/model/x500_vision_0/link/camera_link/sensor/imager/image@sensor_msgs/msg/Image@gz.msgs.Image
+```
 
+(Topic paths depend on the airframe — list with `gz topic -l` first; the structure is `/world/<world>/model/<vehicle>/link/<link>/sensor/<sensor>/<channel>`.)
 
-Refs: [1](https://docs.px4.io/main/en/ros2/user_guide.html#humble)
+---
 
+## 5. Docker (optional)
 
+Useful when host deps drift. The official PX4 dev images live under `px4io/`.
 
+```bash
+# Allow GUI from container
+xhost +local:docker
 
-
-
-
-
-
-
-
-https://docs.px4.io/main/en/test_and_ci/docker.html
-
-# enable access to xhost from the container
-xhost +
-
-# Run docker and open bash shell
 docker run -it --privileged \
---env=LOCAL_USER_ID="$(id -u)" \
--v ~/workspace/PX4-Autopilot:/src/PX4-Autopilot/:rw \
--v /tmp/.X11-unix:/tmp/.X11-unix:ro \
--e DISPLAY=$DISPLAY \
---network host \
---name=px4-ros px4io/px4-dev-base-jammy:latest bash
+  --env=LOCAL_USER_ID="$(id -u)" \
+  -v ~/workspace/PX4-Autopilot:/src/PX4-Autopilot:rw \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  -e DISPLAY=$DISPLAY \
+  --network host \
+  --name=px4-dev \
+  px4io/px4-dev-simulation-jammy:latest \
+  bash
 
+# Inside the container
+cd /src/PX4-Autopilot
+make px4_sitl gz_x500
+```
 
-cd src/PX4-Autopilot    #This is <container_src>
-make px4_sitl_default gazebo-classic
+Re-attach later:
 
+```bash
+docker start -i px4-dev
+docker exec -it px4-dev bash
+```
 
+Refs: [PX4 Docker guide](https://docs.px4.io/main/en/test_and_ci/docker.html).
 
+---
 
+## 6. QGroundControl
 
-# start the container
-docker start -i px4-ros
-# open a new bash shell in this container
-docker exec -it px4-ros bash
+Ground-control station that auto-discovers SITL on `udp://:14550`:
 
+- Download: <https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/quick_start.html>
 
-cd /src/PX4-Autopilot/
-source /opt/ros/noetic/setup.sh
+---
 
-https://docs.qgroundcontrol.com/master/en/qgc-user-guide/getting_started/quick_start.html
+## References
 
-
-https://docs.px4.io/main/en/simulation/ros_interface.html
-
-roslaunch mavros px4.launch fcu_url:="udp://:14540@127.0.0.1:14557"
-
-
-https://www.youtube.com/watch?v=jBTikChu02E&list=PLYy2pGCdhu7xEaNN8krzAKxv74L1mD4OV&index=5
-
-
-
-
-
-export GZ_SIM_RESOURCE_PATH=/home/behnam/workspace/PX4-Autopilot/Tools/simulation/gz/worlds:$GZ_SIM_RESOURCE_PATH
-
-
-PX4_SITL_WORLD=/home/behnam/workspace/PX4-Autopilot/Tools/simulation/gz/worlds/baylands.sdf 
-make px4_sitl gz_x500_depth
-
-
-PX4_SITL_WORLD=/home/behnam/workspace/PX4-Autopilot/Tools/simulation/gz/worlds/baylands.sdf 
-make px4_sitl gz_x500_depth
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ign topic -l
-
-
- ign topic -i -t /camera 
-Publishers [Address, Message Type]:
-  tcp://172.17.0.1:46765, gz.msgs.Image
-
-
-
-ros2 run ros_ign_bridge parameter_bridge /example_topic@std_msgs/msg/String[ignition.msgs.StringMsg
-
-
-
-
-
-
-
-
-roslaunch mavros px4.launch fcu_url:="udp://:14540@127.0.0.1:14557"
-
-
-
-
-
-
-
-
-
-
-
-
+- [Building PX4 Software](https://docs.px4.io/main/en/dev_setup/building_px4.html)
+- [Gazebo simulation](https://docs.px4.io/main/en/sim_gazebo_gz/)
+- [ROS 2 user guide](https://docs.px4.io/main/en/ros2/user_guide.html)
+- [uXRCE-DDS](https://docs.px4.io/main/en/middleware/uxrce_dds.html)
+- [PX4-Autopilot repo](https://github.com/PX4/PX4-Autopilot)
+- [Micro-XRCE-DDS-Agent](https://github.com/eProsima/Micro-XRCE-DDS-Agent)

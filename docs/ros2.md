@@ -381,13 +381,13 @@ From the workspace root:
 
 ```bash
 rosdep update
-rosdep install -i --from-path src --rosdistro $ROS_DISTRO -y
+rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y
 ```
 
 Flags:
-1. `--from-paths src` — scan `package.xml` files for keys
-2. `-y` — non-interactive
-3. `--ignore-src` — skip keys already provided by packages in this workspace
+- `--from-paths src` — scan `package.xml` files for keys
+- `--ignore-src` (`-i`) — skip keys already provided by packages in this workspace
+- `-y` — non-interactive
 
 `rosdep` is not a package manager; it maps rosdep keys to the host's package manager (apt on Ubuntu). Keys are documented in [REP-149](https://ros.org/reps/rep-0149.html).
 
