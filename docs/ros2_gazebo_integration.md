@@ -1,8 +1,6 @@
-# ROS 2 ↔ Gazebo Integration (Docker-only)
+# ROS 2 ↔ Gazebo Integration
 
 **Stack:** ROS 2 Jazzy + `ros_gz` (jazzy branch) + Gazebo **Harmonic**.
-
-This guide assumes the Docker-first ROS 2 setup from [`ros2.md`](./ros2.md). ROS 2 and Gazebo are never installed on the host — everything runs in containers, the workspace is bind-mounted, and GUIs reach the host X server through the standard X11 socket.
 
 ---
 
