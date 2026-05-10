@@ -4,7 +4,7 @@ How ROS 2's DDS-based middleware actually behaves under producer/consumer rate m
 
 **Short answer up front:** QoS does *not* throttle the publisher. It controls *what gets buffered, what gets dropped, and what guarantees exist between endpoints* — but the camera will keep grabbing at 60 Hz regardless of what the subscriber does.
 
-> **Runnable examples:** all snippets below have full executable counterparts in `~/ros2_ws/src/ros2_qos_examples_cpp` and `ros2_qos_examples_py`. Build instructions and run pairs are in that package's [README](../../ros2_ws/src/ros2_qos_examples_cpp/README.md).
+> **Runnable examples:** all snippets below have full executable counterparts in `ros2/ros2_qos_examples_cpp/` and `ros2/ros2_qos_examples_py/` (mounted into the container at `~/ros2_ws/src/`). Build instructions and run pairs are in that package's [README](../ros2/ros2_qos_examples_cpp/README.md).
 
 ---
 
@@ -210,7 +210,7 @@ void worker_loop() {
 }
 ```
 
-Full version (with shutdown handling) at `~/ros2_ws/src/ros2_qos_examples_cpp/src/latest_frame_buffer.cpp`.
+Full version (with shutdown handling) at [`ros2/ros2_qos_examples_cpp/src/latest_frame_buffer.cpp`](../ros2/ros2_qos_examples_cpp/src/latest_frame_buffer.cpp).
 
 ---
 

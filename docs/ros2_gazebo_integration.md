@@ -24,7 +24,7 @@ This guide assumes the Docker-first ROS 2 setup from [`ros2.md`](./ros2.md). ROS
 | ROS 2 distro | `ros_gz` branch | `GZ_VERSION` | Gazebo release |
 |---|---|---|---|
 | **Jazzy** (LTS, 2024–2029) | `jazzy` | `harmonic` | Gazebo Harmonic |
-| Iron | `iron` | `garden` | Gazebo Garden |
+| Iron *(EOL Nov 2024)* | `iron` | `garden` | Gazebo Garden |
 | Humble (LTS, 2022–2027) | `humble` | `fortress` | Gazebo Fortress |
 
 For Jazzy:
@@ -489,10 +489,10 @@ The Jazzy branch of `ros_gz_sim_demos` ships this fix already — only relevant 
 
 ### `gz topic` CLI behaves oddly inside Docker
 
-`gz topic echo` sometimes fails to attach to the simulator from inside a container due to shared-memory transport quirks even with `--ipc host`. Workarounds:
+`gz topic echo` sometimes fails to attach to the simulator from a *different* container than the one running `gz sim` due to shared-memory transport quirks even with `--ipc host`. Workarounds:
 
-- Run `gz topic` from the **host** (it uses the same Gazebo transport because of `--network host`).
-- Or use `ros2 topic echo` after bridging the topic — that path is reliable.
+- Run `gz topic` from another shell **inside the same container** (`docker exec -it ros2_gz bash`) — they share `/tmp` and shared memory.
+- Or bridge the topic and use `ros2 topic echo` over DDS — that path is reliable across containers.
 
 ### "ROS 2 nodes in two containers don't see each other"
 
