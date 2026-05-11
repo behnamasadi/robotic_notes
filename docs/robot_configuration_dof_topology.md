@@ -84,7 +84,7 @@ The **workspace** is the set of points (or poses) the end-effector can physicall
 - **Dexterous workspace:** the set of points reachable with *all* orientations. Dexterous workspace ⊆ reachable workspace.
 
 For a planar 2R arm with link lengths $\ell_1, \ell_2$ and unrestricted joints, the reachable workspace is an annulus
-$$\bigl\{\,(x,y) : |\ell_1 - \ell_2| \le \sqrt{x^2 + y^2} \le \ell_1 + \ell_2\,\bigr\}.$$
+$$\{\,(x,y) : |\ell_1 - \ell_2| \le \sqrt{x^2 + y^2} \le \ell_1 + \ell_2\,\}.$$
 With joint range limits, the workspace becomes a sub-region of this annulus.
 
 ## Topology of C-space
