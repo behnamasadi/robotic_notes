@@ -202,18 +202,25 @@ pip install jupyterlab
 - [The standard deviation of the discrete-time noise process](docs/imu.ipynb#the-standard-deviation-of-the-discrete-time-noise-process)
 
 
-# [Apriltag](#)
-- [Apriltag](docs/apriltag.md#apriltag)
-- [Generating Tag](docs/apriltag.md#generating-tag)
-- [Apriltag ROS](docs/apriltag.md#apriltag-ros)
-- [Detecting Apriltag](docs/apriltag.md#detecting-apriltag)
+# [Fiducial Markers](#)
+- [Square binary fiducials (ArUco, AprilTag](docs/apriltag.md#2-square-binary-fiducials--the-family-relevant-to-robotics)
+- [Composite calibration boards (ChArUco, AprilGrid)](docs/apriltag.md#3-composite-calibration-boards)
+- [Which marker should I use?](docs/apriltag.md#4-decision-shortcut--which-marker-should-i-use)
+- [AprilTag — coordinate frame and measurements](docs/apriltag.md#5-coordinate-frame-and-measurements)
+- [Generating AprilTags](docs/apriltag.md#6-generating-tags)
+- [Detecting AprilTags (C++, Python, ROS)](docs/apriltag.md#7-detecting-apriltags)
+- [Common pitfalls](docs/apriltag.md#8-common-pitfalls)
 
 # [Kalibr](#)
 
-- [Datasets and Calibration Targets](docs/kalibr.md#datasets-and-calibration-targets)
-- [Supported Camera Models and Distortion](docs/kalibr.md#supported-camera-models-and-distortion)
-- [Camera Calibration](docs/kalibr.md#camera-calibration)
-- [Camera IMU Calibration](docs/kalibr.md#camera-imu-calibration)
+- [Choosing a calibration target](docs/kalibr.md#1-choosing-a-calibration-target)
+- [Calibration target files (AprilGrid PDF, YAMLs)](docs/kalibr.md#2-calibration-target-files)
+- [Supported camera models and distortion](docs/kalibr.md#3-supported-camera-models-and-distortion)
+- [Building the Kalibr Docker image](docs/kalibr.md#4-building-the-kalibr-docker-image)
+- [Recording the calibration bag](docs/kalibr.md#5-recording-the-calibration-bag)
+- [Camera-only calibration](docs/kalibr.md#6-camera-only-calibration)
+- [Camera–IMU calibration](docs/kalibr.md#7-cameraimu-calibration)
+- [Common pitfalls](docs/kalibr.md#8-common-pitfalls)
 
 
 
