@@ -1,0 +1,17 @@
+# Recordings symlinked from external storage — never commit large bags
+runs/*/
+!runs/.gitkeep
+
+# Python / build artefacts
+__pycache__/
+*.pyc
+.venv/
+build/
+install/
+
+# rerun output files (can be large)
+*.rrd
+
+# Local experiment outputs
+/tmp_*
+*.bak

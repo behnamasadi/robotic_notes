@@ -1,0 +1,19 @@
+%YAML:1.0
+---
+# rs_front camera, the left half of the stereo pair.
+# Matches models/explorer_r2/model.sdf rs_front and the cam0 entry in
+# config/openvins/kalibr_imucam_chain.yaml — keep them in lockstep.
+model_type: PINHOLE
+camera_name: rs_front
+image_width: 640
+image_height: 480
+distortion_parameters:
+   k1: -0.02
+   k2: 0.003
+   p1: 0.0
+   p2: 0.0
+projection_parameters:
+   fx: 554.26
+   fy: 554.26
+   cx: 320.5
+   cy: 240.5

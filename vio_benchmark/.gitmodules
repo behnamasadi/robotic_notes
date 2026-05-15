@@ -1,0 +1,6 @@
+[submodule "third_party/open_vins"]
+	path = third_party/open_vins
+	url = https://github.com/rpng/open_vins.git
+[submodule "third_party/VINS-Fusion-ROS2"]
+	path = third_party/VINS-Fusion-ROS2
+	url = https://github.com/zinuok/VINS-Fusion-ROS2.git

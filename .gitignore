@@ -28,3 +28,7 @@ __pycache__/
 scripts/sandbox/*
 # Ignore machine_hall junk files temporarily
 data/machine_hall/*
+
+# VIO benchmark outputs — large binaries, never commit
+vio_benchmark/runs/
+vio_benchmark/*.rrd

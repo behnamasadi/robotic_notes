@@ -1,0 +1,109 @@
+%YAML:1.0
+
+# VINS-Fusion config for the EXPLORER_R2 stereo pair.
+#
+# Topics, calibration, and IMU noise are all derived from the same SDF
+# values OpenVINS uses (config/openvins/kalibr_imucam_chain.yaml and
+# kalibr_imu_chain.yaml). Keep them in lockstep — a mismatch will produce
+# systematic drift in one estimator and not the other, making the
+# head-to-head comparison meaningless.
+
+#common parameters
+imu: 1
+num_of_cam: 2
+
+# /imu_filtered is /imu after a low-pass + saturation by
+# scripts/imu_lowpass_node.py — models a real MEMS IMU bandwidth and
+# range, both of which gz-sim's imu_sensor lacks. See
+# docs/VIO_DIAGNOSTIC_GUIDE.md §5.
+imu_topic: "/imu_filtered"
+image0_topic: "/rs_front/image"
+image1_topic: "/rs_front_right/image"
+
+# VINS writes a pose-graph + logs here at runtime. Volume-mount from
+# the host workspace if you want them to survive container restarts.
+output_path: "/ws/runs/vins_output/"
+
+cam0_calib: "cam0.yaml"
+cam1_calib: "cam1.yaml"
+image_width: 640
+image_height: 480
+
+# GPU acceleration off — the gz sim is already at ~27 % RTF with two
+# cameras, and the GPU is busy rendering. CPU-only optical flow keeps
+# CPU/GPU contention down.
+use_gpu         : 0
+use_gpu_acc_flow: 0
+use_gpu_ceres   : 0
+
+# Extrinsic parameter between IMU and camera.
+# 0 = trust the configured extrinsics exactly.
+# 1 = initial guess, optimise from there.
+# 2 = no extrinsics provided, estimate from scratch.
+# In sim everything is exact, so 0.
+estimate_extrinsic: 0
+
+# body_T_cam0 — 4×4 SE(3) of cam0's optical frame expressed in IMU body
+# frame. Same matrix as the cam0 T_imu_cam in
+# config/openvins/kalibr_imucam_chain.yaml. The rotation block converts
+# optical→base_link (REP-103); the translation is the cam0 position
+# in base_link.
+body_T_cam0: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [ 0.0,  0.0,  1.0,  0.565,
+          -1.0,  0.0,  0.0,  0.000,
+           0.0, -1.0,  0.0,  0.245,
+           0.0,  0.0,  0.0,  1.000 ]
+
+# body_T_cam1 — same rotation as cam0, but cam1 origin is offset 10 cm
+# to the right in base_link (y = -0.10) to form the stereo pair.
+body_T_cam1: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [ 0.0,  0.0,  1.0,  0.565,
+          -1.0,  0.0,  0.0, -0.100,
+           0.0, -1.0,  0.0,  0.245,
+           0.0,  0.0,  0.0,  1.000 ]
+
+#Multiple thread support
+multiple_thread: 1
+
+#feature tracker parameters
+max_cnt: 200            # max features in tracking (OpenVINS uses num_pts: 200)
+min_dist: 30            # min pixel distance between features
+freq: 10                # tracker publish rate (Hz). 10 is fine for our 8-Hz cameras under stereo bandwidth pressure.
+F_threshold: 1.0        # RANSAC pixel threshold
+show_track: 1           # publish /vins/image_track so we can see what VINS is following in RViz
+flow_back: 1            # forward+backward optical flow check (matches OpenVINS' double-check)
+
+#optimization parameters
+max_solver_time: 0.04   # max solver time (s) per iteration — keeps it real time
+max_num_iterations: 8   # max solver iterations
+keyframe_parallax: 10.0 # keyframe selection threshold (px)
+
+# IMU parameters. Converted from kalibr_imu_chain.yaml — same gz IMU.
+# acc_n / gyr_n / acc_w / gyr_w correspond to OpenVINS'
+# accelerometer_noise_density / gyroscope_noise_density /
+# accelerometer_random_walk / gyroscope_random_walk.
+acc_n: 1.90e-3   # accelerometer measurement noise density (m/s² / √Hz)
+gyr_n: 1.27e-4   # gyroscope noise density (rad/s / √Hz)
+acc_w: 6.00e-4   # accelerometer bias random walk (m/s³ / √Hz)
+gyr_w: 1.00e-5   # gyroscope bias random walk (rad/s² / √Hz)
+g_norm: 9.81     # gravity magnitude
+
+#unsynchronisation parameters
+# In sim the IMU and cameras share /clock — no time offset. Disable
+# online estimation; if you enable it you'd typically also set
+# initial guess via `td`.
+estimate_td: 0
+td: 0.00
+
+#loop closure parameters — disabled by default. Flip on later if you
+#want to compare with/without loop closure (one of VINS-Fusion's main
+#advantages over OpenVINS' MSCKF).
+load_previous_pose_graph: 0
+pose_graph_save_path: "/ws/runs/vins_output/pose_graph/"
+save_image: 0

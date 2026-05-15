@@ -1,0 +1,67 @@
+%YAML:1.0
+# IMU calibration chain for OpenVINS.
+#
+# T_i_b : transform from IMU body frame to robot body. Identity since the SDF
+# places imu_sensor at base_link origin with no rotation.
+#
+# Noise tuned to a Bosch BMI088 / Xsens MTi-3 grade MEMS unit (mid-tier
+# hobby/research IMU you can actually buy). Numbers are CONTINUOUS-TIME
+# noise densities derived from the SDF's per-sample stddev at 250 Hz:
+#   density = stddev / sqrt(rate)
+#   gyro:  2.0e-3 / sqrt(250) ≈ 1.27e-4 rad/s/√Hz   (BMI088 datasheet: 1.4e-4)
+#   accel: 3.0e-2 / sqrt(250) ≈ 1.90e-3 m/s²/√Hz   (BMI088 datasheet: 1.7e-3)
+# Random walks are typical for that part class; tune if the filter is
+# over-/under-confident. Bump stddev 5-10× to simulate cheap MPU-9250.
+#
+# OpenVINS' "kalibr" IMU model also requires intrinsic-correction matrices
+# (Tw / Ta / R_IMUtoACC / R_IMUtoGYRO / Tg). In a perfect-sim IMU there's
+# nothing to correct, so Tw/Ta and the R_* are identity, and Tg (gyro
+# g-sensitivity) is zero. They must still be present — OpenVINS errors
+# out if they're missing from the YAML.
+
+imu0:
+  T_i_b:
+    - [1.0, 0.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  accelerometer_noise_density:    1.90e-3   # m / s² / sqrt(Hz)
+  accelerometer_random_walk:      6.00e-4   # m / s³ / sqrt(Hz)
+  gyroscope_noise_density:        1.27e-4   # rad / s / sqrt(Hz)
+  gyroscope_random_walk:          1.00e-5   # rad / s² / sqrt(Hz)
+  # /imu_filtered = /imu after band-limit + saturation by
+  # scripts/imu_lowpass_node.py. The raw /imu has impulsive spikes
+  # that gz-sim's bandwidth-unlimited imu_sensor passes through; the
+  # filter mimics a real MEMS. See docs/VIO_DIAGNOSTIC_GUIDE.md §5.
+  rostopic: /imu_filtered
+  time_offset: 0.0
+  update_rate: 250.0
+  model: "kalibr"
+
+  # Intrinsic-correction matrices. Identity / zero for a perfect-sim IMU.
+  # Tw : 3x3 scale + cross-coupling for the gyroscope.
+  Tw:
+    - [1.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0]
+    - [0.0, 0.0, 1.0]
+  # Ta : 3x3 scale + cross-coupling for the accelerometer.
+  Ta:
+    - [1.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0]
+    - [0.0, 0.0, 1.0]
+  # R_IMUtoACC : rotation from IMU body frame to accelerometer sensing frame.
+  R_IMUtoACC:
+    - [1.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0]
+    - [0.0, 0.0, 1.0]
+  # R_IMUtoGYRO : rotation from IMU body frame to gyro sensing frame.
+  R_IMUtoGYRO:
+    - [1.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0]
+    - [0.0, 0.0, 1.0]
+  # Tg : 3x3 g-sensitivity of the gyroscope (rad/s per m/s² of acceleration).
+  # Zero for a perfect IMU — the gyro is not affected by linear acceleration.
+  Tg:
+    - [0.0, 0.0, 0.0]
+    - [0.0, 0.0, 0.0]
+    - [0.0, 0.0, 0.0]

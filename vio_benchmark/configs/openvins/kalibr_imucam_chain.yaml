@@ -1,0 +1,47 @@
+%YAML:1.0
+# Camera-to-IMU extrinsics + intrinsics for the front stereo pair
+# (rs_front + rs_front_right). Used by OpenVINS in stereo mode
+# (use_stereo: true, max_cameras: 2 in estimator_config.yaml).
+#
+# T_imu_cam : 4x4 SE(3) — point in CAMERA OPTICAL frame → expressed in IMU frame.
+#   IMU is at base_link origin (no <pose> in the SDF).
+#   gz-cam axes: x forward, y left, z up
+#   Optical frame axes: x right, y down, z forward
+#   So R_imu←opt = | 0  0  1 |
+#                  |-1  0  0 |
+#                  | 0 -1  0 |
+#   t_imu is the camera origin in base_link (gz frame).
+
+cam0:
+  T_imu_cam:
+    - [ 0.0,  0.0,  1.0,  0.565]
+    - [-1.0,  0.0,  0.0,  0.000]
+    - [ 0.0, -1.0,  0.0,  0.245]
+    - [ 0.0,  0.0,  0.0,  1.000]
+  cam_overlaps: [1]
+  camera_model: pinhole
+  distortion_model: radtan
+  # Matches <distortion> in models/explorer_r2/model.sdf rs_front:
+  #   [ k1, k2, p1, p2 ]   (radtan order; OpenVINS expects 4 coeffs)
+  distortion_coeffs: [-0.02, 0.003, 0.0, 0.0]
+  intrinsics: [554.26, 554.26, 320.5, 240.5]   # fu, fv, cu, cv  (640×480 res)
+  resolution: [640, 480]
+  rostopic: /rs_front/image
+
+# Right half of the front stereo pair. Same model.sdf sensor settings
+# as rs_front, but the rover-frame y component is -0.10 (10 cm to the
+# right). 10 cm baseline gives good triangulation at the 1-10 m range
+# the rover navigates.
+cam1:
+  T_imu_cam:
+    - [ 0.0,  0.0,  1.0,  0.565]
+    - [-1.0,  0.0,  0.0, -0.100]
+    - [ 0.0, -1.0,  0.0,  0.245]
+    - [ 0.0,  0.0,  0.0,  1.000]
+  cam_overlaps: [0]
+  camera_model: pinhole
+  distortion_model: radtan
+  distortion_coeffs: [-0.02, 0.003, 0.0, 0.0]
+  intrinsics: [554.26, 554.26, 320.5, 240.5]
+  resolution: [640, 480]
+  rostopic: /rs_front_right/image
