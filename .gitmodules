@@ -8,3 +8,7 @@
 [submodule "vio_benchmark/third_party/VINS-Fusion-ROS2"]
 	path = vio_benchmark/third_party/VINS-Fusion-ROS2
 	url = https://github.com/zinuok/VINS-Fusion-ROS2.git
+[submodule "lio_benchmark/third_party/FAST_LIO"]
+	path = lio_benchmark/third_party/FAST_LIO
+	url = https://github.com/hku-mars/FAST_LIO.git
+	branch = ROS2

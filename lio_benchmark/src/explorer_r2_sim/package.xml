@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>explorer_r2_sim</name>
+  <version>0.1.0</version>
+  <description>
+    CMU Team Explorer's R2 (SubT challenge) rover in a Gazebo cave world.
+    Ships the SDF world + vehicle, a ros_gz_bridge YAML config, an RViz
+    layout, and a launch file that brings the whole stack up. Sensors:
+    Ouster OS0-32 lidar, RGB camera, IMU, magnetometer, NavSat (GPS).
+    Intended as a sandbox for teleoperation, sensor inspection, and
+    downstream sensor fusion.
+  </description>
+  <maintainer email="behnam.asadi@gmail.com">Behnam Asadi</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+
+  <!-- gt_to_path.py: convert /ground_truth/pose (TFMessage) to a Path
+       that evo can ingest, for VIO/LIO evaluation. -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>ros2bag</exec_depend>
+  <exec_depend>rosbag2_storage_default_plugins</exec_depend>
+
+  <!-- lidar_field_adapter.py: enriches gz gpu_lidar's basic PointCloud2
+       with synthesized per-point ring + t fields that FAST_LIO needs. -->
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>sensor_msgs_py</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

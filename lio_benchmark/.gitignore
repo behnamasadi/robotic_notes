@@ -1,0 +1,9 @@
+build/
+install/
+log/
+runs/
+*.bag
+*.mcap
+*.rrd
+__pycache__/
+*.pyc

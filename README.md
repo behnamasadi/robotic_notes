@@ -377,7 +377,20 @@ pip install jupyterlab
 
 # [Visual and Inertial Odometry VIO](#)
 
-Runnable comparison framework: [`vio_benchmark/`](vio_benchmark/).
+### vio_benchmark — head-to-head VIO comparison on real datasets
+
+The [`vio_benchmark/`](vio_benchmark/) subproject is a self-contained
+framework for comparing visual-inertial odometry estimators against
+public datasets (EuRoC MAV, TUM-VIO, and others). It bundles OpenVINS
+and VINS-Fusion as submodules, ships per-dataset calibration files
+and ground-truth references, and includes pipeline scripts plus a
+rerun.io visualisation that overlays multiple trajectories with the
+live stereo camera projected inside each estimator's frustum. First
+head-to-head result: OpenVINS 0.295 m APE vs VINS-Fusion 0.248 m on
+EuRoC MH_01_easy.
+
+- [vio_benchmark README and pipeline](vio_benchmark/README.md)
+- [Head-to-head comparison report](vio_benchmark/docs/COMPARISON.md)
 
 ### Concepts and methodology
 - [Trajectory analysis methodology and case studies](vio_benchmark/docs/ANALYSIS.md)
@@ -395,7 +408,6 @@ Runnable comparison framework: [`vio_benchmark/`](vio_benchmark/).
 - [HybVIO](https://github.com/SpectacularAI/HybVIO/)
 - [SVO Pro](https://github.com/uzh-rpg/rpg_svo_pro_open)
 - [OKVIS — Open Keyframe-based Visual-Inertial SLAM](https://github.com/ethz-asl/okvis)
-- [Map Manager — 3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)
 
 # [SLAM Benchmark ](#)
 
@@ -415,10 +427,23 @@ Runnable comparison framework: [`vio_benchmark/`](vio_benchmark/).
 
 # [Lidar and IMU LIO](#)
 
-FAST-LIO is wired into the rover sim at [`~/ros2_ws/`](https://github.com/) — see [`docs/lidar_and_imu.md`](docs/lidar_and_imu.md) for the integration notes.
+### lio_benchmark — Gazebo LIO testbed
+
+The [`lio_benchmark/`](lio_benchmark/) subproject is a self-contained
+Gazebo simulator for LiDAR-inertial odometry development. It ships a
+SubT-style rover with a 16-beam LiDAR + IMU + cameras, three
+cave/tunnel worlds, and FAST-LIO wired into the rover by default.
+One-line bring-up via `docker compose`. Unlike VIO, LIO works
+correctly on this sim (FAST-LIO consistently produces 0.3–1.5 %
+end-point error on rover recordings) — the architectural reason is in
+the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why-lio-survives-bad-imu-data-and-vio-doesnt).
+
+- [lio_benchmark README and quick start](lio_benchmark/README.md)
+- [Simulator GPU/rendering performance notes](lio_benchmark/docs/PERFORMANCE.md)
+- [FAST-LIO + LiDAR tuning reference](vio_benchmark/docs/PARAMETERS.md#6-lio--fast-lio-with-the-rover-sim)
 
 ### Concepts and methodology
-- [Why LIO is robust to bad IMU but VIO isn't](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#4b--why-lio-survives-bad-imu-data-and-vio-doesnt)
+- [Why LIO is robust to bad IMU but VIO isn't](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why-lio-survives-bad-imu-data-and-vio-doesnt)
 - [Robust Real-time LiDAR-inertial Initialization](docs/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)
 - [Lidar SLAM for Automated Driving (MATLAB)](https://www.youtube.com/watch?v=n4tazoEcBGo)
 - [DSEC — Stereo Event Camera Dataset for Driving Scenarios](docs/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)
@@ -431,7 +456,6 @@ FAST-LIO is wired into the rover sim at [`~/ros2_ws/`](https://github.com/) — 
 - [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM/tree/ros2)
 - [GLIM — versatile and extensible range-based 3D mapping framework](https://github.com/koide3/glim)
 - [LIMO — Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
-- [93won/lidar_odometry — Fast LiDAR SLAM](https://github.com/93won/lidar_odometry)
 
 
 

@@ -1,0 +1,85 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 20
+      Cell Size: 1
+      Reference Frame: <Fixed Frame>
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Names: true
+    # Ground-truth odometry from gz DiffDrive (red).
+    - Class: rviz_default_plugins/Odometry
+      Name: GT Odometry
+      Enabled: true
+      Keep: 200
+      Topic:
+        Value: /model/explorer_r2/odometry
+        Reliability Policy: Reliable
+      Shape: {Color: 200; 50; 50, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+    # OpenVINS odometry (green).
+    - Class: rviz_default_plugins/Odometry
+      Name: OV Odometry
+      Enabled: true
+      Keep: 200
+      Topic:
+        Value: /ov_msckf/odomimu
+        Reliability Policy: Best Effort
+      Shape: {Color: 50; 200; 50, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+    - Class: rviz_default_plugins/Path
+      Name: OV Path
+      Enabled: true
+      Color: 50; 200; 50
+      Line Style: Lines
+      Line Width: 0.05
+      Topic:
+        Value: /ov_msckf/pathimu
+        Reliability Policy: Reliable
+    - Class: rviz_default_plugins/PointCloud2
+      Name: OV MSCKF Features
+      Enabled: true
+      Style: Points
+      Size (Pixels): 3
+      Color Transformer: AxisColor
+      Topic:
+        Value: /ov_msckf/points_msckf
+        Reliability Policy: Best Effort
+    - Class: rviz_default_plugins/PointCloud2
+      Name: OV SLAM Features
+      Enabled: true
+      Style: Points
+      Size (Pixels): 4
+      Color Transformer: AxisColor
+      Topic:
+        Value: /ov_msckf/points_slam
+        Reliability Policy: Best Effort
+    - Class: rviz_default_plugins/Image
+      Name: VIO Tracking
+      Enabled: true
+      Topic:
+        Value: /ov_msckf/trackhist
+        Reliability Policy: Best Effort
+  Enabled: true
+  Global Options:
+    Background Color: 30; 30; 30
+    Fixed Frame: global
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 12
+      Pitch: 0.7
+      Yaw: 4.3
+Window Geometry:
+  Width: 1600
+  Height: 1000

@@ -1,0 +1,328 @@
+Panels:
+  - Class: rviz_common/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Status1
+        - /TF1/Frames1
+      Splitter Ratio: 0.5
+    Tree Height: 781
+  - Class: rviz_common/Tool Properties
+    Expanded:
+      - /2D Goal Pose1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.5886790156364441
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz_common/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: PointCloud2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style: {Line Width: 0.03, Value: Lines}
+      Name: Grid
+      Normal Cell Count: 0
+      Offset: {X: 0, Y: 0, Z: 0}
+      Plane: XY
+      Plane Cell Count: 20
+      Reference Frame: <Fixed Frame>
+      Value: true
+
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames: {All Enabled: true}
+      Marker Scale: 0.5
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree: {}
+      Update Interval: 0
+      Value: true
+
+    # ─── Mode 1: sim ────────────────────────────────────────────────
+    # Wheel odometry from the DiffDrive plugin (red arrow). Disabled by
+    # default — for a slipping rover on cave terrain the wheel-odom arrow
+    # quickly diverges from reality and clutters the view; turn it back
+    # on from the Displays panel if you need to inspect odom-vs-gt drift.
+    - Class: rviz_default_plugins/Odometry
+      Name: Wheel Odom
+      Enabled: false
+      Keep: 200
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
+      Shape: {Color: 200; 50; 50, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /model/explorer_r2/odometry
+      Value: false
+
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds: {Max Value: 10, Min Value: -10, Value: true}
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: Lidar Cloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 2
+      Size (m): 0.02
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /lidar/points
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: RS Front Camera
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /rs_front/image
+      Value: true
+
+    - Class: rviz_default_plugins/PointCloud2
+      Name: RS Front Cloud
+      Enabled: false
+      Color Transformer: RGB8
+      Style: Points
+      Size (Pixels): 2
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /rs_front/points
+      Use Fixed Frame: true
+      Value: true
+
+    # ─── Mode 2: OpenVINS (empty until vio.launch.py runs) ─────────
+    - Class: rviz_default_plugins/Odometry
+      Name: VIO Odom
+      Enabled: true
+      Keep: 200
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
+      Shape: {Color: 50; 200; 50, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /ov_msckf/odomimu
+      Value: true
+
+    - Class: rviz_default_plugins/Path
+      Name: VIO Path
+      Enabled: true
+      Color: 50; 200; 50
+      Line Style: Lines
+      Line Width: 0.05
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /ov_msckf/pathimu
+      Value: true
+
+    # 3D tracked features. /points_msckf = active in the filter,
+    # short-lived (churn fast). /points_slam = SLAM-mode features kept
+    # in state, longer-lived (more stable, fewer of them).
+    - Class: rviz_default_plugins/PointCloud2
+      Name: VIO MSCKF Features
+      Enabled: true
+      Style: Points
+      Size (Pixels): 5
+      Color: 50; 200; 50
+      Color Transformer: FlatColor
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /ov_msckf/points_msckf
+      Value: true
+
+    - Class: rviz_default_plugins/PointCloud2
+      Name: VIO SLAM Features
+      Enabled: true
+      Style: Spheres
+      Size (m): 0.15
+      Color: 255; 100; 100
+      Color Transformer: FlatColor
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /ov_msckf/points_slam
+      Value: true
+
+    # 2D feature tracks overlaid on the live camera frame. Shows what
+    # VIO is actually following — useful for debugging feature loss.
+    - Class: rviz_default_plugins/Image
+      Name: VIO Track Image
+      Enabled: true
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /ov_msckf/trackhist
+      Value: true
+
+    # ─── Mode 3: FAST_LIO (empty until lio.launch.py runs) ─────────
+    - Class: rviz_default_plugins/Odometry
+      Name: LIO Odom
+      Enabled: true
+      Keep: 200
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
+      Shape: {Color: 50; 120; 220, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /Odometry
+      Value: true
+
+    - Class: rviz_default_plugins/Path
+      Name: LIO Path
+      Enabled: true
+      Color: 50; 120; 220
+      Line Style: Lines
+      Line Width: 0.05
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /path
+      Value: true
+
+    - Class: rviz_default_plugins/PointCloud2
+      Name: LIO Map
+      Enabled: true
+      Style: Flat Squares
+      Size (m): 0.05
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /cloud_registered
+      Value: true
+
+    # ─── Ground truth (always on, populated by gt_to_path.py) ──────
+    - Class: rviz_default_plugins/Odometry
+      Name: GT Odom
+      Enabled: true
+      Keep: 200
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
+      Shape: {Color: 240; 200; 0, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /ground_truth/odom
+      Value: true
+
+    - Class: rviz_default_plugins/Path
+      Name: GT Path
+      Enabled: true
+      Color: 240; 200; 0
+      Line Style: Lines
+      Line Width: 0.08
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /ground_truth/path
+      Value: true
+
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: explorer_r2/odom
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+      Hide Inactive Objects: true
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+    - Class: rviz_default_plugins/Measure
+      Line color: 128; 128; 0
+    - Class: rviz_default_plugins/SetGoal
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /goal_pose
+    - Class: rviz_default_plugins/PublishPoint
+      Single click: true
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /clicked_point
+  Transformation:
+    Current: {Class: rviz_default_plugins/TF}
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 18.0
+      Enable Stereo Rendering: {Stereo Eye Separation: 0.06, Stereo Focal Distance: 1, Swap Stereo Eyes: false, Value: false}
+      Focal Point: {X: 0, Y: 0, Z: 0}
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.7
+      Target Frame: explorer_r2/base_link
+      Value: Orbit (rviz)
+      Yaw: 4.3
+    Saved: ~
+Window Geometry:
+  Displays: {collapsed: false}
+  RS Front Camera: {collapsed: false}
+  VIO Track Image:  {collapsed: false}
+  Height: 1056
+  Hide Left Dock: false
+  Hide Right Dock: false
+  Time:     {collapsed: false}
+  Tool Properties: {collapsed: false}
+  Views:    {collapsed: false}
+  Width: 1869
+  X: 51
+  Y: 384

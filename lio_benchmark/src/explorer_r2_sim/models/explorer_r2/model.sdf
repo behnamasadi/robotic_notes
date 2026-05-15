@@ -1,0 +1,911 @@
+<?xml version='1.0'?>
+<sdf version="1.9">
+    <model name="explorer_r2">
+        <pose>0 0 0.398 0 0 0</pose>
+        <link name="base_link">
+            <inertial>
+                <pose>0.002225 0.033355 0.022792 0 -0 0</pose>
+                <mass>111.0015</mass>
+                <inertia>
+                    <ixx>4.49753</ixx>
+                    <ixy>0.00199937</ixy>
+                    <ixz>-0.00152659</ixz>
+                    <iyy>2.46329</iyy>
+                    <iyz>-0.424901</iyz>
+                    <izz>5.57714</izz>
+                </inertia>
+            </inertial>
+            <collision name="base_link_collision">
+                <pose>0.25 0 0.0480 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.6 0.55 0.428</size>
+                    </box>
+                </geometry>
+            </collision>
+            <collision name="base_link_fixed_joint_lump__sensor_payload_link_collision_1">
+                <pose>0.38 0 0.4 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.28 0.28 0.4</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="connection_visual">
+                <pose>0 0 0 0 1.5707 0</pose>
+                <geometry>
+                    <cylinder>
+                        <length>0.5</length>
+                        <radius>0.05</radius>
+                    </cylinder>
+                </geometry>
+            </visual>
+            <visual name="base_link_visual">
+                <pose>0.180 0 .24 0 0 -1.5707963267948966</pose>
+                <geometry>
+                    <mesh>
+                        <uri>meshes/r2.dae</uri>
+                        <submesh>
+                            <name>BodyFront</name>
+                            <center>true</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Albedo.png</albedo_map>
+                            <metalness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Metalness.png</metalness_map>
+                            <roughness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Roughness.png</roughness_map>
+                        </metal>
+                    </pbr>
+                    <!-- fallback to script if no PBR support-->
+                    <script>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/scripts/</uri>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/</uri>
+                        <name>UrbanTile/R2_Diffuse</name>
+                    </script>
+                </material>
+            </visual>
+            <!-- IMU tuned to a mid-tier MEMS unit you can actually buy
+                 (≈ Bosch BMI088 / Xsens MTi-3 grade — what you'd put on a
+                 hobby/research robot). To stress-test fusion, multiply
+                 stddev by 5-10× to simulate a cheap MPU-9250-class part.
+                 Per-sample stddev at 250 Hz ↔ continuous noise density
+                 (kalibr_imu_chain.yaml uses density). -->
+            <sensor name="imu_sensor" type="imu">
+                <topic>imu</topic>
+                <always_on>1</always_on>
+                <update_rate>250</update_rate>
+                <imu>
+                    <angular_velocity>
+                        <x>
+                            <noise type="gaussian">
+                                <mean>0</mean>
+                                <stddev>2.0e-3</stddev>          <!-- ≈ 0.115 deg/s -->
+                                <bias_mean>1.0e-4</bias_mean>
+                                <bias_stddev>3.0e-5</bias_stddev>
+                                <dynamic_bias_stddev>1.0e-5</dynamic_bias_stddev>
+                                <dynamic_bias_correlation_time>500.0</dynamic_bias_correlation_time>
+                            </noise>
+                        </x>
+                        <y>
+                            <noise type="gaussian">
+                                <mean>0</mean>
+                                <stddev>2.0e-3</stddev>
+                                <bias_mean>1.0e-4</bias_mean>
+                                <bias_stddev>3.0e-5</bias_stddev>
+                                <dynamic_bias_stddev>1.0e-5</dynamic_bias_stddev>
+                                <dynamic_bias_correlation_time>500.0</dynamic_bias_correlation_time>
+                            </noise>
+                        </y>
+                        <z>
+                            <noise type="gaussian">
+                                <mean>0</mean>
+                                <stddev>2.0e-3</stddev>
+                                <bias_mean>1.0e-4</bias_mean>
+                                <bias_stddev>3.0e-5</bias_stddev>
+                                <dynamic_bias_stddev>1.0e-5</dynamic_bias_stddev>
+                                <dynamic_bias_correlation_time>500.0</dynamic_bias_correlation_time>
+                            </noise>
+                        </z>
+                    </angular_velocity>
+                    <linear_acceleration>
+                        <x>
+                            <noise type="gaussian">
+                                <mean>0</mean>
+                                <stddev>3.0e-2</stddev>           <!-- ≈ 3 mg per sample -->
+                                <bias_mean>5.0e-3</bias_mean>
+                                <bias_stddev>1.0e-3</bias_stddev>
+                                <dynamic_bias_stddev>2.0e-4</dynamic_bias_stddev>
+                                <dynamic_bias_correlation_time>200.0</dynamic_bias_correlation_time>
+                            </noise>
+                        </x>
+                        <y>
+                            <noise type="gaussian">
+                                <mean>0</mean>
+                                <stddev>3.0e-2</stddev>
+                                <bias_mean>5.0e-3</bias_mean>
+                                <bias_stddev>1.0e-3</bias_stddev>
+                                <dynamic_bias_stddev>2.0e-4</dynamic_bias_stddev>
+                                <dynamic_bias_correlation_time>200.0</dynamic_bias_correlation_time>
+                            </noise>
+                        </y>
+                        <z>
+                            <noise type="gaussian">
+                                <mean>0</mean>
+                                <stddev>3.0e-2</stddev>
+                                <bias_mean>5.0e-3</bias_mean>
+                                <bias_stddev>1.0e-3</bias_stddev>
+                                <dynamic_bias_stddev>2.0e-4</dynamic_bias_stddev>
+                                <dynamic_bias_correlation_time>200.0</dynamic_bias_correlation_time>
+                            </noise>
+                        </z>
+                    </linear_acceleration>
+                </imu>
+            </sensor>
+
+            <!-- Magnetometer (added) — pairs with the IMU for orientation. -->
+            <sensor name="magnetometer" type="magnetometer">
+                <topic>magnetometer</topic>
+                <update_rate>50</update_rate>
+                <always_on>1</always_on>
+                <magnetometer>
+                    <x><noise type="gaussian"><mean>0</mean><stddev>1e-4</stddev></noise></x>
+                    <y><noise type="gaussian"><mean>0</mean><stddev>1e-4</stddev></noise></y>
+                    <z><noise type="gaussian"><mean>0</mean><stddev>1e-4</stddev></noise></z>
+                </magnetometer>
+            </sensor>
+
+            <!-- NavSat / GPS (added) — needs gz-sim-navsat-system in the
+                 world plus <spherical_coordinates>. Publishes /navsat as
+                 gz.msgs.NavSat → bridged to sensor_msgs/NavSatFix. -->
+            <sensor name="navsat" type="navsat">
+                <topic>navsat</topic>
+                <update_rate>10</update_rate>
+                <always_on>1</always_on>
+                <navsat>
+                    <position_sensing>
+                        <horizontal><noise type="gaussian"><mean>0</mean><stddev>1.0</stddev></noise></horizontal>
+                        <vertical>  <noise type="gaussian"><mean>0</mean><stddev>2.0</stddev></noise></vertical>
+                    </position_sensing>
+                    <velocity_sensing>
+                        <horizontal><noise type="gaussian"><mean>0</mean><stddev>0.05</stddev></noise></horizontal>
+                        <vertical>  <noise type="gaussian"><mean>0</mean><stddev>0.10</stddev></noise></vertical>
+                    </velocity_sensing>
+                </navsat>
+            </sensor>
+
+            <sensor name="rs_front" type="rgbd_camera">
+                <pose>0.565 0  0.245 0 0 0</pose>
+                <topic>rs_front</topic>
+                <always_on>1</always_on>
+                <update_rate>30</update_rate>
+                <camera name="camera_front">
+                    <horizontal_fov>1.0472</horizontal_fov>
+                    <lens>
+                        <intrinsics>
+                            <!-- Bumped 320×240 → 640×480 to give mono VIO
+                                 more pixels per feature (sub-pixel
+                                 localization improves with resolution; the
+                                 σ=0.01 noise floor stays constant in image
+                                 units, so it covers proportionally less of
+                                 each feature).
+                                 fx = fy = width / ( 2 * tan (hfov / 2 ) ) -->
+                            <fx>554.26</fx>
+                            <fy>554.26</fy>
+                            <!-- cx = ( width + 1 ) / 2 -->
+                            <cx>320.5</cx>
+                            <!-- cy = ( height + 1 ) / 2 -->
+                            <cy>240.5</cy>
+                            <s>0</s>
+                        </intrinsics>
+                    </lens>
+                    <!-- Mild radial-tangential distortion, representative of a
+                         ~60° HFOV RealSense-like lens. k1<0 = slight barrel.
+                         Update config/openvins/kalibr_imucam_chain.yaml in
+                         lockstep if these change. -->
+                    <distortion>
+                        <k1>-0.02</k1>
+                        <k2>0.003</k2>
+                        <k3>0.0</k3>
+                        <p1>0.0</p1>
+                        <p2>0.0</p2>
+                        <center>0.5 0.5</center>
+                    </distortion>
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                        <format>R8G8B8</format>
+                    </image>
+                    <clip>
+                        <near>0.01</near>
+                        <far>300</far>
+                    </clip>
+                    <depth_camera>
+                        <clip>
+                            <near>0.1</near>
+                            <far>10</far>
+                        </clip>
+                    </depth_camera>
+                    <!-- Gaussian per-channel noise. stddev is in normalised
+                         0-1 image units; 0.01 ≈ 2.5 grey levels out of 255 —
+                         representative of a real RGB sensor in good lighting. -->
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </camera>
+            </sensor>
+
+            <!-- Right half of the front stereo pair. Identical to rs_front
+                 in every parameter (orientation, intrinsics, distortion,
+                 noise), but offset 10 cm to the right in base_link
+                 (y = -0.10). The 10 cm baseline gives good depth
+                 triangulation in the 1-10 m range, which is what the rover
+                 navigates. Used together with rs_front by stereo VIO
+                 (OpenVINS use_stereo:true, VINS-Fusion stereo configs,
+                 Kimera-VIO, etc.).
+
+                 Keep this sensor's intrinsics + distortion in lockstep
+                 with rs_front and with config/openvins/kalibr_imucam_chain.yaml. -->
+            <sensor name="rs_front_right" type="rgbd_camera">
+                <pose>0.565 -0.10 0.245 0 0 0</pose>
+                <topic>rs_front_right</topic>
+                <always_on>1</always_on>
+                <update_rate>30</update_rate>
+                <camera name="camera_front_right">
+                    <horizontal_fov>1.0472</horizontal_fov>
+                    <lens>
+                        <intrinsics>
+                            <fx>554.26</fx>
+                            <fy>554.26</fy>
+                            <cx>320.5</cx>
+                            <cy>240.5</cy>
+                            <s>0</s>
+                        </intrinsics>
+                    </lens>
+                    <distortion>
+                        <k1>-0.02</k1>
+                        <k2>0.003</k2>
+                        <k3>0.0</k3>
+                        <p1>0.0</p1>
+                        <p2>0.0</p2>
+                        <center>0.5 0.5</center>
+                    </distortion>
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                        <format>R8G8B8</format>
+                    </image>
+                    <clip>
+                        <near>0.01</near>
+                        <far>300</far>
+                    </clip>
+                    <depth_camera>
+                        <clip>
+                            <near>0.1</near>
+                            <far>10</far>
+                        </clip>
+                    </depth_camera>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </camera>
+            </sensor>
+
+            <!-- Type "gpu_lidar" rasterises rays on the GPU via ogre2 — the
+                 default and the only fast option for 1024×16 @ 15 Hz. The CPU
+                 fallback is type="ray", which becomes the bottleneck for any
+                 lidar with >~256 samples. Stick with gpu_lidar unless you're
+                 forced onto a no-GPU machine. -->
+            <sensor name="front_laser" type="gpu_lidar">
+                <!-- Raised from 0.55 to 1.05 — at 0.55 the lidar sat inside
+                     the sensor-payload collision box (z=0.2..0.6) and
+                     raycast into the robot's own front. Moving it above
+                     the payload mast clears the FOV. -->
+                <pose>0 0 1.05 0 0 0</pose>
+                <topic>lidar</topic>
+                <always_on>1</always_on>
+                <update_rate>15</update_rate>
+                <visualize>true</visualize>
+                <!-- Converted from legacy <ray> block to gz-sim <lidar>, with
+                     resolution=1 (was 0.1, which silently downsampled). -->
+                <lidar>
+                    <scan>
+                        <horizontal>
+                            <samples>1024</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-3.14159</min_angle>
+                            <max_angle>3.14159</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>16</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-0.261799</min_angle>
+                            <max_angle>0.261799</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.05</min>
+                        <max>100</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </lidar>
+            </sensor>
+            <!--
+              rs_left / rs_back / rs_right RGBD cameras were removed 2026-05-15
+              to free up GPU rendering budget for the active stereo pair
+              (rs_front + rs_front_right). They were rendered every tick by
+              gz-sim-sensors-system whether anything subscribed or not, costing
+              ~3× the rendering work of the front pair while contributing
+              nothing to the VIO/LIO pipeline.
+
+              To restore them: `git revert <commit>` — the full sensor blocks
+              are in this file's history.
+            -->
+            <light name="right_light_source" type="spot">
+                <pose frame="">0.358 -0.133 0.45 3.1415926535897931 1.5707963267948966 -1.5707963267948966</pose>
+                <attenuation>
+                    <range>50</range>
+                    <linear>0</linear>
+                    <constant>0.1</constant>
+                    <quadratic>0.0025</quadratic>
+                </attenuation>
+                <diffuse>1.0 1.0 0.63 1</diffuse>
+                <specular>1.0 1.0 0.63 1</specular>
+                <spot>
+                    <inner_angle>1</inner_angle>
+                    <outer_angle>1.1</outer_angle>
+                    <falloff>1</falloff>
+                </spot>
+                <direction>0 0 -1</direction>
+                <cast_shadows>1</cast_shadows>
+            </light>
+            <light name="front_light" type="spot">
+                <pose frame="">0.49 0 0.45 1.5707963267948966 1.5707963267948966 -1.5707963267948966</pose>
+                <attenuation>
+                    <range>50</range>
+                    <linear>0</linear>
+                    <constant>0.1</constant>
+                    <quadratic>0.0025</quadratic>
+                </attenuation>
+                <diffuse>0.8 0.8 0.5 1</diffuse>
+                <specular>0.8 0.8 0.5 1</specular>
+                <spot>
+                    <inner_angle>1</inner_angle>
+                    <outer_angle>1.1</outer_angle>
+                    <falloff>1</falloff>
+                </spot>
+                <direction>0 -1 0</direction>
+                <cast_shadows>1</cast_shadows>
+            </light>
+            <light name="left_light_source" type="spot">
+                <pose frame="">0.358 0.133 0.45 0 1.5707963267948966 -1.5707963267948966</pose>
+                <attenuation>
+                    <range>50</range>
+                    <linear>0</linear>
+                    <constant>0.1</constant>
+                    <quadratic>0.0025</quadratic>
+                </attenuation>
+                <diffuse>1.0 1.0 0.63 1</diffuse>
+                <specular>1.0 1.0 0.63 1</specular>
+                <spot>
+                    <inner_angle>1</inner_angle>
+                    <outer_angle>1.1</outer_angle>
+                    <falloff>1</falloff>
+                </spot>
+                <direction>0 0 -1</direction>
+                <cast_shadows>1</cast_shadows>
+            </light>
+            <light name="back_light_source" type="spot">
+                <pose frame="">0.26 0 0.46 -1.5707963267948966 1.5707963267948966 -1.5707963267948966</pose>
+                <attenuation>
+                    <range>50</range>
+                    <linear>0</linear>
+                    <constant>0.1</constant>
+                    <quadratic>0.0025</quadratic>
+                </attenuation>
+                <diffuse>1.0 1.0 0.63 1</diffuse>
+                <specular>1.0 1.0 0.63 1</specular>
+                <spot>
+                    <inner_angle>1</inner_angle>
+                    <outer_angle>1.1</outer_angle>
+                    <falloff>1</falloff>
+                </spot>
+                <direction>0 0 -1</direction>
+                <cast_shadows>1</cast_shadows>
+            </light>
+        </link>
+        <link name="Rear_Rocker_Link">
+            <pose>-0.047625 0 -0.0254 1.5707963267948966 0 0</pose>
+            <inertial>
+                <pose>-0.191018 -0.006403 -0 0 -0 0</pose>
+                <mass>42.8393</mass>
+                <inertia>
+                    <ixx>0.848992</ixx>
+                    <ixy>0.00301842</ixy>
+                    <ixz>5.21788e-06</ixz>
+                    <iyy>1.03049</iyy>
+                    <iyz>1.2171e-07</iyz>
+                    <izz>0.43679</izz>
+                </inertia>
+            </inertial>
+            <collision name="Rear_Rocker_Link_collision">
+                <pose>-0.2 0.072 0 0 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.42 0.43 0.56</size>
+                    </box>
+                </geometry>
+            </collision>
+            <collision name="Rear_Rocker_Link_platform_collision1">
+                <pose>-0.70 0.2855 0 -0.005 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.17 0.01 0.5</size>
+                    </box>
+                </geometry>
+            </collision>
+            <collision name="Rear_Rocker_Link_platform_collision2">
+                <pose>-0.35 0.2855 -0.005 -0.005 0 0</pose>
+                <geometry>
+                    <box>
+                        <size>0.678 0.01 0.69</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="BodyRear_visual">
+                <pose>-0.428 0.068 0 -1.5707963267948966 -1.5707963267948966 0</pose>
+                <geometry>
+                    <mesh>
+                        <uri>meshes/r2.dae</uri>
+                        <submesh>
+                            <name>BodyRear</name>
+                            <center>true</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Albedo.png</albedo_map>
+                            <metalness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Metalness.png</metalness_map>
+                            <roughness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Roughness.png</roughness_map>
+                        </metal>
+                    </pbr>
+                    <script>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/scripts/</uri>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/</uri>
+                        <name>UrbanTile/R2_Diffuse</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <joint name="Center Pivot" type="revolute">
+            <child>Rear_Rocker_Link</child>
+            <parent>base_link</parent>
+            <axis>
+                <xyz>-1 0 0</xyz>
+                <limit>
+                    <lower>-0.5236</lower>
+                    <upper>0.5236</upper>
+                </limit>
+                <dynamics>
+                    <damping>10</damping>
+                    <friction>0.1</friction>
+                    <spring_reference>0.1</spring_reference>
+                    <spring_stiffness>100</spring_stiffness>
+                </dynamics>
+                <use_parent_model_frame>0</use_parent_model_frame>
+            </axis>
+        </joint>
+        <link name="left_front_wheel_link">
+            <pose>0.33421 0.363 -0.091538 -0.013747 -0 -1.5707963267948966</pose>
+            <inertial>
+                <pose>0.007124 -1.6e-05 4e-06 0 -0 0</pose>
+                <mass>11.5398</mass>
+                <inertia>
+                    <ixx>0.127932</ixx>
+                    <ixy>6.41777e-06</ixy>
+                    <ixz>2.40271e-06</ixz>
+                    <iyy>0.0695645</iyy>
+                    <iyz>1.35439e-09</iyz>
+                    <izz>0.0695643</izz>
+                </inertia>
+            </inertial>
+            <collision name="left_front_wheel_link_collision">
+                <pose>0 0 0 3.1415926535897931 1.5707963267948966 3.1415926535897931</pose>
+                <geometry>
+                    <cylinder>
+                        <length>0.1125</length>
+                        <radius>0.31</radius>
+                    </cylinder>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.5</mu>
+                            <mu2>1</mu2>
+                            <fdir1>0 0 1</fdir1>
+                            <slip1>0.0000235</slip1>
+                            <slip2>0</slip2>
+                            <max_vel>10</max_vel>
+                            <min_depth>0.1</min_depth>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>1e+07</kp>
+                            <kd>0.0001</kd>
+                        </ode>
+                    </contact>
+                </surface>
+            </collision>
+            <visual name="left_front_wheel_link_visual">
+                <geometry>
+                    <mesh>
+                        <uri>meshes/r2.dae</uri>
+                        <submesh>
+                            <name>WheelFL</name>
+                            <center>true</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Albedo.png</albedo_map>
+                            <metalness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Metalness.png</metalness_map>
+                            <roughness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Roughness.png</roughness_map>
+                        </metal>
+                    </pbr>
+                    <!-- fallback to script if no PBR support-->
+                    <script>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/scripts/</uri>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/</uri>
+                        <name>UrbanTile/R2_Diffuse</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <joint name="left_front_wheel" type="revolute">
+            <child>left_front_wheel_link</child>
+            <parent>base_link</parent>
+            <axis>
+                <xyz>-1 0 0</xyz>
+                <limit>
+                    <lower>-1e+16</lower>
+                    <upper>1e+16</upper>
+                </limit>
+                <dynamics>
+                    <damping>10</damping>
+                    <friction>0.1</friction>
+                    <spring_reference>0</spring_reference>
+                    <spring_stiffness>0</spring_stiffness>
+                </dynamics>
+                <use_parent_model_frame>0</use_parent_model_frame>
+            </axis>
+        </joint>
+        <link name="left_rear_wheel_link">
+            <pose>-0.334625 0.363 -0.083399 -0.014389 0.000148 -1.5707963267948966</pose>
+            <inertial>
+                <pose>0.007124 -1.6e-05 4e-06 0 -0 0</pose>
+                <mass>11.5398</mass>
+                <inertia>
+                    <ixx>0.127932</ixx>
+                    <ixy>6.41777e-06</ixy>
+                    <ixz>2.40271e-06</ixz>
+                    <iyy>0.0695645</iyy>
+                    <iyz>1.35439e-09</iyz>
+                    <izz>0.0695643</izz>
+                </inertia>
+            </inertial>
+            <collision name="left_rear_wheel_link_collision">
+                <pose>0 0 0 3.1415926535897931 1.5707963267948966 3.1415926535897931</pose>
+                <geometry>
+                    <cylinder>
+                        <length>0.1125</length>
+                        <radius>0.31</radius>
+                    </cylinder>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.5</mu>
+                            <mu2>1</mu2>
+                            <fdir1>0 0 1</fdir1>
+                            <slip1>0.0000235</slip1>
+                            <slip2>0</slip2>
+                            <max_vel>10</max_vel>
+                            <min_depth>0.1</min_depth>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>1e+07</kp>
+                            <kd>0.0001</kd>
+                        </ode>
+                    </contact>
+                </surface>
+            </collision>
+            <visual name="left_rear_wheel_link_visual">
+                <geometry>
+                    <mesh>
+                        <uri>meshes/r2.dae</uri>
+                        <submesh>
+                            <name>WheelBL</name>
+                            <center>true</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Albedo.png</albedo_map>
+                            <metalness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Metalness.png</metalness_map>
+                            <roughness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Roughness.png</roughness_map>
+                        </metal>
+                    </pbr>
+                    <!-- fallback to script if no PBR support-->
+                    <script>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/scripts/</uri>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/</uri>
+                        <name>UrbanTile/R2_Diffuse</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <joint name="left_rear_wheel" type="revolute">
+            <child>left_rear_wheel_link</child>
+            <parent>Rear_Rocker_Link</parent>
+            <axis>
+                <xyz>-1 0 0</xyz>
+                <limit>
+                    <lower>-1e+16</lower>
+                    <upper>1e+16</upper>
+                </limit>
+                <dynamics>
+                    <damping>10</damping>
+                    <friction>0.1</friction>
+                    <spring_reference>0</spring_reference>
+                    <spring_stiffness>0</spring_stiffness>
+                </dynamics>
+                <use_parent_model_frame>0</use_parent_model_frame>
+            </axis>
+        </joint>
+        <link name="right_front_wheel_link">
+            <pose>0.33421 -0.363 -0.091538 -0.013747 -0 1.5707963267948966</pose>
+            <inertial>
+                <pose>0.007124 -1.6e-05 4e-06 0 -0 0</pose>
+                <mass>11.5398</mass>
+                <inertia>
+                    <ixx>0.127932</ixx>
+                    <ixy>6.41777e-06</ixy>
+                    <ixz>2.40271e-06</ixz>
+                    <iyy>0.0695645</iyy>
+                    <iyz>1.35439e-09</iyz>
+                    <izz>0.0695643</izz>
+                </inertia>
+            </inertial>
+            <collision name="right_front_wheel_link_collision">
+                <pose>0 0 0 3.1415926535897931 1.5707963267948966 3.1415926535897931</pose>
+                <geometry>
+                    <cylinder>
+                        <length>0.1125</length>
+                        <radius>0.31</radius>
+                    </cylinder>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.5</mu>
+                            <mu2>1</mu2>
+                            <fdir1>0 0 1</fdir1>
+                            <slip1>0.0000235</slip1>
+                            <slip2>0</slip2>
+                            <max_vel>10</max_vel>
+                            <min_depth>0.1</min_depth>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>1e+07</kp>
+                            <kd>0.0001</kd>
+                        </ode>
+                    </contact>
+                </surface>
+            </collision>
+            <visual name="right_front_wheel_link_visual">
+                <geometry>
+                    <mesh>
+                        <uri>meshes/r2.dae</uri>
+                        <submesh>
+                            <name>WheelFR</name>
+                            <center>true</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Albedo.png</albedo_map>
+                            <metalness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Metalness.png</metalness_map>
+                            <roughness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Roughness.png</roughness_map>
+                        </metal>
+                    </pbr>
+                    <!-- fallback to script if no PBR support-->
+                    <script>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/scripts/</uri>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/</uri>
+                        <name>UrbanTile/R2_Diffuse</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <joint name="right_front_wheel" type="revolute">
+            <child>right_front_wheel_link</child>
+            <parent>base_link</parent>
+            <axis>
+                <xyz>1 0 0</xyz>
+                <limit>
+                    <lower>-1e+16</lower>
+                    <upper>1e+16</upper>
+                </limit>
+                <dynamics>
+                    <damping>10</damping>
+                    <friction>0.1</friction>
+                    <spring_reference>0</spring_reference>
+                    <spring_stiffness>0</spring_stiffness>
+                </dynamics>
+                <use_parent_model_frame>0</use_parent_model_frame>
+            </axis>
+        </joint>
+        <link name="right_rear_wheel_link">
+            <pose>-0.334625 -0.363 -0.083401 -0.014389 -0.000148 1.5707963267948966</pose>
+            <inertial>
+                <pose>0.007124 -1.6e-05 4e-06 0 -0 0</pose>
+                <mass>11.5398</mass>
+                <inertia>
+                    <ixx>0.127932</ixx>
+                    <ixy>6.41777e-06</ixy>
+                    <ixz>2.40271e-06</ixz>
+                    <iyy>0.0695645</iyy>
+                    <iyz>1.35439e-09</iyz>
+                    <izz>0.0695643</izz>
+                </inertia>
+            </inertial>
+            <collision name="right_rear_wheel_link_collision">
+                <pose>0 0 0 3.1415926535897931 1.5707963267948966 3.1415926535897931</pose>
+                <geometry>
+                    <cylinder>
+                        <length>0.1125</length>
+                        <radius>0.31</radius>
+                    </cylinder>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.5</mu>
+                            <mu2>1</mu2>
+                            <fdir1>0 0 1</fdir1>
+                            <slip1>0.0000235</slip1>
+                            <slip2>0</slip2>
+                            <max_vel>10</max_vel>
+                            <min_depth>0.1</min_depth>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>1e+07</kp>
+                            <kd>0.0001</kd>
+                        </ode>
+                    </contact>
+                </surface>
+            </collision>
+            <visual name="right_rear_wheel_link_visual">
+                <geometry>
+                    <mesh>
+                        <uri>meshes/r2.dae</uri>
+                        <submesh>
+                            <name>WheelBR</name>
+                            <center>true</center>
+                        </submesh>
+                    </mesh>
+                </geometry>
+                <material>
+                    <diffuse>1.0 1.0 1.0</diffuse>
+                    <specular>1.0 1.0 1.0</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Albedo.png</albedo_map>
+                            <metalness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Metalness.png</metalness_map>
+                            <roughness_map>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/R2_Roughness.png</roughness_map>
+                        </metal>
+                    </pbr>
+                    <!-- fallback to script if no PBR support-->
+                    <script>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/scripts/</uri>
+                        <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/explorer_r2_sensor_config_2/3/files/materials/textures/</uri>
+                        <name>UrbanTile/R2_Diffuse</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <joint name="right_rear_wheel" type="revolute">
+            <child>right_rear_wheel_link</child>
+            <parent>Rear_Rocker_Link</parent>
+            <axis>
+                <xyz>1 0 0</xyz>
+                <limit>
+                    <lower>-1e+16</lower>
+                    <upper>1e+16</upper>
+                </limit>
+                <dynamics>
+                    <damping>10</damping>
+                    <friction>0.1</friction>
+                    <spring_reference>0</spring_reference>
+                    <spring_stiffness>0</spring_stiffness>
+                </dynamics>
+                <use_parent_model_frame>0</use_parent_model_frame>
+            </axis>
+        </joint>
+
+        <!-- ─── Drive + odom + TF plugins ──────────────────────────────────
+             These used to live in tunnel.sdf and cave.sdf at the world-include
+             site. Moving them onto the model itself means the rover is
+             self-contained and can be spawned into any world via
+             `ros_gz_sim create` without the world SDF knowing anything about
+             the robot. -->
+
+        <!-- 4-wheel skid-steer driven by /cmd_vel. Joint names match the
+             original Fuel model. Odom @ 50 Hz on /model/explorer_r2/odometry. -->
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+            <left_joint>left_rear_wheel</left_joint>
+            <left_joint>left_front_wheel</left_joint>
+            <right_joint>right_rear_wheel</right_joint>
+            <right_joint>right_front_wheel</right_joint>
+            <wheel_separation>1.25</wheel_separation>
+            <wheel_radius>0.31</wheel_radius>
+            <odom_publish_frequency>50</odom_publish_frequency>
+            <topic>cmd_vel</topic>
+            <frame_id>explorer_r2/odom</frame_id>
+            <child_frame_id>explorer_r2/base_link</child_frame_id>
+        </plugin>
+
+        <!-- TF + per-link/sensor poses → /model/explorer_r2/pose,
+             /model/explorer_r2/tf  (the latter as gz.msgs.Pose_V → tf2).
+             publish_link_pose=false avoids the explorer_r2→base_link
+             transform that conflicts with DiffDrive's odom→base_link
+             (one frame can't have two parents in tf2). publish_sensor_pose
+             still emits base_link→sensor transforms which is what RViz
+             needs to render lidar/camera. -->
+        <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+            <publish_link_pose>false</publish_link_pose>
+            <publish_sensor_pose>true</publish_sensor_pose>
+            <publish_collision_pose>false</publish_collision_pose>
+            <publish_visual_pose>false</publish_visual_pose>
+            <publish_nested_model_pose>false</publish_nested_model_pose>
+            <use_pose_vector_msg>true</use_pose_vector_msg>
+            <update_frequency>50</update_frequency>
+        </plugin>
+    </model>
+</sdf>
