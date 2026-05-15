@@ -22,40 +22,30 @@ VINS-Fusion has a slightly tighter envelope (max error 0.45 m vs 1.03 m).
 
 ## How this was done
 
-Setup, one estimator at a time (running both simultaneously caused CPU
-contention that broke OpenVINS in an earlier attempt — see §"Lessons"):
+One estimator at a time per playback (running both simultaneously
+starves whichever one happens to lose the IMU-queue race — see
+"Lessons" below). For each estimator:
 
-```bash
-# In the running sim container
-docker compose exec sim bash
+1. Launch the estimator with its upstream EuRoC reference
+   configuration. Both projects ship a stereo+IMU EuRoC config in
+   their `config/euroc*/` directory.
+2. Start a bag recorder for the estimator's odometry output plus the
+   `/leica/position` ground truth.
+3. Play the EuRoC bag with `--clock` so the estimator sees sim time.
+4. Stop the recorder once playback completes (send SIGINT to the
+   recorder's Python child, not the wrapper bash — see "Lessons").
 
-# 1) Launch ONE estimator with its upstream EuRoC config
-#    (OpenVINS)
-ros2 launch ov_msckf subscribe.launch.py \
-    config_path:=/ws/install/ov_msckf/share/ov_msckf/config/euroc_mav/estimator_config.yaml \
-    use_stereo:=true max_cameras:=2 verbosity:=INFO &
+Then on the trajectory side:
 
-#    (VINS-Fusion — run the second time)
-ros2 run vins vins_node \
-    /ws/install/vins/share/vins/config/euroc/euroc_stereo_imu_config.yaml &
+- Extract the estimator trajectory and the Leica GT to TUM-format
+  `.txt` files.
+- Match samples by timestamp (≤ 50 ms tolerance).
+- Umeyama-align the matched pair (with and without scale).
+- Compute APE RMSE on the aligned trajectory.
 
-# 2) Record the trajectory + GT in a separate terminal
-ros2 bag record -o /ws/runs/euroc_mh01_<name>_solo -s mcap \
-    /ov_msckf/odomimu        # for OpenVINS — OR
-    /odometry                # for VINS-Fusion
-    /leica/position /imu0
-
-# 3) Play the EuRoC bag
-ros2 bag play /datasets/euroc/MH_01_easy_ros2/ --clock
-```
-
-After both runs:
-- Extract estimator trajectory + Leica GT to TUM-format `.txt`
-- Match samples by timestamp (≤ 50 ms tolerance)
-- Umeyama-align the matched pair (with and without scale)
-- Compute APE RMSE on the aligned trajectory
-
-The full computation script is at the end of this doc.
+`scripts/analyze_bag.py` produces the topic-rate + path-length
+summary; `scripts/visualize_rerun.py` renders the multi-estimator
+rerun.io comparison.
 
 ## Why VINS-Fusion has fewer matched samples
 
