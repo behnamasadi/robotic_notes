@@ -1,0 +1,166 @@
+%YAML:1.0 # need to specify the file type at the top!
+
+verbosity: "INFO" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
+
+use_fej: true # if first-estimate Jacobians should be used (enable for good consistency)
+integration: "rk4" # discrete, rk4, analytical (if rk4 or analytical used then analytical covariance propagation is used)
+use_stereo: true # Both rs_front (cam0) and rs_front_right (cam1) feed the filter.
+max_cameras: 2   # Stereo pair; baseline 10 cm. See kalibr_imucam_chain.yaml.
+
+# Online calibration knobs. In a real robot you usually leave these on so
+# the filter polishes the imperfect factory calibration. In *this* sim
+# everything (T_imu_cam, fx/fy/cx/cy, distortion, time-offset) is derived
+# directly from the SDF and the rs_front sensor — there's nothing to
+# polish, and trying to do so adds numerical noise that the filter
+# integrates into the position. Turn them all off.
+calib_cam_extrinsics: false # if the transform between camera and IMU should be optimized R_ItoC, p_CinI
+calib_cam_intrinsics: false # if camera intrinsics should be optimized (focal, center, distortion)
+calib_cam_timeoffset: false # if timeoffset between camera and IMU should be optimized
+calib_imu_intrinsics: false # if imu intrinsics should be calibrated (rotation and skew-scale matrix)
+calib_imu_g_sensitivity: false # if gyroscope gravity sensitivity (Tg) should be calibrated
+
+max_clones: 11 # how many clones in the sliding window
+max_slam: 50 # number of features in our state vector
+max_slam_in_update: 25 # update can be split into sequential updates of batches, how many in a batch
+max_msckf_in_update: 40 # how many MSCKF features to use in the update
+dt_slam_delay: 1 # delay before initializing (helps with stability from bad initialization...)
+
+gravity_mag: 9.81 # magnitude of gravity in this location
+
+feat_rep_msckf: "GLOBAL_3D"
+feat_rep_slam: "ANCHORED_MSCKF_INVERSE_DEPTH"
+feat_rep_aruco: "ANCHORED_MSCKF_INVERSE_DEPTH"
+
+# Zero-velocity updates. **Required for this sim** — with try_zupt: false
+# the filter has no way to learn that the robot is stationary, so every
+# IMU bias error gets integrated into the position estimate, and the
+# trajectory just keeps growing while the robot sits still. With ZUPT on,
+# the filter sees small disparity + small predicted velocity and clamps
+# velocity + bias to zero, which keeps the estimate locked in place.
+try_zupt: true
+zupt_chi2_multipler: 0 # set to 0 for only disp-based
+zupt_max_velocity: 0.1
+zupt_noise_multiplier: 10
+zupt_max_disparity: 0.5 # set to 0 for only imu-based
+zupt_only_at_beginning: false
+
+# ==================================================================
+# ==================================================================
+
+# 5 s window so init averages over enough stationary samples to nail
+# the gravity direction. vio.launch.py also delays OpenVINS by 8 s
+# after launch so the spawn-drop transient is over before VIO starts
+# collecting samples — combined, these prevent the "init on impact"
+# failure mode (which produces a wrong gravity vector → constant
+# residual accel → trajectory drifts while stationary).
+init_window_time: 5.0 # how many seconds to collect initialization information
+# With stereo (use_stereo: true), we WANT dynamic init to run — it uses
+# stereo parallax to determine yaw, which IMU-only static init can't do.
+# Setting init_imu_thresh very high prevents static init from ever
+# triggering, so dynamic init takes over. Verified on bag
+# run_20260514T210126Z: stereo was engaged but static init fired in
+# 1.3 ms and converged to 180° yaw rotation — same unobservable-yaw
+# failure mode as mono (case study 5 in docs/ANALYSIS.md). For mono,
+# drop this back to 0.3.
+init_imu_thresh: 50.0 # threshold for variance of the accelerometer to detect a "jerk" in motion
+init_max_disparity: 10.0 # max disparity to consider the platform stationary (dependent on resolution)
+init_max_features: 50 # how many features to track during initialization (saves on computation)
+
+# Enable dynamic init as a fallback. If static init misses (no jerk
+# detected within init_window_time of motion onset) the dynamic path
+# uses camera parallax + IMU to bootstrap.
+init_dyn_use: true # if dynamic initialization should be used
+init_dyn_mle_opt_calib: false # if we should optimize calibration during intialization (not recommended)
+init_dyn_mle_max_iter: 50 # how many iterations the MLE refinement should use (zero to skip the MLE)
+init_dyn_mle_max_time: 0.05 # how many seconds the MLE should be completed in
+init_dyn_mle_max_threads: 6 # how many threads the MLE should use
+init_dyn_num_pose: 6 # number of poses to use within our window time (evenly spaced)
+init_dyn_min_deg: 10.0 # orientation change needed to try to init
+
+init_dyn_inflation_ori: 10 # what to inflate the recovered q_GtoI covariance by
+init_dyn_inflation_vel: 100 # what to inflate the recovered v_IinG covariance by
+init_dyn_inflation_bg: 10 # what to inflate the recovered bias_g covariance by
+init_dyn_inflation_ba: 100 # what to inflate the recovered bias_a covariance by
+init_dyn_min_rec_cond: 1e-12 # reciprocal condition number thresh for info inversion
+
+init_dyn_bias_g: [ 0.0, 0.0, 0.0 ] # initial gyroscope bias guess
+init_dyn_bias_a: [ 0.0, 0.0, 0.0 ] # initial accelerometer bias guess
+
+# ==================================================================
+# ==================================================================
+
+record_timing_information: false # if we want to record timing information of the method
+record_timing_filepath: "/tmp/traj_timing.txt" # https://docs.openvins.com/eval-timing.html#eval-ov-timing-flame
+
+# if we want to save the simulation state and its diagional covariance
+# use this with rosrun ov_eval error_simulation
+save_total_state: false
+filepath_est: "/tmp/ov_estimate.txt"
+filepath_std: "/tmp/ov_estimate_std.txt"
+filepath_gt: "/tmp/ov_groundtruth.txt"
+
+# ==================================================================
+# ==================================================================
+
+# Front-end feature tracking.
+#
+# Important: our gz image is much cleaner than real-camera data
+# (uniformly lit, no rolling-shutter, low Gaussian noise added in the
+# SDF). The aggressive low-light tuning that pays off in real caves
+# (CLAHE + lower fast_threshold + more features) backfires here:
+# CLAHE amplifies the sim's σ=0.01 Gaussian noise into pseudo-texture,
+# fast_threshold=10 then accepts the noise as features, and the tracker
+# locks onto ghosts → filter integrates nonsense → 22 km of "motion"
+# in 165 s of driving (verified on bag run_20260514T162146Z).
+#
+# Conservative defaults below. If you switch to a real camera or a
+# textured/dim outdoor world, try CLAHE + num_pts:400 + fast_threshold:10.
+use_klt: true # if true we will use KLT, otherwise use a ORB descriptor + robust matching
+num_pts: 200 # number of points (per camera) we will extract and try to track
+fast_threshold: 20 # threshold for fast extraction (warning: lower threshs can be expensive)
+grid_x: 5 # extraction sub-grid count for horizontal direction (uniform tracking)
+grid_y: 5 # extraction sub-grid count for vertical direction (uniform tracking)
+min_px_dist: 10 # distance between features (features near each other provide less information)
+knn_ratio: 0.70 # descriptor knn threshold for the top two descriptor matches
+track_frequency: 21.0 # frequency we will perform feature tracking at (in frames per second / hertz)
+downsample_cameras: false # will downsample image in half if true
+num_opencv_threads: 4 # -1: auto, 0-1: serial, >1: number of threads
+histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE — HISTOGRAM is safer on clean sim images
+
+# aruco tag tracker for the system
+# DICT_6X6_1000 from https://chev.me/arucogen/
+use_aruco: false
+num_aruco: 1024
+downsize_aruco: true
+
+# ==================================================================
+# ==================================================================
+
+# Camera noises and chi-squared threshold multipliers.
+#
+# up_msckf_sigma_px: the pixel-noise σ that the filter assumes for each
+# 2D feature observation. Larger value = filter trusts each pixel
+# observation less = orientation/translation updates are more conservative.
+# Default 1.0 was producing fast-frequency orientation jitter on the
+# tunnel/cave lattice scene (visible as a "forest of arrows" cluster in
+# the RViz VIO Odom display — see docs/ANALYSIS.md "case study 3.5").
+# Bumped to 2.0 to dampen the per-IMU-step orientation kicks from
+# ambiguous KLT correspondences across the regular grid pattern.
+up_msckf_sigma_px: 2
+up_msckf_chi2_multipler: 1
+up_slam_sigma_px: 2
+up_slam_chi2_multipler: 1
+up_aruco_sigma_px: 1
+up_aruco_chi2_multipler: 1
+
+# masks for our images
+use_mask: false
+
+# imu and camera spacial-temporal
+# imu config should also have the correct noise values
+relative_config_imu: "kalibr_imu_chain.yaml"
+relative_config_imucam: "kalibr_imucam_chain.yaml"
+
+
+
+

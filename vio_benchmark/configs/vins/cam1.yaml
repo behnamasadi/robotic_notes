@@ -1,0 +1,19 @@
+%YAML:1.0
+---
+# rs_front_right camera, the right half of the stereo pair (10 cm
+# baseline). Same intrinsics + distortion as cam0 — only the
+# extrinsic position (in vins.yaml's body_T_cam1) differs.
+model_type: PINHOLE
+camera_name: rs_front_right
+image_width: 640
+image_height: 480
+distortion_parameters:
+   k1: -0.02
+   k2: 0.003
+   p1: 0.0
+   p2: 0.0
+projection_parameters:
+   fx: 554.26
+   fy: 554.26
+   cx: 320.5
+   cy: 240.5
