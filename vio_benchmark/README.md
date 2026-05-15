@@ -109,17 +109,11 @@ Skipped: VINS-Mono (mono-only, ROS 1 only, predecessor of VINS-Fusion).
 
 ## Related
 
-This repo was now part of `robotic_notes/`. See top-level README.
-
-Originally extracted from the [SubT-rover simulator
-repo](../../ros2_ws/) where the VIO investigation originally happened.
-The rover sim repo retains:
-- The gazebo simulation infrastructure
-- LIO comparisons (FAST-LIO works fine in sim, unlike VIO — see the
-  diagnostic guide's §4b for why)
-- Behavioral / scenario testing
-- SubT-style cave/tunnel scenarios
-
-See the rover sim's `docs/SESSION_2026-05-15.md` for the narrative log
-of how the VIO investigation unfolded (impulses in simulated IMU,
-filter attempts, eventually pivoting to real datasets).
+- [`../lio_benchmark/`](../lio_benchmark/) — the Gazebo LiDAR-inertial
+  testbed. LIO works correctly there; VIO does not (see
+  [`docs/VIO_DIAGNOSTIC_GUIDE.md` §3](docs/VIO_DIAGNOSTIC_GUIDE.md#3--why-lio-survives-bad-imu-data-and-vio-doesnt)
+  for the architectural reason).
+- [`docs/SESSION_2026-05-15.md`](docs/SESSION_2026-05-15.md) — narrative
+  log of the VIO investigation: impulses in simulated IMU, filter
+  attempts, pivot to real datasets.
+- Top-level [README.md](../README.md) — robotic_notes index.

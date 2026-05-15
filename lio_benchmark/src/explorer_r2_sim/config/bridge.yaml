@@ -1,0 +1,167 @@
+# ros_gz_bridge YAML config — one declarative source of truth for every topic
+# crossing the ROS 2 ↔ Gazebo boundary.
+#
+# direction:
+#   GZ_TO_ROS  → sensors / state from Gazebo into ROS 2
+#   ROS_TO_GZ  → commands from ROS 2 into Gazebo
+#   BIDIRECTIONAL → both ways
+
+# ─── Commands (ROS → GZ) ─────────────────────────────────────────────────────
+- ros_topic_name: "/cmd_vel"
+  gz_topic_name:  "/cmd_vel"
+  ros_type_name:  "geometry_msgs/msg/Twist"
+  gz_type_name:   "gz.msgs.Twist"
+  direction:      ROS_TO_GZ
+
+# ─── Clock (so ROS uses sim time) ────────────────────────────────────────────
+- ros_topic_name: "/clock"
+  gz_topic_name:  "/clock"
+  ros_type_name:  "rosgraph_msgs/msg/Clock"
+  gz_type_name:   "gz.msgs.Clock"
+  direction:      GZ_TO_ROS
+
+# ─── Odometry ────────────────────────────────────────────────────────────────
+# Wheel odometry from DiffDrive — drifty over time; representative of what a
+# real robot's encoders give you.
+- ros_topic_name: "/model/explorer_r2/odometry"
+  gz_topic_name:  "/model/explorer_r2/odometry"
+  ros_type_name:  "nav_msgs/msg/Odometry"
+  gz_type_name:   "gz.msgs.Odometry"
+  direction:      GZ_TO_ROS
+
+# ─── Ground truth ────────────────────────────────────────────────────────────
+# Auto-published by scene_broadcaster: gz.msgs.Pose_V containing the absolute
+# pose of every dynamic model. Bridge to /tf style messages so you can
+# compare /ov_msckf/odomimu against the truth.
+- ros_topic_name: "/ground_truth/pose"
+  gz_topic_name:  "/world/tunnel/dynamic_pose/info"
+  ros_type_name:  "tf2_msgs/msg/TFMessage"
+  gz_type_name:   "gz.msgs.Pose_V"
+  direction:      GZ_TO_ROS
+# Same topic but for the cave world (world-name is in the path). Only one
+# of these actually has a publisher at runtime — bridges with no GZ
+# publisher are no-ops.
+- ros_topic_name: "/ground_truth/pose"
+  gz_topic_name:  "/world/cave/dynamic_pose/info"
+  ros_type_name:  "tf2_msgs/msg/TFMessage"
+  gz_type_name:   "gz.msgs.Pose_V"
+  direction:      GZ_TO_ROS
+
+# ─── TF — both DiffDrive's odom transform AND PosePublisher's per-link/sensor
+# poses go onto /tf so RViz finds the lidar/camera/IMU frames. Multiple
+# publishers on /tf is normal (tf2 expects this).
+- ros_topic_name: "/tf"
+  gz_topic_name:  "/model/explorer_r2/tf"
+  ros_type_name:  "tf2_msgs/msg/TFMessage"
+  gz_type_name:   "gz.msgs.Pose_V"
+  direction:      GZ_TO_ROS
+
+- ros_topic_name: "/tf"
+  gz_topic_name:  "/model/explorer_r2/pose"
+  ros_type_name:  "tf2_msgs/msg/TFMessage"
+  gz_type_name:   "gz.msgs.Pose_V"
+  direction:      GZ_TO_ROS
+
+# ─── Lidar (front_laser, <topic>lidar</topic>) ───────────────────────────────
+# gz-sim publishes LaserScan on /lidar and PointCloudPacked on /lidar/points.
+- ros_topic_name: "/lidar/points"
+  gz_topic_name:  "/lidar/points"
+  ros_type_name:  "sensor_msgs/msg/PointCloud2"
+  gz_type_name:   "gz.msgs.PointCloudPacked"
+  direction:      GZ_TO_ROS
+
+- ros_topic_name: "/lidar/scan"
+  gz_topic_name:  "/lidar"
+  ros_type_name:  "sensor_msgs/msg/LaserScan"
+  gz_type_name:   "gz.msgs.LaserScan"
+  direction:      GZ_TO_ROS
+
+# ─── IMU + Magnetometer + NavSat (custom topics) ─────────────────────────────
+- ros_topic_name: "/imu"
+  gz_topic_name:  "/imu"
+  ros_type_name:  "sensor_msgs/msg/Imu"
+  gz_type_name:   "gz.msgs.IMU"
+  direction:      GZ_TO_ROS
+
+- ros_topic_name: "/magnetometer"
+  gz_topic_name:  "/magnetometer"
+  ros_type_name:  "sensor_msgs/msg/MagneticField"
+  gz_type_name:   "gz.msgs.Magnetometer"
+  direction:      GZ_TO_ROS
+
+- ros_topic_name: "/navsat"
+  gz_topic_name:  "/navsat"
+  ros_type_name:  "sensor_msgs/msg/NavSatFix"
+  gz_type_name:   "gz.msgs.NavSat"
+  direction:      GZ_TO_ROS
+
+# ─── Front RealSense (rs_front, <topic>rs_front</topic>) ─────────────────────
+# RGBD cameras emit four sub-topics under the name: /image, /depth_image,
+# /points, /camera_info.
+- ros_topic_name: "/rs_front/image"
+  gz_topic_name:  "/rs_front/image"
+  ros_type_name:  "sensor_msgs/msg/Image"
+  gz_type_name:   "gz.msgs.Image"
+  direction:      GZ_TO_ROS
+
+# /rs_front/depth and /rs_front/points are not consumed by stereo VIO (OpenVINS,
+# VINS-Fusion). Bridging them costs one full memcpy each per frame in
+# parameter_bridge — 640×480 depth (1.2 MB/frame) + dense point cloud (~5 MB/
+# frame) at 30 Hz adds up to ~200 MB/s of avoidable work. Re-enable if a
+# downstream consumer (RGBD-Kimera, octomap, depth visualisation) needs them.
+
+# - ros_topic_name: "/rs_front/depth"
+#   gz_topic_name:  "/rs_front/depth_image"
+#   ros_type_name:  "sensor_msgs/msg/Image"
+#   gz_type_name:   "gz.msgs.Image"
+#   direction:      GZ_TO_ROS
+
+# - ros_topic_name: "/rs_front/points"
+#   gz_topic_name:  "/rs_front/points"
+#   ros_type_name:  "sensor_msgs/msg/PointCloud2"
+#   gz_type_name:   "gz.msgs.PointCloudPacked"
+#   direction:      GZ_TO_ROS
+
+- ros_topic_name: "/rs_front/camera_info"
+  gz_topic_name:  "/rs_front/camera_info"
+  ros_type_name:  "sensor_msgs/msg/CameraInfo"
+  gz_type_name:   "gz.msgs.CameraInfo"
+  direction:      GZ_TO_ROS
+
+# ─── Right half of the front stereo pair (rs_front_right) ───────────────
+# Same sensor type as rs_front, offset 10 cm to the right. Used together
+# with rs_front by stereo VIO (OpenVINS use_stereo:true, VINS-Fusion,
+# Kimera-VIO). Depth + points are also bridged here for downstream
+# consumers (e.g. RGBD VIO via Kimera) but stereo VIO itself only needs
+# image + camera_info from both cameras.
+- ros_topic_name: "/rs_front_right/image"
+  gz_topic_name:  "/rs_front_right/image"
+  ros_type_name:  "sensor_msgs/msg/Image"
+  gz_type_name:   "gz.msgs.Image"
+  direction:      GZ_TO_ROS
+
+# Same rationale as rs_front: depth + points commented out to free bridge CPU.
+
+# - ros_topic_name: "/rs_front_right/depth"
+#   gz_topic_name:  "/rs_front_right/depth_image"
+#   ros_type_name:  "sensor_msgs/msg/Image"
+#   gz_type_name:   "gz.msgs.Image"
+#   direction:      GZ_TO_ROS
+
+# - ros_topic_name: "/rs_front_right/points"
+#   gz_topic_name:  "/rs_front_right/points"
+#   ros_type_name:  "sensor_msgs/msg/PointCloud2"
+#   gz_type_name:   "gz.msgs.PointCloudPacked"
+#   direction:      GZ_TO_ROS
+
+- ros_topic_name: "/rs_front_right/camera_info"
+  gz_topic_name:  "/rs_front_right/camera_info"
+  ros_type_name:  "sensor_msgs/msg/CameraInfo"
+  gz_type_name:   "gz.msgs.CameraInfo"
+  direction:      GZ_TO_ROS
+
+# Other 3 RealSenses (rs_back/left/right) follow the same pattern. Bridging
+# all 4 is heavy on CPU+bandwidth — uncomment the ones you actually need.
+# - { ros_topic_name: "/rs_back/image",  gz_topic_name: "/rs_back/image",  ros_type_name: "sensor_msgs/msg/Image",  gz_type_name: "gz.msgs.Image",  direction: GZ_TO_ROS }
+# - { ros_topic_name: "/rs_left/image",  gz_topic_name: "/rs_left/image",  ros_type_name: "sensor_msgs/msg/Image",  gz_type_name: "gz.msgs.Image",  direction: GZ_TO_ROS }
+# - { ros_topic_name: "/rs_right/image", gz_topic_name: "/rs_right/image", ros_type_name: "sensor_msgs/msg/Image",  gz_type_name: "gz.msgs.Image",  direction: GZ_TO_ROS }

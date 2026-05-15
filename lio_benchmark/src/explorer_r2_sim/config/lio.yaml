@@ -1,0 +1,57 @@
+/**:
+    ros__parameters:
+        feature_extract_enable: false
+        point_filter_num: 3
+        max_iteration: 3
+        filter_size_surf: 0.5
+        filter_size_map: 0.5
+        cube_side_length: 1000.0
+        runtime_pos_log_enable: false
+        map_file_path: ""
+
+        common:
+            # /lidar/points_lio is the enriched output of
+            # lidar_field_adapter.py — it carries the per-point ring + t
+            # fields that the Ouster preprocessor needs but gz gpu_lidar
+            # doesn't publish. Don't point at /lidar/points directly or
+            # FAST_LIO will silently drop every scan.
+            lid_topic:  "/lidar/points_lio"
+            # /imu_filtered is /imu after a 80 Hz IIR low-pass + ±16 g
+            # saturation, applied by scripts/imu_lowpass_node.py. The raw
+            # /imu stream from gz-sim has impulsive 200 m/s² spikes on every
+            # cmd_vel direction change because gz-sim's imu_sensor has no
+            # bandwidth model; the filter mimics what a real MEMS would do
+            # in hardware. See docs/VIO_DIAGNOSTIC_GUIDE.md §5.
+            imu_topic:  "/imu_filtered"
+            time_sync_en: false
+            time_offset_lidar_to_imu: 0.0
+
+        preprocess:
+            lidar_type: 3                # 1=Livox, 2=Velodyne, 3=Ouster
+            scan_line: 16                # gz lidar: 16 vertical samples
+            scan_rate: 15                # gz lidar update rate
+            timestamp_unit: 3            # 0-s, 1-ms, 2-us, 3-ns
+            blind: 0.5
+
+        mapping:
+            acc_cov: 0.1
+            gyr_cov: 0.01
+            b_acc_cov: 0.001
+            b_gyr_cov: 8.0e-7
+            fov_degree:    360.0
+            det_range:     100.0
+            extrinsic_est_en:  false
+            extrinsic_T: [ 0.0, 0.0, 1.05 ]    # lidar 1.05 m above IMU/base_link
+            extrinsic_R: [ 1.0, 0.0, 0.0,
+                           0.0, 1.0, 0.0,
+                           0.0, 0.0, 1.0 ]
+
+        publish:
+            path_en:  true               # publish /fast_lio/path for RViz
+            scan_publish_en:  true
+            dense_publish_en: true
+            scan_bodyframe_pub_en: false
+
+        pcd_save:
+            pcd_save_en: false
+            interval: -1

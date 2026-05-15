@@ -1,0 +1,118 @@
+name: explorer_r2_sim
+
+# One service: `sim` runs Gazebo + ros_gz_bridge + RViz inside the container.
+# The host's ~/ros2_ws is bind-mounted into the container at /ws — so source
+# edits show up live, the OpenVINS + FAST_LIO submodules pinned in the host
+# repo are what actually gets built, and build/install/log live on the host
+# (gitignored). The entrypoint runs colcon build on first start, then reuses
+# the cache.
+#
+# Usage:
+#   docker compose up                   # gz + bridge + RViz + joy (mode 1)
+#   docker compose exec sim ros2 launch explorer_r2_sim vio.launch.py  # + mode 2
+#   docker compose exec sim ros2 launch explorer_r2_sim lio.launch.py  # + mode 3
+#   docker compose run --rm sim bash    # interactive shell
+#   BUILD=force docker compose up       # rebuild from scratch
+#   WORLD=cave docker compose up        # different world (default: tunnel)
+#   WORLD=rubicon docker compose up     # any preset, local SDF path, or Fuel URL
+#
+# After bring-up, drive from any other ROS 2 terminal sharing ROS_DOMAIN_ID:
+#   ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+services:
+  sim:
+    build:
+      context: .
+      dockerfile: docker/sim.Dockerfile
+      args:
+        ROS_DISTRO: ${ROS_DISTRO:-jazzy}
+        GZ_PKG:     ${GZ_PKG:-gz-harmonic}
+    image: explorer_r2_sim/sim:${ROS_DISTRO:-jazzy}
+    # Override the Dockerfile CMD so we can plumb $WORLD through to the
+    # cave.launch.py world:= arg without editing anything in-tree. The
+    # default (tunnel) matches the launch file's own default; pass any
+    # preset (tunnel | cave | rubicon | tugbot_depot | singapore_river),
+    # any local SDF path, or any Fuel URL.
+    command:
+      - ros2
+      - launch
+      - explorer_r2_sim
+      - cave.launch.py
+      - world:=${WORLD:-tunnel}
+      # Default to GUI-off because gz-sim's GUI tries to open a Qt/X11
+      # window via the host's display, and inside the container that path
+      # either fails outright (no xauth) or forces ogre2's renderer back
+      # to Mesa software for the GUI context — and gz-sim shares that
+      # context with the sensor cameras, so the sensors get dragged onto
+      # CPU rendering too. The 2026-05-15 measurements showed: with GUI on
+      # cameras run at 5-7 Hz / GPU 0 %, with GUI off cameras at 28 Hz /
+      # GPU ~30 %. Override on the command line for visual debugging:
+      #   docker compose run --rm sim ros2 launch explorer_r2_sim cave.launch.py gui:=true rviz:=true
+      - gui:=false
+      - rviz:=false
+    network_mode: host
+    ipc: host
+    privileged: true
+    environment:
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: 1
+      XDG_RUNTIME_DIR: /tmp/runtime-root
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
+      # Wire gz-rendering's Ogre2 to the NVIDIA EGL stack instead of Mesa's
+      # llvmpipe software rasterizer. The Dockerfile installs libglvnd0 +
+      # mesa-utils; __EGL_VENDOR_LIBRARY_FILENAMES tells GLVND which vendor
+      # ICD to load for EGL. We deliberately do NOT set
+      # __GLX_VENDOR_LIBRARY_NAME=nvidia — that forces gz-sim onto NVIDIA's
+      # GLX extension, which requires a working X server with the NVIDIA
+      # display driver. Inside this container DISPLAY points at the host's
+      # X socket but the X server has no NVIDIA GLX module, so gz-sim
+      # crashes with "X Error of failed request: BadValue, Major opcode 156
+      # (NV-GLX)". OGRE_RTT_MODE=FBO + GZ_HEADLESS_RENDERING=1 force
+      # offscreen render targets through EGL, which is exactly the path
+      # NVIDIA's container runtime supports without an X server.
+      __EGL_VENDOR_LIBRARY_FILENAMES: /usr/share/glvnd/egl_vendor.d/10_nvidia.json
+      OGRE_RTT_MODE: FBO
+      GZ_HEADLESS_RENDERING: "1"
+      # Use Cyclone DDS instead of Fast-DDS. Cyclone defaults to shared-memory
+      # loopback for same-host comms, which is near-zero-copy for image-sized
+      # payloads — Fast-DDS in our setup is sending image frames through UDP
+      # loopback, paying a full kernel-network round-trip per frame. Switching
+      # RMW alone (no profile XML) typically halves image-publish latency and
+      # is one of the items in docs/PERFORMANCE.md.
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+      # Entrypoint build behaviour: auto | force | skip
+      BUILD: ${BUILD:-auto}
+    volumes:
+      # Bind the whole workspace into the container. Compose file lives at
+      # ros2_ws/src/explorer_r2_sim/, so ../.. is the workspace root.
+      - ../..:/ws:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # Persist Fuel asset cache so cave tiles + r2 mesh only download once.
+      # Volume names retained from the prior package name so the existing
+      # cache (cave + tunnel tiles + EXPLORER_R2 mesh) is reused.
+      - fuel:/root/.gz/fuel
+      - fuel_ign:/root/.ignition/fuel
+      # Joystick: bind /dev/input so joy_node can open jsX / eventX.
+      - /dev/input:/dev/input
+      # Real-world VIO datasets (EuRoC, TUM-VIO etc). Read-only mount so
+      # bag play can pick up sequences from ~/datasets/ on the host.
+      - ~/datasets:/datasets:ro
+    devices:
+      - /dev/dri:/dev/dri
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  fuel:
+    name: cave_robot_cave_robot_fuel
+    external: true
+  fuel_ign:
+    name: cave_robot_cave_robot_fuel_ign
+    external: true

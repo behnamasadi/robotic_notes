@@ -350,14 +350,15 @@ the kNN-ratio test in descriptor matching. Strongly recommended on.
 
 Unlike VIO, **LIO works fine on simulated data** (see
 [`VIO_DIAGNOSTIC_GUIDE.md` §3](VIO_DIAGNOSTIC_GUIDE.md#3--why-lio-survives-bad-imu-data-and-vio-doesnt)
-for the architectural reason). The rover sim at `~/ros2_ws/` is the
-canonical LIO deployment for this project. The knobs below are for
-that setup, not for a public-dataset run.
+for the architectural reason). The
+[`lio_benchmark/`](../../lio_benchmark/) subproject is the canonical
+LIO deployment for this work. The knobs below are for that setup,
+not for a public-dataset run.
 
 ### LiDAR sensor (rover SDF)
 
 The rover's mast-mounted `gpu_lidar` sensor in
-`models/explorer_r2/model.sdf`:
+`lio_benchmark/src/explorer_r2_sim/models/explorer_r2/model.sdf`:
 
 | Param         | Value                       | SDF tag             |
 |---------------|-----------------------------|---------------------|
@@ -372,7 +373,7 @@ The rover's mast-mounted `gpu_lidar` sensor in
 Z = 1.05 m above `base_link` puts the lidar above the payload box;
 at z < ~0.65 it raycasts into the chassis.
 
-### Field adapter — `lidar_field_adapter.py`
+### Field adapter — `lio_benchmark/src/explorer_r2_sim/scripts/lidar_field_adapter.py`
 
 gz's `gpu_lidar` publishes a basic `sensor_msgs/PointCloud2` with
 only `x`, `y`, `z`, `intensity`. FAST-LIO's Ouster preprocessor
@@ -387,10 +388,10 @@ and `t` (timestamp offset within the scan). The adapter:
   `ouster_ros::Point` field set (`ring` is `uint8` to match
   FAST-LIO's struct definition; `uint16` silently fails to bind).
 
-`config/lio.yaml`'s `lid_topic` points at `/lidar/points_lio`, not
+`lio_benchmark/src/explorer_r2_sim/config/lio.yaml`'s `lid_topic` points at `/lidar/points_lio`, not
 the raw `/lidar/points`.
 
-### FAST-LIO `config/lio.yaml`
+### FAST-LIO `lio_benchmark/src/explorer_r2_sim/config/lio.yaml`
 
 | Key                          | Value                | Why                                                                  |
 |------------------------------|----------------------|----------------------------------------------------------------------|

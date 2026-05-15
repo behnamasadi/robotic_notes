@@ -1,0 +1,34 @@
+# teleop_twist_joy params for a Logitech F310 (X-mode default mapping).
+#
+#   axis_linear.x:   left stick Y           → forward/back
+#   axis_angular.yaw: right stick X         → turn
+#   enable_button:   LB (deadman)           → must hold to send any motion
+#   enable_turbo_button: RB                 → hold for x3 speed
+#
+# Buttons / axes follow the standard Linux joystick layout for F310 X-mode
+# (the small switch on the back must be on "X", not "D"). For "D" mode use:
+#   axis_linear.x: 1, axis_angular.yaw: 2, enable_button: 4
+
+joy_node:
+  ros__parameters:
+    device_id: 0
+    deadzone: 0.05
+    autorepeat_rate: 30.0
+
+teleop_twist_joy_node:
+  ros__parameters:
+    require_enable_button: true
+    enable_button: 4          # LB
+    enable_turbo_button: 5    # RB
+    axis_linear:
+      x: 1                    # left stick Y
+    scale_linear:
+      x: 1.0
+    scale_linear_turbo:
+      x: 3.0
+    axis_angular:
+      yaw: 3                  # right stick X
+    scale_angular:
+      yaw: 1.0
+    scale_angular_turbo:
+      yaw: 3.0
