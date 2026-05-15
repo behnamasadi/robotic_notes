@@ -49,61 +49,54 @@ own repos:
 vio_benchmark/
 ├── docs/                  # comparison reports, diagnostic guide, dataset recipes
 ├── configs/
+│   ├── openvins/          # estimator_config + kalibr chain YAMLs
+│   ├── vins/              # vins.yaml + cam0/cam1 calibration
 │   └── euroc_groundtruth/ # TUM-format GT trajectories for all 11 EuRoC sequences
+├── launch/                # vio.launch.py, vins.launch.py
 ├── scripts/
-│   ├── run_euroc.sh       # end-to-end pipeline: download → convert → run → analyze
-│   └── analyze_bag.py     # bag-level trajectory summary, IMU sanity check
-└── runs/                  # estimator output recordings, symlinked from external storage
+│   ├── analyze_bag.py     # bag-level trajectory summary + IMU sanity check
+│   └── visualize_rerun.py # rerun.io comparison viewer (frustums + drift + cameras)
+├── third_party/           # OpenVINS, VINS-Fusion as submodules
+└── runs/                  # gitignored — estimator output recordings live here
 ```
 
-Datasets themselves are NOT in the repo — they're large (~3 GB per
-EuRoC bag) and freely re-downloadable. They live in `~/datasets/euroc/`
-on the dev machine.
+Datasets themselves are not in the repo and are downloaded out-of-band
+to `~/datasets/euroc/` — see [`docs/DATASETS.md`](docs/DATASETS.md)
+for download links and conversion recipe.
 
-## Quick start
+## Usage
 
-Reproduce the headline MH_01_easy comparison:
+After downloading a sequence into `~/datasets/euroc/<seq>_ros2/`:
 
 ```bash
-# 1. Get EuRoC MH_01_easy.bag (ROS 1 bag, ~2.7 GB)
-mkdir -p ~/datasets/euroc
-wget -P ~/datasets/euroc/ \
-    http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_01_easy/MH_01_easy.bag
+# Analyse a recording (writes summary.md + plots)
+python3 scripts/analyze_bag.py runs/<run-dir>
 
-# 2. Convert ROS 1 → ROS 2 mcap
-pip install rosbags
-rosbags-convert --src ~/datasets/euroc/MH_01_easy.bag \
-                --dst ~/datasets/euroc/MH_01_easy_ros2 \
-                --dst-storage mcap
-
-# 3. Run estimators against it (requires a ROS 2 Jazzy container with
-#    OpenVINS + VINS-Fusion built — see the rover-sim repo's Dockerfile)
-scripts/run_euroc.sh
-
-# 4. Compute APE
-python3 scripts/analyze_bag.py runs/euroc_mh01_ov_solo
-python3 scripts/analyze_bag.py runs/euroc_mh01_vins_solo
+# Interactive comparison in rerun.io
+python3 scripts/visualize_rerun.py <run1> <run2> ... \
+    --estimator-topic <topic1> <topic2> ... \
+    --label <name1> <name2> ... \
+    --source-bag ~/datasets/euroc/<seq>_ros2 \
+    --output compare.rrd
+rerun compare.rrd
 ```
 
-Full recipe in [`docs/DATASETS.md`](docs/DATASETS.md).
+For the end-to-end recipe (launching estimators, recording outputs,
+running APE), see [`docs/COMPARISON.md`](docs/COMPARISON.md) and
+[`docs/DATASETS.md`](docs/DATASETS.md).
 
 ## Roadmap
 
 In priority order — each is a focused future session:
 
-1. **MH_03_medium + V1_01_easy sequences** — bumps to 2 estimators × 3
-   sequences. Blocked on ETH's server being reachable (was down 2026-05-15).
-2. **ORB-SLAM3** — third estimator, fundamentally different architecture
-   (full SLAM with loop closure), ROS 2 wrapper exists. ~half a day.
-3. **rerun.io visualization** — replace matplotlib plots with a synced
-   3D-pose / camera-image / drift-over-time scene. ~1 hour.
-4. **PX4 drone in gz-sim experiment** — test whether wheel-free dynamics
-   produces a clean enough IMU stream that sim VIO becomes viable.
-   ~half a day.
-5. **Kimera-VIO** — needs GTSAM built from source (~30 min build). ~half
-   day total. Adds factor-graph perspective.
-6. **TUM-VIO sequences** — different hardware/scenes, validates that
-   numbers aren't EuRoC-specific.
+1. **More EuRoC sequences** (MH_02–05, V1/V2_*) — bumps coverage from
+   one sequence to a defensible per-estimator average.
+2. **ORB-SLAM3** — third estimator, full SLAM with loop closure,
+   community ROS 2 wrapper exists.
+3. **Kimera-VIO** — factor-graph perspective. Needs GTSAM built from
+   source.
+4. **TUM-VIO sequences** — different hardware/scenes; validates that
+   numbers are not EuRoC-specific.
 
 Skipped: VINS-Mono (mono-only, ROS 1 only, predecessor of VINS-Fusion).
 
