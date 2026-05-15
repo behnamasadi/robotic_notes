@@ -471,6 +471,13 @@ pip install jupyterlab
 - [ViT for Monocular Visual odometry](docs/vit_monocular_vision/vit_monocular_vo.ipynb)  
   - [Loss Functions Used in VO/SLAM](docs/vit_monocular_vision/vit_monocular_vo.ipynb#i-types-of-loss-functions-used-in-vo)  
   - [Trajectory Evaluation Metrics (ATE, RPE, sub-trajectory drift)](docs/vit_monocular_vision/vit_monocular_vo.ipynb#iv-trajectory-evaluation-metrics)  
+- [VO Loss Functions](docs/vo_loss_functions.ipynb)  
+- [VO Evaluation Metrics](docs/vo_evaluation_metrics.ipynb)  
+- [Photometric Reprojection Loss](docs/photometric_reprojection_loss.ipynb)  
+  - [Photometric Loss Mathematics](docs/photometric_loss_mathematics.md)  
+- [Edge-Aware Depth Smoothness](docs/edge_aware_depth_smoothness.ipynb)  
+- [SSIM (Structural Similarity)](docs/ssim.ipynb)  
+- [Understanding Poses](docs/understanding_poses.md)  
 
 
 # [Gaussian Splat](#)
