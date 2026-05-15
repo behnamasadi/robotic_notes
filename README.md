@@ -464,6 +464,13 @@ pip install jupyterlab
 - [Describe Anything, Anywhere, at Any Moment (DAAAM)](https://github.com/MIT-SPARK/DAAAM)  
 - [Generative View Stitching](https://github.com/andrewsonga/generative_view_stitching)  
 - [Thinking with Camera: A Unified Multimodal Model for Camera-Centric Understanding and Generation (ICLR 2026)](https://github.com/KangLiao929/Puffin)  
+- [VGGSfM](https://github.com/facebookresearch/vggsfm)  
+- [InstantSfM](https://github.com/cre185/InstantSfM)  
+- [MatchAnything](docs/match_anything/index.ipynb)  
+- [DepthNet, PoseNet](docs/visual_odometry/KITTI.ipynb)  
+- [ViT for Monocular Visual odometry](docs/vit_monocular_vision/vit_monocular_vo.ipynb)  
+  - [Loss Functions Used in VO/SLAM](docs/vit_monocular_vision/vit_monocular_vo.ipynb#i-types-of-loss-functions-used-in-vo)  
+  - [Trajectory Evaluation Metrics (ATE, RPE, sub-trajectory drift)](docs/vit_monocular_vision/vit_monocular_vo.ipynb#iv-trajectory-evaluation-metrics)  
 
 
 # [Gaussian Splat](#)
