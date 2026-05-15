@@ -414,18 +414,24 @@ Runnable comparison framework: [`vio_benchmark/`](vio_benchmark/).
 
 
 # [Lidar and IMU LIO](#)
+
+FAST-LIO is wired into the rover sim at [`~/ros2_ws/`](https://github.com/) — see [`docs/lidar_and_imu.md`](docs/lidar_and_imu.md) for the integration notes.
+
+### Concepts and methodology
 - [Why LIO is robust to bad IMU but VIO isn't](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#4b--why-lio-survives-bad-imu-data-and-vio-doesnt)
-- [A Stereo Event Camera Dataset for Driving Scenarios DSEC](docs/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)  
-- [FAST-LIO (Fast LiDAR-Inertial Odometry)](docs/lidar_and_imu.md#fast-lio--fast-lidar-inertial-odometry-)  
-- [incremental Generalized Iterative Closest Point (GICP) based tightly-coupled LiDAR-inertial odometry (LIO), iG-LIO](docs/lidar_and_imu.md#incremental-generalized-iterative-closest-point--gicp--based-tightly-coupled-lidar-inertial-odometry--lio---ig-lio)  
-- [Direct LiDAR-Inertial Odometry: Lightweight LIO with Continuous-Time Motion Correction](docs/lidar_and_imu.md#direct-lidar-inertial-odometry--lightweight-lio-with-continuous-time-motion-correction)  
-- [Robust Real-time LiDAR-inertial Initialization](docs/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)  
-- [CT-LIO: Continuous-Time LiDAR-Inertial Odometry](docs/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)  
-- [Lidar SLAM for Automated Driving (MATLAB learning)](https://www.youtube.com/watch?v=n4tazoEcBGo)  
-- [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM/tree/ros2)  
-- [GLIM - versatile and extensible range-based 3D mapping framework](https://github.com/koide3/glim)  
-- [Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
-- [Fast LiDAR SLAM](https://github.com/93won/lidar_odometry)
+- [Robust Real-time LiDAR-inertial Initialization](docs/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)
+- [Lidar SLAM for Automated Driving (MATLAB)](https://www.youtube.com/watch?v=n4tazoEcBGo)
+- [DSEC — Stereo Event Camera Dataset for Driving Scenarios](docs/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)
+
+### Estimators
+- [FAST-LIO](docs/lidar_and_imu.md#fast-lio--fast-lidar-inertial-odometry-)
+- [iG-LIO — incremental GICP tightly-coupled LIO](docs/lidar_and_imu.md#incremental-generalized-iterative-closest-point--gicp--based-tightly-coupled-lidar-inertial-odometry--lio---ig-lio)
+- [DLIO — Direct LiDAR-Inertial Odometry with Continuous-Time Motion Correction](docs/lidar_and_imu.md#direct-lidar-inertial-odometry--lightweight-lio-with-continuous-time-motion-correction)
+- [CT-LIO — Continuous-Time LiDAR-Inertial Odometry](docs/lidar_and_imu.md#ct-lio--continuous-time-lidar-inertial-odometry)
+- [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM/tree/ros2)
+- [GLIM — versatile and extensible range-based 3D mapping framework](https://github.com/koide3/glim)
+- [LIMO — Lidar-Monocular Visual Odometry](https://github.com/johannes-graeter/limo)
+- [93won/lidar_odometry — Fast LiDAR SLAM](https://github.com/93won/lidar_odometry)
 
 
 
