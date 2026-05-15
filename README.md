@@ -377,27 +377,52 @@ pip install jupyterlab
 
 # [Visual and Inertial Odometry VIO](#)
 
-- [Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)  
-- [HybVIO](https://github.com/SpectacularAI/HybVIO/)  
-- [SVO Pro](https://github.com/uzh-rpg/rpg_svo_pro_open)  
-- [OpenVINS](docs/open_vins.md)  
-  - [OpenVINS Multi-Camera Extension](docs/open_vins.md#openvins-multi-camera-extension)  
-  - [Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)  
-  - [IMU Propagation Derivations openvin](https://docs.openvins.com/propagation.html)  
+A standalone, runnable VIO comparison framework lives in
+[`vio_benchmark/`](vio_benchmark/) — it has OpenVINS and VINS-Fusion as
+submodules, EuRoC ground truth, configs, pipeline scripts, and a
+rerun.io visualization that overlays multiple estimators with the live
+camera feed projected inside each frustum.
+
+### Concepts and methodology
+- [Trajectory analysis methodology — APE, RPE, Umeyama alignment, case studies, "what is parallax", "why forward driving is the worst case for mono VIO"](vio_benchmark/docs/ANALYSIS.md)
+- [Diagnostic guide — 7-step procedure for broken VIO + §4b "Why LIO survives bad IMU but VIO doesn't" + §5 "On trusting simulated IMU data"](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md)
+- [Parameter reference — what every knob in `estimator_config.yaml` and `vins.yaml` does](vio_benchmark/docs/PARAMETERS.md)
+- [Visual-Inertial Navigation Systems: An Introduction (lecture)](https://www.youtube.com/watch?v=dXN2E38jvQM)
+- [IMU Propagation Derivations (OpenVINS)](https://docs.openvins.com/propagation.html)
 - [Error State Kalman Filter VIO (ESKF-VIO)](docs/error_state_extended_kalman_filter_vio.ipynb)
-- [Kimera-VIO](https://github.com/MIT-SPARK/Kimera-VIO)  
-- [3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)  
+
+### Estimators
+- [OpenVINS](docs/open_vins.md) — MSCKF-based filter, sliding-window
+  - [OpenVINS Multi-Camera Extension](docs/open_vins.md#openvins-multi-camera-extension)
+  - Wired into [vio_benchmark](vio_benchmark/) as a submodule; runnable on EuRoC
+- [VINS-Fusion](https://github.com/HKUST-Aerial-Robotics/VINS-Fusion) — full-smoothing factor-graph
+  - Wired into [vio_benchmark](vio_benchmark/) as a submodule; runnable on EuRoC
+- [Kimera-VIO](https://github.com/MIT-SPARK/Kimera-VIO) — factor-graph + full SLAM
+- [HybVIO](https://github.com/SpectacularAI/HybVIO/) — Spectacular AI's hybrid filter
+- [SVO Pro](https://github.com/uzh-rpg/rpg_svo_pro_open)
+- [Open Keyframe-based Visual-Inertial SLAM okvis](https://github.com/ethz-asl/okvis)
+- [3D Mapping Library For Autonomous Robots](https://github.com/Zhefan-Xu/map_manager)
 
 # [SLAM Benchmark ](#)
-- [Hilti x Trimble SLAM Challenge 2026](https://hilti-trimble-challenge.com/)  
-- [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/visual_Inertial_SLAM_comparison.md)  
-- [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)  
-- [ETH3D](https://www.eth3d.net/slam_overview)  
-- [rvp group](https://rvp-group.net/slam-dataset.html)  
-- [M3DGR: A Multi-sensor, Multi-scenario and Massive-baseline SLAM Dataset for Ground Robots](https://github.com/sjtuyinjie/M3DGR)  
+
+### This repo's results
+- [Head-to-head on EuRoC MH_01_easy — OpenVINS (0.295 m APE) vs VINS-Fusion (0.248 m APE), stereo + mono, with rerun.io visualization](vio_benchmark/docs/COMPARISON.md)
+- [VIO dataset recipe — EuRoC + TUM-VIO + M2DGR + 4Seasons, OpenVINS Google Drive mirrors, what to skip](vio_benchmark/docs/DATASETS.md)
+- [Debug session log — narrative of the VIO investigation that produced this work](vio_benchmark/docs/SESSION_2026-05-15.md)
+
+### External benchmarks
+- [Hilti x Trimble SLAM Challenge 2026](https://hilti-trimble-challenge.com/)
+- [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/visual_Inertial_SLAM_comparison.md)
+- [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)
+- [ETH3D](https://www.eth3d.net/slam_overview)
+- [rvp group](https://rvp-group.net/slam-dataset.html)
+- [M3DGR: A Multi-sensor, Multi-scenario and Massive-baseline SLAM Dataset for Ground Robots](https://github.com/sjtuyinjie/M3DGR)
 
 
 # [Lidar and IMU LIO](#)
+
+> See [vio_benchmark VIO_DIAGNOSTIC_GUIDE §4b](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md) for why LIO is robust to noisy/aliased IMU data while VIO blows up scale on the same stream — IMU plays structurally different roles in each: integrator-path for VIO, hint-path for LIO.
+
 - [A Stereo Event Camera Dataset for Driving Scenarios DSEC](docs/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)  
 - [FAST-LIO (Fast LiDAR-Inertial Odometry)](docs/lidar_and_imu.md#fast-lio--fast-lidar-inertial-odometry-)  
 - [incremental Generalized Iterative Closest Point (GICP) based tightly-coupled LiDAR-inertial odometry (LIO), iG-LIO](docs/lidar_and_imu.md#incremental-generalized-iterative-closest-point--gicp--based-tightly-coupled-lidar-inertial-odometry--lio---ig-lio)  
