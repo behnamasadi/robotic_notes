@@ -12,3 +12,14 @@
 	path = lio_benchmark/third_party/FAST_LIO
 	url = https://github.com/hku-mars/FAST_LIO.git
 	branch = ROS2
+[submodule "lio_benchmark/third_party/DLIO"]
+	path = lio_benchmark/third_party/DLIO
+	url = https://github.com/vectr-ucla/direct_lidar_inertial_odometry.git
+	branch = feature/ros2
+[submodule "lio_benchmark/third_party/kiss-icp"]
+	path = lio_benchmark/third_party/kiss-icp
+	url = https://github.com/PRBonn/kiss-icp.git
+[submodule "lio_benchmark/third_party/LIO-SAM"]
+	path = lio_benchmark/third_party/LIO-SAM
+	url = https://github.com/TixiaoShan/LIO-SAM.git
+	branch = ros2
