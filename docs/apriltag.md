@@ -107,7 +107,11 @@ A tag's printed **size** (edge length, black-to-black) and the **spacing** ratio
 
 ## 6. Generating tags
 
-You can either **download pre-rendered PNGs** from the official repository or **generate** your own from scratch.
+You can either **download pre-rendered PNGs** from the official repository, use a **browser-based generator**, or **generate** your own from scratch.
+
+### 6.0 Browser generator (no install)
+
+The web tool [AprilTag Generator](https://shiqiliu-67.github.io/apriltag-generator/) ([source](https://github.com/shiqiliu-67/apriltag-generator)) runs entirely in the browser and lays out one or many tags into a single **print-ready PDF** — useful for quickly producing a tag, a sheet of tags, or an AprilGrid for detection / pose / calibration without a local toolchain. Pick the family and physical size, download, and print at **100 % scale** (then measure with a ruler — see §8).
 
 ### 6.1 Download pre-rendered tags (easiest)
 
