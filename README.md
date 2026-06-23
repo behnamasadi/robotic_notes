@@ -210,6 +210,10 @@ pip install jupyterlab
 - [Generating AprilTags](docs/apriltag.md#6-generating-tags)
 - [Detecting AprilTags (C++, Python, ROS)](docs/apriltag.md#7-detecting-apriltags)
 - [Common pitfalls](docs/apriltag.md#8-common-pitfalls)
+- [AprilTag vs ArUco (and ChArUco / AprilGrid)](docs/apriltag_vs_aruco.md)
+  * [What the family / dictionary names mean (tag36h11, DICT_6X6_250)](docs/apriltag_vs_aruco.md#2-what-the-family--dictionary-names-mean)
+  * [Calibration boards — ChArUco vs AprilGrid (with generation)](docs/apriltag_vs_aruco.md#3-the-real-fork-in-the-road-calibration-boards)
+  * [Decision guide](docs/apriltag_vs_aruco.md#4-decision-guide)
 
 # [Kalibr](#)
 
