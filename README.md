@@ -108,6 +108,9 @@ pip install jupyterlab
 
 
 
+# [Continuous Integration](#)
+- [Running GitHub Actions locally with `act` (test CI before you push)](docs/run_github_actions_locally_with_act.md)
+
 # [Robotic System Design & Design Patterns](#)
 - [Robotic System Design & Design Patterns](docs/robotic_system_design.md)
   * [1. High-Level Architecture of a Humanoid Robot](docs/robotic_system_design.md#1-high-level-architecture-of-a-humanoid-robot)
