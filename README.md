@@ -374,6 +374,7 @@ pip install jupyterlab
 - [Kabsch Algorithm](docs/shape_analysis.ipynb#kabsch-algorithm)
 - [Umeyama Algorithm](docs/shape_analysis.ipynb#umeyama-algorithm)
 - [Iterative Closest Point (ICP)](docs/shape_analysis.ipynb#iterative-closest-point--icp-)
+- [Rotation Averaging — the same SVD/Procrustes trick applied to N estimates of one rotation](docs/rotation_averaging.md#1-single-rotation-averaging)
 
 
 
@@ -469,7 +470,11 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 
 # [Structure-from-Motion](#)
 - [Structure from Motion from Scratch](docs/sfm.ipynb)
-- [Robust Rotation Averaging](https://www.youtube.com/watch?v=oAR-LMStRS4)
+- [Rotation Averaging](docs/rotation_averaging.md)
+  - [Single rotation averaging — chordal/SVD mean, quaternion (Markley) mean, Karcher mean, Weiszfeld median](docs/rotation_averaging.md#1-single-rotation-averaging)
+  - [Multiple rotation averaging (rotation synchronization) — the global-SfM problem, Govindu → Martinec–Pajdla → Chatterjee–Govindu IRLS → Shonan](docs/rotation_averaging.md#2-multiple-rotation-averaging--the-sfm-problem)
+  - [Why outlier relative rotations, not the optimizer, are the hard part](docs/rotation_averaging.md#the-practical-note)
+  - [Robust Rotation Averaging (talk)](https://www.youtube.com/watch?v=oAR-LMStRS4)
 - [Bundler](https://www.cs.cornell.edu/~snavely/bundler/bundler-v0.4-manual.html)
 - [Noah Snavely Reprojection Error](docs/noah_snavely_reprojection_error.ipynb)
 - [Global Structure-from-Motion Revisited](https://arxiv.org/pdf/2407.20219)
