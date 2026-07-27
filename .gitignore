@@ -32,3 +32,6 @@ data/machine_hall/*
 # VIO benchmark outputs — large binaries, never commit
 vio_benchmark/runs/
 vio_benchmark/*.rrd
+# MASt3R tutorial: cloned upstream repo and generated outputs
+docs/visual_odometry/third_party/
+docs/visual_odometry/output/

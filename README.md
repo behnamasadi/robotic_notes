@@ -400,7 +400,7 @@ EuRoC MH_01_easy.
 - [Head-to-head comparison report](vio_benchmark/docs/COMPARISON.md)
 
 ### Concepts and methodology
-- [Trajectory analysis methodology and case studies](vio_benchmark/docs/ANALYSIS.md)
+- [Trajectory analysis methodology and case studies](docs/visual_odometry/trajectory_analysis.ipynb)
 - [Diagnostic procedure for broken VIO](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md)
 - [Estimator parameter reference](vio_benchmark/docs/PARAMETERS.md)
 - [Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)
@@ -521,10 +521,18 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 - [VGGSfM](https://github.com/facebookresearch/vggsfm)  
 - [InstantSfM](https://github.com/cre185/InstantSfM)  
 - [MatchAnything](docs/match_anything/index.ipynb)  
-- [DepthNet, PoseNet](docs/visual_odometry/KITTI.ipynb)  
-- [ViT for Monocular Visual odometry](docs/vit_monocular_vision/vit_monocular_vo.ipynb)  
-  - [Loss Functions Used in VO/SLAM](docs/vit_monocular_vision/vit_monocular_vo.ipynb#i-types-of-loss-functions-used-in-vo)  
-  - [Trajectory Evaluation Metrics (ATE, RPE, sub-trajectory drift)](docs/vit_monocular_vision/vit_monocular_vo.ipynb#iv-trajectory-evaluation-metrics)  
+- Monocular Visual Odometry (deep-learning) — [docs/visual_odometry/](docs/visual_odometry/)
+  - [KITTI: dataset, calibration, ground-truth poses, stereo, COLMAP conversion](docs/visual_odometry/KITTI.ipynb)
+  - [DepthNet + PoseNet self-supervised baseline (Monodepth2/SfM-Learner family)](docs/visual_odometry/KITTI.ipynb#1-self-supervised-monocular-vo-depth--pose)
+  - [Deep-learning VO families: pose regression, depth+pose joint, geometry-aware, flow-based](docs/visual_odometry/vit_monocular_vo.ipynb#overview-of-approaches-and-deep-learning-architecture-for-visual-odometry)
+  - [Loss Functions Used in VO/SLAM (quaternion, geodesic, SE(3) Lie-log)](docs/visual_odometry/vit_monocular_vo.ipynb#i-types-of-loss-functions-used-in-vo)
+  - [Model Design Variants: CNN vs ViT pose heads, temporal aggregation, output reps](docs/visual_odometry/vit_monocular_vo.ipynb#ii-model-design-variants)
+  - [Self-supervised VO: photometric reprojection, SSIM+L1, auto-mask, min-reprojection](docs/visual_odometry/vit_monocular_vo.ipynb#iii-unsupervised--self-supervised-vo)
+  - [Trajectory analysis — ATE/RPE, Sim(3)/SE(3)/posyaw alignment, sub-trajectory drift, parallax loss, mono unobservable yaw, KLT vs descriptor](docs/visual_odometry/trajectory_analysis.ipynb)
+  - [DUSt3R & MASt3R — pointmap SfM: paper map (Depth Anything, VGGT, MapAnything), reading order, how pointmaps/matching/global alignment work, hands-on 2-image → point cloud + pose + Rerun](docs/visual_odometry/dust3r_mast3r.ipynb)
+    - how the head turns tokens into $(x,y,z)$ — ray direction × `expm1(range)`, why the canonical frame is just camera 1, where $z$ really comes from (parallax vs monocular prior)
+    - how matching works — the 24-d L2-normalized descriptor head, the two-sided InfoNCE objective, and fast reciprocal NN as a fixed-point iteration instead of a 155 GB similarity matrix
+    - how the two camera poses are recovered in the canonical frame — PnP-RANSAC on $X^{2,1}$, OpenCV world→cam vs pose conventions, the swapped-pair Procrustes alternative, scale and degenerate cases
 - [VO Loss Functions](docs/vo_loss_functions.ipynb)  
 - [VO Evaluation Metrics](docs/vo_evaluation_metrics.ipynb)  
 - [Photometric Reprojection Loss](docs/photometric_reprojection_loss.ipynb)  
