@@ -540,7 +540,7 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
     - [Speedy MASt3R](https://arxiv.org/html/2503.10017v1)
     - [Mast3r Slam with Rerun](https://github.com/rerun-io/mast3r-slam)
 - [VO Loss Functions](docs/vo_loss_functions.ipynb)  
-- [VO Evaluation Metrics](docs/vo_evaluation_metrics.ipynb)  
+- [VO Evaluation Metrics — ATE/RPE vs challenge-style AA/mAA as aggregations of the same Sim(3)-aligned residual, the two mAA families, $C=-R^\top t$](docs/vo_evaluation_metrics.ipynb)  
 - [Photometric Reprojection Loss](docs/photometric_reprojection_loss.ipynb)  
   - [Photometric Loss Mathematics](docs/photometric_loss_mathematics.md)  
 - [Edge-Aware Depth Smoothness](docs/edge_aware_depth_smoothness.ipynb)  
