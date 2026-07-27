@@ -534,6 +534,8 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
   - [Trajectory analysis — ATE/RPE, Sim(3)/SE(3)/posyaw alignment, sub-trajectory drift, parallax loss, mono unobservable yaw, KLT vs descriptor](docs/visual_odometry/trajectory_analysis.ipynb)
   - [DUSt3R & MASt3R — pointmap SfM: paper map (Depth Anything, VGGT, MapAnything), reading order, how pointmaps/matching/global alignment work, hands-on 2-image → point cloud + pose + Rerun](docs/visual_odometry/dust3r_mast3r.ipynb)
     - [The 2026 role inversion: feed-forward front-end, classical back-end — why MASt3R+COLMAP is the wrong hybrid, submapping for long video, licensing table](docs/visual_odometry/dust3r_mast3r.ipynb#the-2026-role-inversion-feed-forward-front-end-classical-back-end)
+    - [VGGT-SLAM loop closure at submap level — SALAD retrieval, free 3D↔3D loop constraints, SL(4) vs Sim(3) (projective drift), planar degeneracy](docs/visual_odometry/dust3r_mast3r.ipynb#vggt-slam-how-loop-closure-works-at-submap-level)
+    - [Persistent state = learned filtering — CUT3R as an EKF with learned state, filter-vs-smoother table (CUT3R/Spann3R/StreamVGGT vs VGGT-SLAM)](docs/visual_odometry/dust3r_mast3r.ipynb#persistent-state-the-learned-filter)
     - [Pointmap head: tokens → (x,y,z), ray direction × expm1(range)](docs/visual_odometry/dust3r_mast3r.ipynb#23-from-tokens-to-xyz-what-the-head-actually-regresses)
     - [Canonical frame is just camera 1, and where z comes from](docs/visual_odometry/dust3r_mast3r.ipynb#24-the-canonical-frame-is-just-camera-1)
     - [Matching: 24-d descriptors, InfoNCE, fast reciprocal NN](docs/visual_odometry/dust3r_mast3r.ipynb#41-matching--mast3rs-descriptor-head)
