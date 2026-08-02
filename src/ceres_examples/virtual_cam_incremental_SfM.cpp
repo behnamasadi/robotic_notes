@@ -222,7 +222,7 @@ void setCameraIntrinsic(double focal, double k1, double k2,
 
   camera_params[6] = focal; // focal
   camera_params[7] = k1;    // k1
-  camera_params[8] = k1;    // k2
+  camera_params[8] = k2;    // k2
 }
 
 //------------------------------------------------------------------------------
