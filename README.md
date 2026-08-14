@@ -417,11 +417,29 @@ EuRoC MH_01_easy.
 - [SVO Pro](https://github.com/uzh-rpg/rpg_svo_pro_open)
 - [OKVIS — Open Keyframe-based Visual-Inertial SLAM](https://github.com/ethz-asl/okvis)
 
+# [Datasets](#)
+
+### KITTI odometry
+- [Overview](docs/visual_odometry/KITTI.ipynb)
+- [Sensor setup](docs/visual_odometry/KITTI.ipynb#sensor-setup)
+- [Calibration files and projection matrices](docs/visual_odometry/KITTI.ipynb#calibration-files-and-projection-matrices)
+- [Ground-truth poses](docs/visual_odometry/KITTI.ipynb#ground-truth-poses)
+- [Displaying ground-truth poses in Rerun](docs/visual_odometry/KITTI.ipynb#display-ground-truth-poses-in-rerun)
+- [Stereo vision](docs/visual_odometry/KITTI.ipynb#stereo-vision)
+- [Sparse/dense reconstruction from known poses with COLMAP](docs/visual_odometry/KITTI.ipynb#reconstruct-sparsedense-model-from-known-camera-poses-with-colmap)
+- [Understanding KITTI poses](docs/understanding_poses.md)
+
+### Dataset collections
+- [Dataset recipes — EuRoC, TUM-VIO, M2DGR, 4Seasons](vio_benchmark/docs/DATASETS.md)
+- [M3DGR — Multi-sensor, Multi-scenario, Massive-baseline SLAM Dataset for Ground Robots](https://github.com/sjtuyinjie/M3DGR)
+- [rvp group SLAM datasets](https://rvp-group.net/slam-dataset.html)
+- [DSEC — Stereo Event Camera Dataset for Driving Scenarios](docs/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)
+
+
 # [SLAM Benchmark ](#)
 
 ### This repo's results
 - [Head-to-head — OpenVINS vs VINS-Fusion on EuRoC MH_01_easy](vio_benchmark/docs/COMPARISON.md)
-- [Dataset recipes — EuRoC, TUM-VIO, M2DGR, 4Seasons](vio_benchmark/docs/DATASETS.md)
 - [Debug session log](vio_benchmark/docs/SESSION_2026-05-15.md)
 
 ### External benchmarks
@@ -429,8 +447,6 @@ EuRoC MH_01_easy.
 - [Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots](docs/visual_Inertial_SLAM_comparison.md)
 - [A Comparison of Modern General-Purpose Visual SLAM Approaches](https://arxiv.org/pdf/2107.07589)
 - [ETH3D](https://www.eth3d.net/slam_overview)
-- [rvp group](https://rvp-group.net/slam-dataset.html)
-- [M3DGR — Multi-sensor, Multi-scenario, Massive-baseline SLAM Dataset for Ground Robots](https://github.com/sjtuyinjie/M3DGR)
 
 
 # [Lidar and IMU LIO](#)
@@ -454,7 +470,6 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 - [Why LIO is robust to bad IMU but VIO isn't](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why-lio-survives-bad-imu-data-and-vio-doesnt)
 - [Robust Real-time LiDAR-inertial Initialization](docs/lidar_and_imu.md#robust-real-time-lidar-inertial-initialization)
 - [Lidar SLAM for Automated Driving (MATLAB)](https://www.youtube.com/watch?v=n4tazoEcBGo)
-- [DSEC — Stereo Event Camera Dataset for Driving Scenarios](docs/lidar_and_imu.md#a-stereo-event-camera-dataset-for-driving-scenarios-dsec)
 
 ### Estimators
 - [FAST-LIO](docs/lidar_and_imu.md#fast-lio--fast-lidar-inertial-odometry-)
@@ -486,15 +501,6 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 
 
 # [Deep Learning based SLAM](#)
-
-### KITTI odometry dataset
-- [Overview](docs/visual_odometry/KITTI.ipynb)
-- [Sensor setup](docs/visual_odometry/KITTI.ipynb#sensor-setup)
-- [Calibration files and projection matrices](docs/visual_odometry/KITTI.ipynb#calibration-files-and-projection-matrices)
-- [Ground-truth poses](docs/visual_odometry/KITTI.ipynb#ground-truth-poses)
-- [Displaying ground-truth poses in Rerun](docs/visual_odometry/KITTI.ipynb#display-ground-truth-poses-in-rerun)
-- [Stereo vision](docs/visual_odometry/KITTI.ipynb#stereo-vision)
-- [Sparse/dense reconstruction from known poses with COLMAP](docs/visual_odometry/KITTI.ipynb#reconstruct-sparsedense-model-from-known-camera-poses-with-colmap)
 
 ### Self-supervised DepthNet + PoseNet
 - [Implementation tutorial](docs/visual_odometry/KITTI.ipynb#self-supervised-monocular-vo-on-kitti--practical-implementation-tutorial)
@@ -583,9 +589,6 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 
 
 # [Trajectory and Pose Evaluation](#)
-
-### Pose conventions
-- [Understanding KITTI poses](docs/understanding_poses.md)  
 
 ### Trajectory metrics
 - [Trajectory analysis](docs/visual_odometry/trajectory_analysis.ipynb)  
