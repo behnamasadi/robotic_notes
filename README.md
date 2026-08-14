@@ -487,106 +487,151 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 
 # [Deep Learning based SLAM](#)
 
-**Learning-based monocular VO — hands-on notebooks** ([docs/visual_odometry/](docs/visual_odometry/)):
-- [KITTI odometry — sensor setup, calibration, ground-truth poses, stereo, COLMAP from known poses](docs/visual_odometry/KITTI.ipynb)
-  - [Self-supervised DepthNet + PoseNet baseline (SfM-Learner / Monodepth2 family)](docs/visual_odometry/KITTI.ipynb#1-self-supervised-monocular-vo-depth--pose)
-- [Deep-learning VO architectures](docs/visual_odometry/vit_monocular_vo.ipynb)
-  - [Overview of the main families — pose regression, depth+pose joint, geometry-aware, flow-based](docs/visual_odometry/vit_monocular_vo.ipynb#overview-of-approaches-and-deep-learning-architecture-for-visual-odometry)
-  - [Model design variants — CNN vs ViT pose heads, temporal aggregation, output representations](docs/visual_odometry/vit_monocular_vo.ipynb#ii-model-design-variants)
-  - [Self-supervised VO — photometric reprojection, SSIM+L1, auto-masking, min-reprojection](docs/visual_odometry/vit_monocular_vo.ipynb#iii-unsupervised--self-supervised-vo)
+### KITTI odometry dataset
+- [Overview](docs/visual_odometry/KITTI.ipynb)
+- [Sensor setup](docs/visual_odometry/KITTI.ipynb#sensor-setup)
+- [Calibration files and projection matrices](docs/visual_odometry/KITTI.ipynb#calibration-files-and-projection-matrices)
+- [Ground-truth poses](docs/visual_odometry/KITTI.ipynb#ground-truth-poses)
+- [Displaying ground-truth poses in Rerun](docs/visual_odometry/KITTI.ipynb#display-ground-truth-poses-in-rerun)
+- [Stereo vision](docs/visual_odometry/KITTI.ipynb#stereo-vision)
+- [Sparse/dense reconstruction from known poses with COLMAP](docs/visual_odometry/KITTI.ipynb#reconstruct-sparsedense-model-from-known-camera-poses-with-colmap)
 
-**Feed-forward depth estimation** (per-image / per-video geometry, no poses):
+### Self-supervised DepthNet + PoseNet
+- [Implementation tutorial](docs/visual_odometry/KITTI.ipynb#self-supervised-monocular-vo-on-kitti--practical-implementation-tutorial)
+- [Depth + pose training objective](docs/visual_odometry/KITTI.ipynb#1-self-supervised-monocular-vo-depth--pose)
+- [Supervised depth add-on](docs/visual_odometry/KITTI.ipynb#2-supervised-depth-optional-add-on)
+- [Shapes, sizes and VRAM knobs](docs/visual_odometry/KITTI.ipynb#shapes-sizes-and-vram-knobs)
+- [Minimal architectures](docs/visual_odometry/KITTI.ipynb#minimal-architectures-proven--tiny)
+- [Training recipe](docs/visual_odometry/KITTI.ipynb#training-recipe-self-sup-monocular-vo-kitti)
+- [Evaluation](docs/visual_odometry/KITTI.ipynb#evaluation)
+- [Baselines for a 4 GB GPU](docs/visual_odometry/KITTI.ipynb#concrete-baselines-to-run-on-4-gb)
+- [Multi-scale output](docs/visual_odometry/KITTI.ipynb#multi-scale-output)
+- [Implementation tips](docs/visual_odometry/KITTI.ipynb#handy-implementation-tips)
+
+### Deep-learning VO architectures
+- [Overview of the main families](docs/visual_odometry/vit_monocular_vo.ipynb#overview-of-approaches-and-deep-learning-architecture-for-visual-odometry)
+- [Pose regression heads — CNN vs ViT](docs/visual_odometry/vit_monocular_vo.ipynb#21-pose-regression-heads--cnn-style-vs-vit-style)
+- [ViT-based VO architectures](docs/visual_odometry/vit_monocular_vo.ipynb#22-representative-vit-based-vo-architectures)
+- [Temporal modeling](docs/visual_odometry/vit_monocular_vo.ipynb#23-temporal-modeling)
+- [Input and output representations](docs/visual_odometry/vit_monocular_vo.ipynb#24-input-and-output-representations)
+- [Self-supervised VO](docs/visual_odometry/vit_monocular_vo.ipynb#iii-unsupervised--self-supervised-vo)
+
+### Feed-forward depth estimation
 - [Depth-Anything-3](https://github.com/ByteDance-Seed/Depth-Anything-3)  
-- [Depth Any Camera: Zero-Shot Metric Depth Estimation from Any Camera](https://github.com/yuliangguo/depth_any_camera)  
-- [UniK3D: Universal Camera Monocular 3D Estimation](https://github.com/lpiccinelli-eth/unik3d)  
-- [DoubleTake: Geometry Guided Depth Estimation](https://nianticlabs.github.io/doubletake/)  
-- [Murre: Multi-view Reconstruction via SfM-guided Monocular Depth Estimation](https://github.com/zju3dv/Murre)  
-- [Stereo Any Video: Temporally Consistent Stereo Matching](https://tomtomtommi.github.io/StereoAnyVideo/)  
+- [Depth Any Camera](https://github.com/yuliangguo/depth_any_camera)  
+- [UniK3D](https://github.com/lpiccinelli-eth/unik3d)  
+- [DoubleTake](https://nianticlabs.github.io/doubletake/)  
+- [Murre](https://github.com/zju3dv/Murre)  
+- [Stereo Any Video](https://tomtomtommi.github.io/StereoAnyVideo/)  
 
-**Two-view pointmap regression — DUSt3R / MASt3R lineage** (each pair gives one relative pose; a global-alignment / BA-style back-end is still needed to fuse many views — *not* end-to-end):
-- [DUSt3R & MASt3R — pointmap SfM: paper landscape, reading order, hands-on two images → point cloud + pose + Rerun](docs/visual_odometry/dust3r_mast3r.ipynb)
-  - [The 2026 role inversion — feed-forward front-end, classical back-end; why MASt3R+COLMAP is the wrong hybrid; submapping for long video; licensing table](docs/visual_odometry/dust3r_mast3r.ipynb#the-2026-role-inversion-feed-forward-front-end-classical-back-end)
-  - [VGGT-SLAM — loop closure at submap level: SALAD retrieval, free 3D↔3D loop constraints, SL(4) vs Sim(3), planar degeneracy](docs/visual_odometry/dust3r_mast3r.ipynb#vggt-slam-how-loop-closure-works-at-submap-level)
-  - [Persistent state as a learned filter — CUT3R as an EKF with learned state, filter-vs-smoother table](docs/visual_odometry/dust3r_mast3r.ipynb#persistent-state-the-learned-filter)
-  - [Pointmap head — tokens → (x,y,z), ray direction × expm1(range)](docs/visual_odometry/dust3r_mast3r.ipynb#23-from-tokens-to-xyz-what-the-head-actually-regresses)
-  - [The canonical frame is just camera 1 — and where z comes from](docs/visual_odometry/dust3r_mast3r.ipynb#24-the-canonical-frame-is-just-camera-1)
-  - [Matching — 24-d descriptors, InfoNCE, fast reciprocal NN](docs/visual_odometry/dust3r_mast3r.ipynb#41-matching--mast3rs-descriptor-head)
-  - [Relative pose — PnP-RANSAC, world→cam vs pose conventions](docs/visual_odometry/dust3r_mast3r.ipynb#43-recovering-the-relative-camera-pose)
+### Two-view pointmap regression — DUSt3R / MASt3R
+- [DUSt3R & MASt3R notebook](docs/visual_odometry/dust3r_mast3r.ipynb)
+- [The paper landscape](docs/visual_odometry/dust3r_mast3r.ipynb#1-the-paper-landscape)
+- [The 2026 role inversion](docs/visual_odometry/dust3r_mast3r.ipynb#the-2026-role-inversion-feed-forward-front-end-classical-back-end)
+- [VGGT-SLAM loop closure](docs/visual_odometry/dust3r_mast3r.ipynb#vggt-slam-how-loop-closure-works-at-submap-level)
+- [Persistent state as a learned filter](docs/visual_odometry/dust3r_mast3r.ipynb#persistent-state-the-learned-filter)
+- [The pointmap](docs/visual_odometry/dust3r_mast3r.ipynb#21-the-pointmap)
+- [Pointmap head](docs/visual_odometry/dust3r_mast3r.ipynb#23-from-tokens-to-xyz-what-the-head-actually-regresses)
+- [The canonical frame](docs/visual_odometry/dust3r_mast3r.ipynb#24-the-canonical-frame-is-just-camera-1)
+- [Global alignment, not bundle adjustment](docs/visual_odometry/dust3r_mast3r.ipynb#27-multi-view-global-alignment-this-is-not-bundle-adjustment)
+- [Matching — MASt3R's descriptor head](docs/visual_odometry/dust3r_mast3r.ipynb#41-matching--mast3rs-descriptor-head)
+- [Recovering intrinsics](docs/visual_odometry/dust3r_mast3r.ipynb#42-recovering-intrinsics--the-focal-from-a-single-pointmap)
+- [Recovering the relative pose](docs/visual_odometry/dust3r_mast3r.ipynb#43-recovering-the-relative-camera-pose)
+- [Sparse global alignment (MASt3R-SfM)](docs/visual_odometry/dust3r_mast3r.ipynb#5-from-a-pair-to-a-scene-sparse-global-alignment-mast3r-sfm-style)
 - [Speedy MASt3R](https://arxiv.org/html/2503.10017v1)  
 - [MASt3R-SLAM with Rerun](https://github.com/rerun-io/mast3r-slam)  
 
-**End-to-end feed-forward multi-view — VGGT lineage** (all cameras + geometry in one forward pass, no per-pair fusion):
-- [VGGT: Visual Geometry Grounded Transformer](https://github.com/facebookresearch/vggt)  
-- [MapAnything: Universal Feed-Forward Metric 3D Reconstruction](https://github.com/facebookresearch/map-anything)  
-- [Fast3R: Towards 3D Reconstruction of 1000+ Images in One Forward Pass](https://github.com/facebookresearch/fast3r)  
+### End-to-end multi-view — VGGT
+- [VGGT](https://github.com/facebookresearch/vggt)  
+- [MapAnything](https://github.com/facebookresearch/map-anything)  
+- [Fast3R](https://github.com/facebookresearch/fast3r)  
 - [VGGSfM](https://github.com/facebookresearch/vggsfm)  
-- [CUT3R: Continuous 3D Perception Model with Persistent State (streaming)](https://github.com/CUT3R/CUT3R)  
+- [CUT3R](https://github.com/CUT3R/CUT3R)  
 
-**SLAM systems with learned front-ends:**
+### SLAM with learned front-ends
 - [DROID-SLAM](https://github.com/princeton-vl/DROID-SLAM?tab=readme-ov-file)  
-- [SLAM3R: Real-Time Dense Scene Reconstruction from Monocular RGB Videos](https://github.com/PKU-VCL-3DV/SLAM3R)  
-- [MegaSam: Accurate, Fast and Robust Casual Structure and Motion from Casual Dynamic Videos](https://github.com/mega-sam/mega-sam)  
-- [MAGiC-SLAM: Multi-Agent Gaussian Globally Consistent SLAM](https://vladimiryugay.github.io/magic_slam/index.html)  
+- [SLAM3R](https://github.com/PKU-VCL-3DV/SLAM3R)  
+- [MegaSaM](https://github.com/mega-sam/mega-sam)  
+- [MAGiC-SLAM](https://vladimiryugay.github.io/magic_slam/index.html)  
 - [NeRF-SLAM](docs/NeRF-SLAM.md)  
 - [CURL-MAP](https://github.com/SenseRoboticsLab/CURL-MAP)  
 
-**Feature matching & point tracking:**
+### Feature matching and point tracking
 - [MatchAnything](docs/match_anything/index.ipynb)  
-- [LightGlue: Local Feature Matching at Light Speed](https://github.com/cvg/LightGlue)  
+- [LightGlue](https://github.com/cvg/LightGlue)  
 - [Tracking Any Point (TAP)](https://github.com/google-deepmind/tapnet)  
-- [LEAP-VO: Long-term Effective Any Point Tracking for Visual Odometry](https://chiaki530.github.io/projects/leapvo/)  
+- [LEAP-VO](https://chiaki530.github.io/projects/leapvo/)  
 
-**Learned SfM & visual localization:**
+### Learned SfM and visual localization
 - [Detector-Free Structure from Motion](https://hxy-123.github.io/)  
 - [InstantSfM](https://github.com/cre185/InstantSfM)  
 - [ACE0](https://github.com/nianticlabs/acezero)  
 - [Hierarchical Localization](https://github.com/cvg/Hierarchical-Localization)  
 
-**Neural rendering & mapping (NeRF / 3DGS):**
+### Neural rendering and mapping
 - [Gaussian Splatting](docs/gaussian_splatting.md)  
 - [instant-ngp](docs/instant_ngp.md)  
-- [A Hierarchical 3D Gaussian Representation for Real-Time Rendering of Very Large Datasets](https://arxiv.org/pdf/2406.12080)  
-- [Mitigating Motion Blur in Neural Radiance Fields with Events and Frames](https://github.com/uzh-rpg/EvDeblurNeRF)  
-- [MegaScenes: Scene-Level View Synthesis at Scale](https://megascenes.github.io/)  
-- [Morpheus: Text-Driven 3D Gaussian Splat Shape and Color Stylization](https://nianticlabs.github.io/morpheus/)  
+- [Hierarchical 3D Gaussians for large datasets](https://arxiv.org/pdf/2406.12080)  
+- [EvDeblurNeRF](https://github.com/uzh-rpg/EvDeblurNeRF)  
+- [MegaScenes](https://megascenes.github.io/)  
+- [Morpheus](https://nianticlabs.github.io/morpheus/)  
 
-**Semantic & multimodal 3D perception:**
-- [Human3R: Everyone Everywhere All at Once](https://github.com/fanegg/Human3R)  
+### Semantic and multimodal 3D perception
+- [Human3R](https://github.com/fanegg/Human3R)  
 - [Describe Anything, Anywhere, at Any Moment (DAAAM)](https://github.com/MIT-SPARK/DAAAM)  
-- [Thinking with Camera: A Unified Multimodal Model for Camera-Centric Understanding and Generation (Puffin, ICLR 2026)](https://github.com/KangLiao929/Puffin)  
+- [Puffin — camera-centric multimodal model](https://github.com/KangLiao929/Puffin)  
 
 
 # [Trajectory and Pose Evaluation](#)
 
-Read top to bottom: pose conventions first, then the metrics and how to run them, then the bridge to the SfM-benchmark (Image Matching Challenge) vocabulary.
+### Pose conventions
+- [Understanding KITTI poses](docs/understanding_poses.md)  
 
-- [Understanding KITTI poses — the $T_{w\,i}$ format in `00.txt`, coordinate conventions, computing relative transforms](docs/understanding_poses.md)  
-- [Trajectory analysis — the full evaluation tutorial](docs/visual_odometry/trajectory_analysis.ipynb)  
-  - [Why naive trajectory comparison fails — the alignment (gauge) problem](docs/visual_odometry/trajectory_analysis.ipynb#1-why-naive-comparison-fails--the-alignment-problem)  
-  - [Absolute Pose Error (APE / ATE) — per-sample error, aggregate statistics, strengths and weaknesses](docs/visual_odometry/trajectory_analysis.ipynb#2-absolute-pose-error-ape--ate)  
-  - [Relative Pose Error (RPE) — gauge invariance, the arbitrary choice of $\Delta$](docs/visual_odometry/trajectory_analysis.ipynb#3-relative-pose-error-rpe)  
-  - [Alignment — Umeyama Sim(3) for monocular, SE(3), yaw-only, posyaw, and which to use when](docs/visual_odometry/trajectory_analysis.ipynb#4-alignment--umeyama-and-friends)  
-  - [Sub-trajectory drift — the recommended evaluation](docs/visual_odometry/trajectory_analysis.ipynb#5-sub-trajectory-drift--the-recommended-evaluation)  
-  - [Tools — `evo` and `rpg_trajectory_evaluation`, with runnable commands](docs/visual_odometry/trajectory_analysis.ipynb#7-tools--evo-and-rpg_trajectory_evaluation)  
-  - [Reporting recipe for a new VO/SLAM method](docs/visual_odometry/trajectory_analysis.ipynb#8-reporting-recipe-for-a-new-voslam-method)  
-  - Diagnostics: [parallax and why forward driving is the worst case](docs/visual_odometry/trajectory_analysis.ipynb#9-parallax--and-why-forward-driving-is-the-worst-case) · [mono VIO has unobservable yaw](docs/visual_odometry/trajectory_analysis.ipynb#10-mono-vio-has-unobservable-yaw) · [KLT vs descriptor matching](docs/visual_odometry/trajectory_analysis.ipynb#11-tracker-choice--klt-vs-descriptor-matching)  
-- [Evaluation metrics for poses and trajectories — ATE/RPE vs Image Matching Challenge AA/mAA](docs/vo_evaluation_metrics.ipynb)  
-  - [The one residual behind ATE and camera-centre mAA](docs/vo_evaluation_metrics.ipynb#1-the-one-residual-behind-ate-and-maa)  
-  - [Same Umeyama, different robustness — least squares (`evo`) vs RANSAC (IMC scorer)](docs/vo_evaluation_metrics.ipynb#2-same-umeyama-different-robustness)  
-  - [Two different metrics are both called "mAA" — relative-pose (IMC 2019–2023) vs camera-centre (IMC 2024–2025)](docs/vo_evaluation_metrics.ipynb#4-two-different-metrics-are-both-called-maa)  
-- [image-matching-benchmark — the official IMC evaluation code](https://github.com/ubc-vision/image-matching-benchmark)  
+### Trajectory metrics
+- [Trajectory analysis](docs/visual_odometry/trajectory_analysis.ipynb)  
+- [Why naive comparison fails — the alignment problem](docs/visual_odometry/trajectory_analysis.ipynb#1-why-naive-comparison-fails--the-alignment-problem)  
+- [Absolute Pose Error (APE / ATE)](docs/visual_odometry/trajectory_analysis.ipynb#2-absolute-pose-error-ape--ate)  
+- [Relative Pose Error (RPE)](docs/visual_odometry/trajectory_analysis.ipynb#3-relative-pose-error-rpe)  
+- [Alignment — Umeyama Sim(3), SE(3), yaw-only, posyaw](docs/visual_odometry/trajectory_analysis.ipynb#4-alignment--umeyama-and-friends)  
+- [Sub-trajectory drift](docs/visual_odometry/trajectory_analysis.ipynb#5-sub-trajectory-drift--the-recommended-evaluation)  
+- [Which statistics to report](docs/visual_odometry/trajectory_analysis.ipynb#6-which-statistics-to-report)  
+- [Tools — `evo` and `rpg_trajectory_evaluation`](docs/visual_odometry/trajectory_analysis.ipynb#7-tools--evo-and-rpg_trajectory_evaluation)  
+- [Reporting recipe](docs/visual_odometry/trajectory_analysis.ipynb#8-reporting-recipe-for-a-new-voslam-method)  
+
+### Diagnostics
+- [Parallax and forward driving](docs/visual_odometry/trajectory_analysis.ipynb#9-parallax--and-why-forward-driving-is-the-worst-case)  
+- [Mono VIO has unobservable yaw](docs/visual_odometry/trajectory_analysis.ipynb#10-mono-vio-has-unobservable-yaw)  
+- [KLT vs descriptor matching](docs/visual_odometry/trajectory_analysis.ipynb#11-tracker-choice--klt-vs-descriptor-matching)  
+
+### Benchmark scores — Image Matching Challenge
+- [Evaluation metrics for poses and trajectories](docs/vo_evaluation_metrics.ipynb)  
+- [The one residual behind ATE and mAA](docs/vo_evaluation_metrics.ipynb#1-the-one-residual-behind-ate-and-maa)  
+- [Same Umeyama, different robustness](docs/vo_evaluation_metrics.ipynb#2-same-umeyama-different-robustness)  
+- [The convention trap: $C = -R^\top t$](docs/vo_evaluation_metrics.ipynb#3-the-convention-trap-c---rtop-t)  
+- [Two different metrics are both called mAA](docs/vo_evaluation_metrics.ipynb#4-two-different-metrics-are-both-called-maa)  
+- [image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)  
 
 
 # [VO and Depth Loss Functions](#)
 
-Read top to bottom: the overview of the whole loss zoo first, then each term in the standard self-supervised total loss (photometric + SSIM + smoothness), then the supervised pose losses.
+### Overview
+- [Loss functions for depth + pose estimation](docs/vo_loss_functions.ipynb)  
+- [Recommended combination](docs/vo_loss_functions.ipynb#5-recommended-combination-for-your-project)  
 
-- [Loss functions for depth + pose estimation — the overview: which losses exist, when to use each, recommended combination and example total loss](docs/vo_loss_functions.ipynb)  
-- [Photometric reprojection loss — back-project → transform → re-project → sample, worked numerical example, scale ambiguity in monocular VO](docs/photometric_reprojection_loss.ipynb)  
-  - [Photometric loss mathematics — the formal derivation on KITTI, step-by-step warping pipeline with matrix shapes](docs/photometric_loss_mathematics.md)  
-- [SSIM — luminance/contrast/structure terms, worked numerical example, Gaussian window, PyTorch implementation; SSIM vs LPIPS](docs/ssim.ipynb)  
-- [Edge-aware depth smoothness — first- and second-order variants, Charbonnier, scale-invariant normalization, worked numerical example](docs/edge_aware_depth_smoothness.ipynb)  
-- [Pose losses — naïve quaternion vs geodesic $SO(3)$, full SE(3): weighted sum vs Lie-log geodesic, how to pick the weights](docs/visual_odometry/vit_monocular_vo.ipynb#i-types-of-loss-functions-used-in-vo)  
+### Self-supervised losses
+- [Photometric reprojection loss](docs/photometric_reprojection_loss.ipynb)  
+- [Photometric loss mathematics](docs/photometric_loss_mathematics.md)  
+- [SSIM](docs/ssim.ipynb)  
+- [LPIPS](docs/ssim.ipynb#lpips)  
+- [Edge-aware depth smoothness](docs/edge_aware_depth_smoothness.ipynb)  
+
+### Pose losses
+- [Types of loss functions used in VO](docs/visual_odometry/vit_monocular_vo.ipynb#i-types-of-loss-functions-used-in-vo)  
+- [Rotation loss overview](docs/visual_odometry/vit_monocular_vo.ipynb#111-rotation-loss-overview)  
+- [Quaternion loss](docs/visual_odometry/vit_monocular_vo.ipynb#112-quaternion-loss-naïve-euclidean-loss)  
+- [Geodesic loss](docs/visual_odometry/vit_monocular_vo.ipynb#113-geodesic-loss-rotation-angle-loss)  
+- [Full transformation loss $SE(3)$](docs/visual_odometry/vit_monocular_vo.ipynb#12-full-transformation-loss-se3)  
+- [How to pick the weights](docs/visual_odometry/vit_monocular_vo.ipynb#124-how-to-pick-weights-very-important)  
 
 
 # [Object Pose and Shape Estimation](#)
