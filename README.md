@@ -402,6 +402,9 @@ EuRoC MH_01_easy.
 
 ### Concepts and methodology
 - [Trajectory analysis methodology and case studies](docs/visual_odometry/trajectory_analysis.ipynb)
+- [Estimator consistency — NEES, NIS, and auditing the covariance](docs/visual_odometry/estimator_consistency.ipynb)
+- [Benchmark methodology — run-to-run variance and paired significance](docs/visual_odometry/benchmark_methodology.ipynb)
+- [Runtime evaluation — latency, throughput, and tail costs](docs/visual_odometry/runtime_evaluation.ipynb)
 - [Diagnostic procedure for broken VIO](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md)
 - [Estimator parameter reference](vio_benchmark/docs/PARAMETERS.md)
 - [Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)
@@ -613,6 +616,37 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 - [The convention trap: $C = -R^\top t$](docs/vo_evaluation_metrics.ipynb#3-the-convention-trap-c---rtop-t)  
 - [Two different metrics are both called mAA](docs/vo_evaluation_metrics.ipynb#4-two-different-metrics-are-both-called-maa)  
 - [image-matching-benchmark](https://github.com/ubc-vision/image-matching-benchmark)  
+
+### Estimator consistency — is the reported covariance honest
+- [Estimator consistency](docs/visual_odometry/estimator_consistency.ipynb)  
+- [Accuracy and consistency are different failure modes](docs/visual_odometry/estimator_consistency.ipynb#1-accuracy-and-consistency-are-different-failure-modes)  
+- [NEES — Normalised Estimation Error Squared](docs/visual_odometry/estimator_consistency.ipynb#2-nees--normalised-estimation-error-squared)  
+- [The gauge trap — why absolute NEES is usually meaningless](docs/visual_odometry/estimator_consistency.ipynb#3-the-gauge-trap--the-reason-absolute-nees-is-usually-meaningless)  
+- [ANEES — and why one run tests almost nothing](docs/visual_odometry/estimator_consistency.ipynb#4-anees--and-why-one-run-tests-almost-nothing)  
+- [NIS — consistency without ground truth](docs/visual_odometry/estimator_consistency.ipynb#5-nis--the-consistency-test-that-needs-no-ground-truth)  
+- [Diagnosis — FEJ, double-counting, sparsification](docs/visual_odometry/estimator_consistency.ipynb#6-diagnosis--what-actually-causes-each-direction)  
+- [Where P comes from — and the convention trap](docs/visual_odometry/estimator_consistency.ipynb#7-where-p-comes-from--and-the-convention-trap)  
+- [Reporting recipe](docs/visual_odometry/estimator_consistency.ipynb#8-reporting-recipe)  
+
+### Benchmark methodology — variance, significance, honest comparison
+- [Benchmark methodology](docs/visual_odometry/benchmark_methodology.ipynb)  
+- ["Deterministic" algorithms are not](docs/visual_odometry/benchmark_methodology.ipynb#1-deterministic-algorithms-are-not)  
+- [How many runs, and what to do with them](docs/visual_odometry/benchmark_methodology.ipynb#2-how-many-runs-and-what-to-do-with-them)  
+- [Compare paired, not unpaired](docs/visual_odometry/benchmark_methodology.ipynb#3-compare-paired-not-unpaired)  
+- [Bootstrap confidence intervals](docs/visual_odometry/benchmark_methodology.ipynb#4-confidence-intervals-without-the-normality-assumption)  
+- [Aggregation traps — failures, weighting, normalisation](docs/visual_odometry/benchmark_methodology.ipynb#5-aggregation-traps--where-the-ranking-silently-changes)  
+- [Cherry-picking and leaderboard overfitting](docs/visual_odometry/benchmark_methodology.ipynb#6-cherry-picking-and-leaderboard-overfitting)  
+- [Reporting checklist](docs/visual_odometry/benchmark_methodology.ipynb#7-reporting-checklist)  
+
+### Runtime evaluation — latency, throughput, memory
+- [Runtime evaluation](docs/visual_odometry/runtime_evaluation.ipynb)  
+- [Three numbers that get called "speed"](docs/visual_odometry/runtime_evaluation.ipynb#1-three-numbers-that-get-called-speed)  
+- [The mean is the wrong statistic — report the tail](docs/visual_odometry/runtime_evaluation.ipynb#2-the-mean-is-the-wrong-statistic--report-the-tail)  
+- [Per-thread budgets](docs/visual_odometry/runtime_evaluation.ipynb#3-one-number-per-system-is-not-enough--report-per-thread-budgets)  
+- [Measurement traps — build type, playback rate, throttling](docs/visual_odometry/runtime_evaluation.ipynb#4-measurement-traps)  
+- [Memory and energy](docs/visual_odometry/runtime_evaluation.ipynb#5-memory-and-energy--the-constraints-that-actually-kill-deployments)  
+- [Tooling — perf, Tracy, ros2 topic delay](docs/visual_odometry/runtime_evaluation.ipynb#6-tooling)  
+- [Reporting template](docs/visual_odometry/runtime_evaluation.ipynb#7-reporting-template)  
 
 
 # [VO and Depth Loss Functions](#)
