@@ -501,7 +501,7 @@ def write_summary(out: Path, bag_dir: Path, odoms: dict[str, OdomTrace],
     lines.append("")
     lines.append("---")
     lines.append("")
-    lines.append("See [`docs/ANALYSIS.md`](../docs/ANALYSIS.md) for a worked-example "
+    lines.append("See [`docs/visual_odometry/trajectory_analysis.ipynb`](../../docs/visual_odometry/trajectory_analysis.ipynb) for a worked-example "
                  "case study and per-failure-mode root-cause notes.")
     lines.append("")
 

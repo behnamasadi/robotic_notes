@@ -509,7 +509,6 @@
                     <spring_reference>0.1</spring_reference>
                     <spring_stiffness>100</spring_stiffness>
                 </dynamics>
-                <use_parent_model_frame>0</use_parent_model_frame>
             </axis>
         </joint>
         <link name="left_front_wheel_link">
@@ -542,8 +541,6 @@
                             <fdir1>0 0 1</fdir1>
                             <slip1>0.0000235</slip1>
                             <slip2>0</slip2>
-                            <max_vel>10</max_vel>
-                            <min_depth>0.1</min_depth>
                         </ode>
                     </friction>
                     <contact>
@@ -598,7 +595,6 @@
                     <spring_reference>0</spring_reference>
                     <spring_stiffness>0</spring_stiffness>
                 </dynamics>
-                <use_parent_model_frame>0</use_parent_model_frame>
             </axis>
         </joint>
         <link name="left_rear_wheel_link">
@@ -631,8 +627,6 @@
                             <fdir1>0 0 1</fdir1>
                             <slip1>0.0000235</slip1>
                             <slip2>0</slip2>
-                            <max_vel>10</max_vel>
-                            <min_depth>0.1</min_depth>
                         </ode>
                     </friction>
                     <contact>
@@ -687,7 +681,6 @@
                     <spring_reference>0</spring_reference>
                     <spring_stiffness>0</spring_stiffness>
                 </dynamics>
-                <use_parent_model_frame>0</use_parent_model_frame>
             </axis>
         </joint>
         <link name="right_front_wheel_link">
@@ -720,8 +713,6 @@
                             <fdir1>0 0 1</fdir1>
                             <slip1>0.0000235</slip1>
                             <slip2>0</slip2>
-                            <max_vel>10</max_vel>
-                            <min_depth>0.1</min_depth>
                         </ode>
                     </friction>
                     <contact>
@@ -776,7 +767,6 @@
                     <spring_reference>0</spring_reference>
                     <spring_stiffness>0</spring_stiffness>
                 </dynamics>
-                <use_parent_model_frame>0</use_parent_model_frame>
             </axis>
         </joint>
         <link name="right_rear_wheel_link">
@@ -809,8 +799,6 @@
                             <fdir1>0 0 1</fdir1>
                             <slip1>0.0000235</slip1>
                             <slip2>0</slip2>
-                            <max_vel>10</max_vel>
-                            <min_depth>0.1</min_depth>
                         </ode>
                     </friction>
                     <contact>
@@ -865,7 +853,6 @@
                     <spring_reference>0</spring_reference>
                     <spring_stiffness>0</spring_stiffness>
                 </dynamics>
-                <use_parent_model_frame>0</use_parent_model_frame>
             </axis>
         </joint>
 

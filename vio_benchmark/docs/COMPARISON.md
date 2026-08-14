@@ -170,6 +170,6 @@ def umeyama(src, tgt, with_scale=True):
 - [`DATASETS.md`](./DATASETS.md) — how to obtain and convert EuRoC bags
 - [`VIO_DIAGNOSTIC_GUIDE.md`](./VIO_DIAGNOSTIC_GUIDE.md) — what to do
   when a VIO is broken (sim or real)
-- [`ANALYSIS.md`](./ANALYSIS.md) — APE / RPE / Umeyama explained
+- [`trajectory_analysis.ipynb`](../../docs/visual_odometry/trajectory_analysis.ipynb) — APE / RPE / Umeyama explained
 - `runs/euroc_mh01_ov_solo/` — OpenVINS solo recording
 - `runs/euroc_mh01_vins_solo/` — VINS-Fusion solo recording

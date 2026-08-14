@@ -106,6 +106,42 @@ else
     rm -f /ws/src/fast_lio
 fi
 
+# ─── Optional: DLIO (alternative LIO, side-by-side with FAST_LIO) ───────
+# UCLA Vectr's Direct LiDAR-Inertial Odometry. Pure ament_cmake C++ ROS 2
+# package, builds cleanly out of the box — no patches needed, no nested
+# submodules, no GTSAM. We feed it /lidar/points + /imu directly; DLIO
+# does its own continuous-time deskewing from IMU integration so the
+# ring/t adapter that FAST-LIO needs is not required.
+if [ -e third_party/DLIO/package.xml ]; then
+    ln -sfn /ws/third_party/DLIO /ws/src/direct_lidar_inertial_odometry
+    PKGS+=(direct_lidar_inertial_odometry)
+else
+    rm -f /ws/src/direct_lidar_inertial_odometry
+fi
+
+# ─── Optional: KISS-ICP (LiDAR-only, no IMU — for IMU-vs-no-IMU compare) ─
+# PRBonn's KISS-ICP is a monorepo: ros/ holds the ament_cmake wrapper,
+# cpp/ holds the pipeline library. ros/CMakeLists.txt detects the
+# sibling cpp/ at configure time and add_subdirectory's it, so we just
+# need to symlink the whole repo into src/ — colcon descends, finds
+# ros/package.xml, and builds kiss_icp. apt deps (libsophus-dev,
+# libtsl-robin-map-dev) are baked into sim.Dockerfile.
+if [ -e third_party/kiss-icp/ros/package.xml ]; then
+    ln -sfn /ws/third_party/kiss-icp /ws/src/kiss-icp
+    PKGS+=(kiss_icp)
+else
+    rm -f /ws/src/kiss-icp
+fi
+
+# Note: LIO-SAM is NOT built in this container. It runs in its own
+# container (see docker-compose.yml's `lio_sam` service) using upstream's
+# own Dockerfile + GTSAM-from-borglab-PPA setup. That sidesteps the
+# Eigen-naming and GTSAM-version pain we hit trying to build it in our
+# Jazzy + ros-jazzy-gtsam image. The two containers share the same ROS
+# DDS domain via host networking, so LIO-SAM subscribes to our
+# /lidar/points_lio + /imu and publishes /lio_sam/mapping/* which our
+# RViz already has displays for.
+
 # ─── Build ──────────────────────────────────────────────────────────────
 # Is the install/ tree complete? Check every required package's install
 # dir, not just install/setup.bash — a previously-failed build can leave

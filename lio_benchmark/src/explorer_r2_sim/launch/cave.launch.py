@@ -41,7 +41,7 @@ from launch.substitutions import LaunchConfiguration
 
 
 # Args forwarded verbatim to world.launch.py.
-_WORLD_ARGS = ("world", "gui", "rviz", "joy", "teleop", "rqt_steering", "verbose")
+_WORLD_ARGS = ("world", "gui", "rviz", "joy", "teleop", "rqt_steering", "verbose", "rover_tf")
 # Args forwarded verbatim to spawn_robot.launch.py.
 _SPAWN_ARGS = ("world", "spawn_x", "spawn_y", "spawn_z", "spawn_yaw")
 
@@ -86,6 +86,35 @@ def generate_launch_description():
             print("[cave.launch.py] fast_lio not installed — skipping LIO. "
                   "Initialise third_party/FAST_LIO and rebuild to enable.")
 
+        # dlio.launch.py — auto-include DLIO if installed (side-by-side
+        # comparison against FAST-LIO; trajectories overlaid in RViz with
+        # different colours).
+        try:
+            get_package_share_directory("direct_lidar_inertial_odometry")
+            actions.append(IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(os.path.join(launch_dir, "dlio.launch.py"))))
+        except PackageNotFoundError:
+            print("[cave.launch.py] direct_lidar_inertial_odometry not installed — "
+                  "skipping DLIO. Initialise third_party/DLIO and rebuild to enable.")
+
+        # kiss_icp.launch.py — auto-include KISS-ICP if installed
+        # (LiDAR-only baseline, no IMU — shows what you lose by dropping
+        # IMU fusion).
+        try:
+            get_package_share_directory("kiss_icp")
+            actions.append(IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(os.path.join(launch_dir, "kiss_icp.launch.py"))))
+        except PackageNotFoundError:
+            print("[cave.launch.py] kiss_icp not installed — skipping KISS-ICP. "
+                  "Initialise third_party/kiss-icp and rebuild to enable.")
+
+        # LIO-SAM is not launched from here — it runs in its own
+        # container (see docker-compose.yml `lio_sam` service) using
+        # upstream's reference Dockerfile + GTSAM build. The two
+        # containers share the same ROS DDS domain via host networking,
+        # so LIO-SAM subscribes to /lidar/points_lio + /imu and
+        # publishes /lio_sam/mapping/* directly to our RViz.
+
         return actions
 
     return LaunchDescription([
@@ -96,6 +125,7 @@ def generate_launch_description():
         DeclareLaunchArgument("teleop",        default_value="false"),
         DeclareLaunchArgument("rqt_steering",  default_value="false"),
         DeclareLaunchArgument("verbose",       default_value="3"),
+        DeclareLaunchArgument("rover_tf",      default_value="ground_truth"),
         DeclareLaunchArgument("spawn_x",       default_value="auto"),
         DeclareLaunchArgument("spawn_y",       default_value="auto"),
         DeclareLaunchArgument("spawn_z",       default_value="auto"),

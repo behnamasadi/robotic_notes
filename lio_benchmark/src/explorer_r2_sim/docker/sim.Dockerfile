@@ -17,6 +17,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # OpenVINS build-time deps: libceres, libeigen3, libboost, image_transport,
 #   cv_bridge, tf2_geometry_msgs.
 # FAST_LIO build-time deps: libpcl, pcl_conversions, pcl_ros.
+# KISS-ICP build-time deps: libsophus (Lie algebra), libtsl-robin-map
+#   (fast hash map), libtbb (parallel pipeline). libtbb is already pulled
+#   in by libpcl-dev; sophus + robin-map are not.
 RUN apt-get update && apt-get install -y --no-install-recommends \
       curl gnupg lsb-release ca-certificates xterm git \
  && curl -fsSL https://packages.osrfoundation.org/gazebo.gpg \
@@ -43,6 +46,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ros-${ROS_DISTRO}-pcl-conversions \
       ros-${ROS_DISTRO}-pcl-ros \
       ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+      ros-${ROS_DISTRO}-sophus robin-map-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # GLVND + EGL + GL + glxinfo so gz-rendering's Ogre2 backend can reach

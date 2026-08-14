@@ -1,0 +1,75 @@
+# Sim overrides for LIO-SAM. Only the bits that differ from LIO-SAM's
+# stock config (third_party/LIO-SAM/config/params.yaml) — defaults
+# inherited via the C++ declare_parameter calls in mapOptimization.cpp
+# etc. cover the rest.
+/**:
+    ros__parameters:
+        use_sim_time: true
+
+        # Topics — feed the same sensors FAST-LIO sees.
+        # /lidar/points_lio carries the per-point ring + t fields that
+        # LIO-SAM's Ouster preprocessor expects (added by the
+        # lidar_field_adapter.py shim).
+        pointCloudTopic: "/lidar/points_lio"
+        imuTopic:        "/imu"
+        odomTopic:       "/lio_sam/odometry/imu"
+        gpsTopic:        "/lio_sam/gps_unused"
+
+        # Frames — all namespaced under lio_sam/. LIO-SAM does a TF
+        # lookup between lidarFrame and baselinkFrame at every IMU
+        # callback to compute the LiDAR ↔ IMU/base extrinsic; the
+        # static TF in lio_sam.launch.py
+        # (lio_sam/base_link → lio_sam/lidar_link, 0 0 1.05 m) seeds
+        # that lookup so it succeeds at startup before LIO-SAM has
+        # published its own frames. baselink / odometry / map stay
+        # under lio_sam/ so they don't clash with the sim's
+        # explorer_r2/* frames, FAST-LIO's body, or DLIO's
+        # dlio/baselink. The lio_sam.launch.py glue TF then binds
+        # lio_sam/map to explorer_r2/odom.
+        lidarFrame:     "lio_sam/lidar_link"
+        baselinkFrame:  "lio_sam/base_link"
+        odometryFrame:  "lio_sam/odom"
+        mapFrame:       "lio_sam/map"
+
+        # GPS is not wired in this sim.
+        useImuHeadingInitialization: false
+        useGpsElevation:             false
+
+        # Sensor — matches gz_lidar in models/explorer_r2/model.sdf:
+        #   16 vertical samples × 1024 horizontal samples, ±15° elevation.
+        # The "ouster" preset matches the field layout produced by
+        # lidar_field_adapter.py (intensity + ring + t in nanoseconds).
+        sensor:         ouster
+        N_SCAN:         16
+        Horizon_SCAN:   1024
+        downsampleRate: 1
+        lidarMinRange:  0.5
+        lidarMaxRange:  100.0
+
+        # Sim IMU has Gaussian noise + slow bias drift (see model.sdf).
+        # Defaults from the stock config are close enough — leave them.
+        imuGravity:    9.80665
+        imuRPYWeight:  0.01
+
+        # IMU → LiDAR transform (LiDAR is 1.05 m above the IMU/base_link,
+        # identity rotation). Same numbers as FAST-LIO's `extrinsic_T` and
+        # DLIO's baselink2lidar — see config/lio.yaml and config/dlio.yaml.
+        extrinsicTrans: [0.0, 0.0, 1.05]
+        extrinsicRot:   [1.0, 0.0, 0.0,
+                         0.0, 1.0, 0.0,
+                         0.0, 0.0, 1.0]
+        extrinsicRPY:   [1.0, 0.0, 0.0,
+                         0.0, 1.0, 0.0,
+                         0.0, 0.0, 1.0]
+
+        # Loop closure ON — this is the whole reason LIO-SAM is here.
+        # Scan-Context-ish distance-based detection (LIO-SAM uses a
+        # simpler radius-based candidate search by default) + ICP
+        # verification + iSAM2 pose graph correction.
+        loopClosureEnableFlag:         true
+        loopClosureFrequency:          1.0
+        surroundingKeyframeSize:       50
+        historyKeyframeSearchRadius:   15.0
+        historyKeyframeSearchTimeDiff: 30.0
+        historyKeyframeSearchNum:      25
+        historyKeyframeFitnessScore:   0.3

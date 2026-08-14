@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="3">
+  <!-- Minimal shim that satisfies FAST_LIO's hard `find_package(livox_ros_driver2)`
+       dependency without pulling in the full Livox SDK. FAST_LIO needs the
+       livox_ros_driver2::CustomMsg type at compile time for its preprocess
+       and laserMapping translation units; we never actually receive Livox
+       data on this rig (the gz lidar is Ouster-style — lidar_type: 3 in
+       config/lio.yaml — so the Livox callbacks are never invoked).
+
+       The package is intentionally named `livox_ros_driver2` (not
+       `livox_ros_driver2_msgs`) to match the find_package() call inside
+       third_party/FAST_LIO/CMakeLists.txt.
+
+       Message definitions are verbatim from upstream Livox-SDK/livox_ros_driver2. -->
+  <name>livox_ros_driver2</name>
+  <version>0.0.1</version>
+  <description>
+    Local shim providing the livox_ros_driver2/CustomMsg + CustomPoint
+    message types so FAST_LIO builds in workspaces without the full Livox
+    SDK installed.
+  </description>
+  <maintainer email="behnam.asadi@gmail.com">Behnam Asadi</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <build_depend>std_msgs</build_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

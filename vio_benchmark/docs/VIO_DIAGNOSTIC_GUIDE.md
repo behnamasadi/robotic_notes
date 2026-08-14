@@ -18,7 +18,7 @@ The guide has four parts:
    comparison.
 
 If you're new to `evo` / APE / RPE / Umeyama, read
-[`ANALYSIS.md`](./ANALYSIS.md) first — it explains those concepts
+[`trajectory_analysis.ipynb`](../../docs/visual_odometry/trajectory_analysis.ipynb) first — it explains those concepts
 bottom-up. This guide builds on them.
 
 
@@ -492,7 +492,7 @@ answers that.
 
 ## Related
 
-- [`ANALYSIS.md`](./ANALYSIS.md) — APE / RPE / Umeyama explained
+- [`trajectory_analysis.ipynb`](../../docs/visual_odometry/trajectory_analysis.ipynb) — APE / RPE / Umeyama explained
   bottom-up; parallax and forward-driving aside; mono unobservable
   yaw; KLT vs descriptor tracker; ROVIO arbitrary-yaw aside.
 - [`COMPARISON.md`](./COMPARISON.md) — head-to-head numbers from

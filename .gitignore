@@ -35,3 +35,7 @@ vio_benchmark/*.rrd
 # MASt3R tutorial: cloned upstream repo and generated outputs
 docs/visual_odometry/third_party/
 docs/visual_odometry/output/
+.aider*
+
+# Large SLAM datasets (Newer College rosbags, ~44 GB)
+data/slam/collection 1 - newer college/

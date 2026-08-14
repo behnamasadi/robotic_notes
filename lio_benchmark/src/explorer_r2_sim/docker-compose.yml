@@ -39,17 +39,13 @@ services:
       - explorer_r2_sim
       - cave.launch.py
       - world:=${WORLD:-tunnel}
-      # Default to GUI-off because gz-sim's GUI tries to open a Qt/X11
-      # window via the host's display, and inside the container that path
-      # either fails outright (no xauth) or forces ogre2's renderer back
-      # to Mesa software for the GUI context — and gz-sim shares that
-      # context with the sensor cameras, so the sensors get dragged onto
-      # CPU rendering too. The 2026-05-15 measurements showed: with GUI on
-      # cameras run at 5-7 Hz / GPU 0 %, with GUI off cameras at 28 Hz /
-      # GPU ~30 %. Override on the command line for visual debugging:
-      #   docker compose run --rm sim ros2 launch explorer_r2_sim cave.launch.py gui:=true rviz:=true
-      - gui:=false
-      - rviz:=false
+      # rqt_robot_steering window — sliders for linear + angular vel
+      # on /cmd_vel, handy when no joystick is connected. Off by
+      # default in cave.launch.py; on here so `docker compose up`
+      # always opens the GUI. Set RQT_STEERING=false in the env to
+      # suppress (or just close the window — won't affect anything
+      # else).
+      - rqt_steering:=${RQT_STEERING:-true}
     network_mode: host
     ipc: host
     privileged: true
@@ -75,12 +71,18 @@ services:
       __EGL_VENDOR_LIBRARY_FILENAMES: /usr/share/glvnd/egl_vendor.d/10_nvidia.json
       OGRE_RTT_MODE: FBO
       GZ_HEADLESS_RENDERING: "1"
-      # Use Cyclone DDS instead of Fast-DDS. Cyclone defaults to shared-memory
-      # loopback for same-host comms, which is near-zero-copy for image-sized
-      # payloads — Fast-DDS in our setup is sending image frames through UDP
-      # loopback, paying a full kernel-network round-trip per frame. Switching
-      # RMW alone (no profile XML) typically halves image-publish latency and
-      # is one of the items in docs/PERFORMANCE.md.
+      # Use Cyclone DDS — it's significantly more reliable for the
+      # sim's mix of high-rate IMU + LiDAR + multiple estimators all
+      # publishing on /tf simultaneously than FastDDS in our testing.
+      # (FastDDS dropped publishes from FAST-LIO and KISS-ICP under
+      # load on the same hardware.) Cyclone also defaults to
+      # shared-memory loopback for same-host comms, near-zero-copy
+      # for image-sized payloads (see docs/PERFORMANCE.md).
+      # Trade-off: the LIO-SAM sibling container uses FastDDS (only
+      # RMW shipped in upstream's image). Cyclone↔FastDDS interop
+      # works at the wire level but emits "type hash" warnings; the
+      # known-bad case is `ros2 topic info -v`. /tf and basic topics
+      # cross fine.
       RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
       # Entrypoint build behaviour: auto | force | skip
       BUILD: ${BUILD:-auto}
@@ -99,6 +101,11 @@ services:
       # Real-world VIO datasets (EuRoC, TUM-VIO etc). Read-only mount so
       # bag play can pick up sequences from ~/datasets/ on the host.
       - ~/datasets:/datasets:ro
+      # Public LIO/SLAM benchmark datasets (Newer College, KITTI,
+      # HILTI, MulRan, …) live under robotic_notes/data/slam/ at the
+      # repo root. Read-only bind mount so bag.launch.py can play
+      # them inside the container without copying.
+      - ../../../data:/data:ro
     devices:
       - /dev/dri:/dev/dri
     deploy:
@@ -108,6 +115,115 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  # === Bag replay (real-world LiDAR-IMU datasets) ============================
+  # Plays a converted rosbag2 (Newer College, KITTI, HILTI, …) through the
+  # four estimators instead of Gazebo. Same image as `sim`; just runs
+  # bag.launch.py in place of cave.launch.py.
+  #
+  # MUTUALLY EXCLUSIVE with `sim` — both publish /lidar/points + /imu, so
+  # running both at once would mix Gazebo data with the bag stream. Always
+  # `docker compose down` before bringing up `bag`.
+  #
+  # Behind the `bag` compose profile so `docker compose up` (default) brings
+  # up the Gazebo flow; opt-in to the bag flow explicitly:
+  #
+  #   docker compose down                                  # stop sim if running
+  #   docker compose --profile bag up bag lio_sam         # bag + LIO-SAM
+  #
+  # Override the bag with env vars:
+  #   BAG_PATH=/data/...other-bag DATASET=newer_college \
+  #     docker compose --profile bag up bag lio_sam
+  bag:
+    profiles: [bag]
+    image: explorer_r2_sim/sim:${ROS_DISTRO:-jazzy}
+    container_name: bag
+    command:
+      - ros2
+      - launch
+      - explorer_r2_sim
+      - bag.launch.py
+      - bag_path:=${BAG_PATH:-/data/slam/collection 1 - newer college/ros2/stairs}
+      - dataset:=${DATASET:-newer_college}
+      - rate:=${RATE:-1.0}
+      - loop:=${LOOP:-false}
+    network_mode: host
+    ipc: host
+    privileged: true
+    environment:
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: 1
+      XDG_RUNTIME_DIR: /tmp/runtime-root
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
+      __EGL_VENDOR_LIBRARY_FILENAMES: /usr/share/glvnd/egl_vendor.d/10_nvidia.json
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+      # `bag` never builds anything — the sim image's install/ is already
+      # populated by a prior `docker compose up sim --build`. Skip the
+      # colcon check.
+      BUILD: skip
+    volumes:
+      - ../..:/ws:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../../../data:/data:ro
+    devices:
+      - /dev/dri:/dev/dri
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # LIO-SAM — runs alongside `sim` by default. Built on ROS Jazzy
+  # (matching `sim`) so DDS delivers messages cross-container without
+  # the type-hash issues that block Humble↔Jazzy. GTSAM 4.1 + unstable
+  # built from source because (a) LIO-SAM uses
+  # `gtsam_unstable::IncrementalFixedLagSmoother`, (b) Noble's apt
+  # ships GTSAM 4.2 only (no libgtsam-unstable-dev), and (c) the
+  # borglab PPA targets Jammy. See docker/lio_sam.Dockerfile.
+  #
+  # To skip LIO-SAM (e.g., if you only care about pure odometry and
+  # want a faster `docker compose up`): `docker compose up sim`. The
+  # explicit service name disables auto-bringup of `lio_sam`.
+  lio_sam:
+    build:
+      context: .
+      dockerfile: docker/lio_sam.Dockerfile
+    image: lio_sam_jazzy:latest
+    container_name: lio_sam
+    network_mode: host
+    ipc: host
+    environment:
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-42}
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+    volumes:
+      # Replace LIO-SAM's stock params.yaml with our sim-specific
+      # override (16-beam Ouster topology, namespaced lio_sam/* frames,
+      # LiDAR-1.05m-above-base extrinsic, /lidar/points_lio + /imu
+      # topic names, loop closure enabled).
+      - ./config/lio_sam.yaml:/root/ros2_ws/install/lio_sam/share/lio_sam/config/params.yaml:ro
+      # Use our minimal launch instead of upstream's run.launch.py.
+      # Theirs also starts robot_state_publisher with their xacro and a
+      # bare-named map→odom static TF — both pollute our TF graph with
+      # conflicting frames. Ours only starts the 4 LIO-SAM nodes; the
+      # static TFs we need are published from world.launch.py in `sim`
+      # and reach this container via DDS.
+      - ./launch/lio_sam_container.launch.py:/lio_sam_container.launch.py:ro
+    command:
+      - bash
+      - -lc
+      - >-
+        source /opt/ros/jazzy/setup.bash &&
+        source /root/ros2_ws/install/setup.bash &&
+        ros2 launch /lio_sam_container.launch.py
+    # No depends_on — lio_sam is independent of which "frontend"
+    # publishes /lidar/points and /imu. The default `docker compose
+    # up` brings both sim + lio_sam by virtue of neither having a
+    # profile; the `bag` flow uses `docker compose --profile bag up
+    # bag lio_sam` to bring up bag instead of sim.
 
 volumes:
   fuel:

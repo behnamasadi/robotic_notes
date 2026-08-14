@@ -33,6 +33,7 @@ Visualization Manager:
       Class: rviz_default_plugins/Grid
       Color: 160; 160; 164
       Enabled: true
+
       Line Style: {Line Width: 0.03, Value: Lines}
       Name: Grid
       Normal Cell Count: 0
@@ -44,8 +45,19 @@ Visualization Manager:
 
     - Class: rviz_default_plugins/TF
       Enabled: true
+
       Frame Timeout: 15
-      Frames: {All Enabled: true}
+      # Hide LIO-SAM's intermediate frames — they're internal plumbing.
+      # lio_sam/map and lio_sam/odom sit 1.05 m above the rover because
+      # of the static-glue offset we use to put lio_sam/base_link at
+      # the correct ground z (see launch/lio_sam_container.launch.py).
+      # Showing them as floating axes in RViz is visually confusing
+      # without adding information. lio_sam/base_link and
+      # lio_sam/lidar_link stay visible — they're the rover's pose.
+      Frames:
+        All Enabled: true
+        lio_sam/map:  {Value: false}
+        lio_sam/odom: {Value: false}
       Marker Scale: 0.5
       Name: TF
       Show Arrows: true
@@ -55,7 +67,6 @@ Visualization Manager:
       Update Interval: 0
       Value: true
 
-    # ─── Mode 1: sim ────────────────────────────────────────────────
     # Wheel odometry from the DiffDrive plugin (red arrow). Disabled by
     # default — for a slipping rover on cave terrain the wheel-odom arrow
     # quickly diverges from reality and clutters the view; turn it back
@@ -63,6 +74,7 @@ Visualization Manager:
     - Class: rviz_default_plugins/Odometry
       Name: Wheel Odom
       Enabled: false
+
       Keep: 200
       Position Tolerance: 0.1
       Angle Tolerance: 0.1
@@ -87,6 +99,7 @@ Visualization Manager:
       Color Transformer: AxisColor
       Decay Time: 0
       Enabled: true
+
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
@@ -109,6 +122,7 @@ Visualization Manager:
 
     - Class: rviz_default_plugins/Image
       Enabled: true
+
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -125,6 +139,7 @@ Visualization Manager:
     - Class: rviz_default_plugins/PointCloud2
       Name: RS Front Cloud
       Enabled: false
+
       Color Transformer: RGB8
       Style: Points
       Size (Pixels): 2
@@ -135,77 +150,11 @@ Visualization Manager:
       Use Fixed Frame: true
       Value: true
 
-    # ─── Mode 2: OpenVINS (empty until vio.launch.py runs) ─────────
-    - Class: rviz_default_plugins/Odometry
-      Name: VIO Odom
-      Enabled: true
-      Keep: 200
-      Position Tolerance: 0.1
-      Angle Tolerance: 0.1
-      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
-      Shape: {Color: 50; 200; 50, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
-      Topic:
-        Depth: 5
-        Reliability Policy: Best Effort
-        Value: /ov_msckf/odomimu
-      Value: true
-
-    - Class: rviz_default_plugins/Path
-      Name: VIO Path
-      Enabled: true
-      Color: 50; 200; 50
-      Line Style: Lines
-      Line Width: 0.05
-      Topic:
-        Depth: 5
-        Reliability Policy: Reliable
-        Value: /ov_msckf/pathimu
-      Value: true
-
-    # 3D tracked features. /points_msckf = active in the filter,
-    # short-lived (churn fast). /points_slam = SLAM-mode features kept
-    # in state, longer-lived (more stable, fewer of them).
-    - Class: rviz_default_plugins/PointCloud2
-      Name: VIO MSCKF Features
-      Enabled: true
-      Style: Points
-      Size (Pixels): 5
-      Color: 50; 200; 50
-      Color Transformer: FlatColor
-      Topic:
-        Depth: 5
-        Reliability Policy: Best Effort
-        Value: /ov_msckf/points_msckf
-      Value: true
-
-    - Class: rviz_default_plugins/PointCloud2
-      Name: VIO SLAM Features
-      Enabled: true
-      Style: Spheres
-      Size (m): 0.15
-      Color: 255; 100; 100
-      Color Transformer: FlatColor
-      Topic:
-        Depth: 5
-        Reliability Policy: Best Effort
-        Value: /ov_msckf/points_slam
-      Value: true
-
-    # 2D feature tracks overlaid on the live camera frame. Shows what
-    # VIO is actually following — useful for debugging feature loss.
-    - Class: rviz_default_plugins/Image
-      Name: VIO Track Image
-      Enabled: true
-      Topic:
-        Depth: 5
-        Reliability Policy: Best Effort
-        Value: /ov_msckf/trackhist
-      Value: true
-
-    # ─── Mode 3: FAST_LIO (empty until lio.launch.py runs) ─────────
+    # ─── FAST_LIO ──────────────────────────────────────────────────
     - Class: rviz_default_plugins/Odometry
       Name: LIO Odom
-      Enabled: true
+      Enabled: false
+
       Keep: 200
       Position Tolerance: 0.1
       Angle Tolerance: 0.1
@@ -220,6 +169,7 @@ Visualization Manager:
     - Class: rviz_default_plugins/Path
       Name: LIO Path
       Enabled: true
+
       Color: 50; 120; 220
       Line Style: Lines
       Line Width: 0.05
@@ -231,7 +181,8 @@ Visualization Manager:
 
     - Class: rviz_default_plugins/PointCloud2
       Name: LIO Map
-      Enabled: true
+      Enabled: false
+
       Style: Flat Squares
       Size (m): 0.05
       Color Transformer: AxisColor
@@ -242,10 +193,147 @@ Visualization Manager:
         Value: /cloud_registered
       Value: true
 
+    # ─── DLIO (side-by-side with FAST-LIO, green) ──────────────────
+    - Class: rviz_default_plugins/Odometry
+      Name: DLIO Odom
+      Enabled: false
+
+      Keep: 200
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
+      Shape: {Color: 80; 200; 120, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /dlio/odom_node/odom
+      Value: true
+
+    - Class: rviz_default_plugins/Path
+      Name: DLIO Path
+      Enabled: true
+
+      Color: 80; 200; 120
+      Line Style: Lines
+      Line Width: 0.05
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /dlio/odom_node/path
+      Value: true
+
+    - Class: rviz_default_plugins/PointCloud2
+      Name: DLIO Map
+      Enabled: false
+
+      Style: Flat Squares
+      Size (m): 0.05
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /dlio/odom_node/pointcloud/deskewed
+      Value: true
+
+    # ─── KISS-ICP (LiDAR-only baseline, no IMU; orange) ─────────────
+    # KISS-ICP itself only publishes /kiss/odometry. odom_to_path.py
+    # (launched from kiss_icp.launch.py) accumulates that into a Path
+    # on /kiss/path so the trajectory line below matches the FAST-LIO
+    # and DLIO displays.
+    - Class: rviz_default_plugins/Odometry
+      Name: KISS-ICP Odom
+      Enabled: false
+
+      Keep: 200
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
+      Shape: {Color: 240; 120; 40, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /kiss/odometry
+      Value: true
+
+    - Class: rviz_default_plugins/Path
+      Name: KISS-ICP Path
+      Enabled: true
+
+      Color: 240; 120; 40
+      Line Style: Lines
+      Line Width: 0.05
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /kiss/path
+      Value: true
+
+    - Class: rviz_default_plugins/PointCloud2
+      Name: KISS-ICP Map
+      Enabled: false
+
+      Style: Flat Squares
+      Size (m): 0.05
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /kiss/local_map
+      Value: true
+
+    # ─── LIO-SAM (LIO + loop closure; purple) ──────────────────────
+    # Active when the `lio_sam` compose profile is up. LIO-SAM
+    # publishes its outputs with BEST_EFFORT QoS, so the subscriber
+    # QoS here must match (set in each Topic block below).
+    - Class: rviz_default_plugins/Odometry
+      Name: LIO-SAM Odom
+      Enabled: false
+
+      Keep: 200
+      Position Tolerance: 0.1
+      Angle Tolerance: 0.1
+      Covariance: {Position: {Value: false}, Orientation: {Value: false}, Value: false}
+      Shape: {Color: 200; 80; 220, Value: Arrow, Alpha: 1, Axes Length: 0.3, Axes Radius: 0.05, Head Length: 0.2, Head Radius: 0.08, Shaft Length: 0.5, Shaft Radius: 0.04}
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /lio_sam/mapping/odometry
+      Value: true
+
+    - Class: rviz_default_plugins/Path
+      Name: LIO-SAM Path
+      Enabled: true
+
+      Color: 200; 80; 220
+      Line Style: Lines
+      Line Width: 0.05
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /lio_sam/mapping/path
+      Value: true
+
+    - Class: rviz_default_plugins/PointCloud2
+      Name: LIO-SAM Map
+      Enabled: false
+
+      Style: Flat Squares
+      Size (m): 0.05
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Topic:
+        Depth: 5
+        Reliability Policy: Best Effort
+        Value: /lio_sam/mapping/map_global
+      Value: true
+
     # ─── Ground truth (always on, populated by gt_to_path.py) ──────
     - Class: rviz_default_plugins/Odometry
       Name: GT Odom
       Enabled: true
+
       Keep: 200
       Position Tolerance: 0.1
       Angle Tolerance: 0.1
@@ -260,6 +348,7 @@ Visualization Manager:
     - Class: rviz_default_plugins/Path
       Name: GT Path
       Enabled: true
+
       Color: 240; 200; 0
       Line Style: Lines
       Line Width: 0.08
@@ -316,7 +405,6 @@ Visualization Manager:
 Window Geometry:
   Displays: {collapsed: false}
   RS Front Camera: {collapsed: false}
-  VIO Track Image:  {collapsed: false}
   Height: 1056
   Hide Left Dock: false
   Hide Right Dock: false

@@ -60,7 +60,7 @@ init_window_time: 5.0 # how many seconds to collect initialization information
 # triggering, so dynamic init takes over. Verified on bag
 # run_20260514T210126Z: stereo was engaged but static init fired in
 # 1.3 ms and converged to 180° yaw rotation — same unobservable-yaw
-# failure mode as mono (case study 5 in docs/ANALYSIS.md). For mono,
+# failure mode as mono (case study 5 in docs/visual_odometry/trajectory_analysis.ipynb). For mono,
 # drop this back to 0.3.
 init_imu_thresh: 50.0 # threshold for variance of the accelerometer to detect a "jerk" in motion
 init_max_disparity: 10.0 # max disparity to consider the platform stationary (dependent on resolution)
@@ -143,7 +143,7 @@ downsize_aruco: true
 # observation less = orientation/translation updates are more conservative.
 # Default 1.0 was producing fast-frequency orientation jitter on the
 # tunnel/cave lattice scene (visible as a "forest of arrows" cluster in
-# the RViz VIO Odom display — see docs/ANALYSIS.md "case study 3.5").
+# the RViz VIO Odom display — see docs/visual_odometry/trajectory_analysis.ipynb "case study 3.5").
 # Bumped to 2.0 to dampen the per-IMU-step orientation kicks from
 # ambiguous KLT correspondences across the regular grid pattern.
 up_msckf_sigma_px: 2

@@ -47,15 +47,19 @@
   gz_type_name:   "gz.msgs.Pose_V"
   direction:      GZ_TO_ROS
 
-# ─── TF — both DiffDrive's odom transform AND PosePublisher's per-link/sensor
-# poses go onto /tf so RViz finds the lidar/camera/IMU frames. Multiple
-# publishers on /tf is normal (tf2 expects this).
-- ros_topic_name: "/tf"
-  gz_topic_name:  "/model/explorer_r2/tf"
-  ros_type_name:  "tf2_msgs/msg/TFMessage"
-  gz_type_name:   "gz.msgs.Pose_V"
-  direction:      GZ_TO_ROS
-
+# ─── TF — only PosePublisher's per-link/sensor poses (lidar/camera/imu)
+# are bridged onto /tf.
+#
+# We INTENTIONALLY do NOT bridge DiffDrive's odom→base_link transform
+# (which would otherwise come from /model/explorer_r2/tf). DiffDrive
+# computes that transform from wheel-encoder integration, so it drifts;
+# using it to position the rover mesh in RViz means the mesh visibly
+# diverges from truth and the LIO arrows look "stuck to a wrong robot".
+# Instead, gt_to_path.py broadcasts explorer_r2/odom→explorer_r2/base_link
+# from ground truth, so the rover mesh is always at the actual pose and
+# the LIO arrows / paths show their drift as visible offsets against it.
+# Wheel-odom data is still available on /model/explorer_r2/odometry for
+# anyone who wants to consume it as a topic.
 - ros_topic_name: "/tf"
   gz_topic_name:  "/model/explorer_r2/pose"
   ros_type_name:  "tf2_msgs/msg/TFMessage"

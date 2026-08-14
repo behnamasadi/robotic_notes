@@ -141,7 +141,7 @@ papers for stereo+IMU mode:
 
 - [`COMPARISON.md`](COMPARISON.md) — head-to-head OpenVINS vs
   VINS-Fusion on EuRoC MH_01_easy
-- [`ANALYSIS.md`](ANALYSIS.md) — methodology (APE / RPE / Umeyama,
+- [`trajectory_analysis.ipynb`](../../docs/visual_odometry/trajectory_analysis.ipynb) — methodology (APE / RPE / Umeyama,
   parallax, mono yaw, KLT vs descriptor)
 - [`VIO_DIAGNOSTIC_GUIDE.md`](VIO_DIAGNOSTIC_GUIDE.md) — what to do
   when an estimator is broken

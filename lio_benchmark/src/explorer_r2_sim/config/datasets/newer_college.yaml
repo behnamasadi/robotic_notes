@@ -1,0 +1,80 @@
+# Newer College Dataset (NCD) overrides.
+# https://ori-drs.github.io/newer-college-dataset/
+#
+# Collection 1 bags (~2021-07-01 *) record:
+#   - Ouster OS1-64    (64 vertical beams, 1024 horizontal, 10 Hz)
+#     LiDAR cloud :   /os_cloud_node/points    sensor_msgs/PointCloud2
+#     OS1 IMU     :   /os_cloud_node/imu       sensor_msgs/Imu  @ 100 Hz
+#   - Alphasense IMU   (higher-grade, 200 Hz)
+#                     /alphasense_driver_ros/imu
+#   - 4 cameras (not needed for LIO)
+# Ground truth: TUM-format CSV in ground_truth/tum_format/
+#
+# To play through the four estimators:
+#   docker compose exec sim ros2 launch explorer_r2_sim bag.launch.py \
+#     bag_path:=/datasets/newer_college/ros2/stairs \
+#     dataset:=newer_college
+#
+# bag.launch.py reads the `topics` block below and passes the right
+# --remap args to `ros2 bag play`. Per-estimator sensor params (LIO-SAM
+# N_SCAN=64, FAST-LIO scan_line=64, extrinsics) are loaded from the
+# `<estimator>` blocks below as overlay params.
+
+# ─── Bag topic → canonical topic remaps ───────────────────────────────
+# bag.launch.py composes `--remap <bag_topic>:=<our_topic>` from these.
+topics:
+    pointcloud:    /os_cloud_node/points         # → /lidar/points
+    imu:           /os_cloud_node/imu            # → /imu
+    #imu:          /alphasense_driver_ros/imu    # alternative (higher rate)
+
+# ─── LIO-SAM (64-beam Ouster sensor params) ────────────────────────────
+lio_sam:
+    N_SCAN:         64
+    Horizon_SCAN:   1024
+    sensor:         ouster
+    # Approximate extrinsic — NCD's rig has the Ouster mounted with
+    # IMU coincident. Replace with the exact calibration from NCD's
+    # paper / kalibr files if you have them.
+    extrinsicTrans: [0.0, 0.0, 0.0]
+    extrinsicRot:   [1.0, 0.0, 0.0,
+                     0.0, 1.0, 0.0,
+                     0.0, 0.0, 1.0]
+    extrinsicRPY:   [1.0, 0.0, 0.0,
+                     0.0, 1.0, 0.0,
+                     0.0, 0.0, 1.0]
+
+# ─── FAST-LIO (Ouster preprocessor, 64-beam) ───────────────────────────
+fast_lio:
+    preprocess:
+        lidar_type:     3       # Ouster
+        scan_line:      64
+        scan_rate:      10
+        timestamp_unit: 3       # nanoseconds
+        blind:          0.5
+    mapping:
+        extrinsic_T: [0.0, 0.0, 0.0]
+        extrinsic_R: [1.0, 0.0, 0.0,
+                      0.0, 1.0, 0.0,
+                      0.0, 0.0, 1.0]
+
+# ─── DLIO (sensor-agnostic, just override the LiDAR-IMU extrinsic) ────
+dlio:
+    extrinsics:
+        baselink2imu:
+            t: [0.0, 0.0, 0.0]
+        baselink2lidar:
+            t: [0.0, 0.0, 0.0]
+
+# ─── KISS-ICP (mostly autodetects; just adjust ranges) ────────────────
+kiss_icp:
+    data:
+        max_range: 100.0
+        min_range: 0.5
+
+# ─── Ground truth ─────────────────────────────────────────────────────
+# TUM-format CSVs in `ground_truth/tum_format/` (one per sequence,
+# e.g. gt-nc-stairs.csv). Each row: stamp tx ty tz qx qy qz qw.
+# To overlay GT in RViz, write a small converter that reads the CSV
+# and publishes /ground_truth/pose at sim_time — not auto-launched
+# by bag.launch.py (TODO). For numerical eval, point evo at the CSV
+# directly: `evo_ape tum gt-nc-stairs.csv estimator-trajectory.tum`.

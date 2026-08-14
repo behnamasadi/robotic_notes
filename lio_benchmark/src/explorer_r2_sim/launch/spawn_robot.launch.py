@@ -56,6 +56,11 @@ def generate_launch_description():
                 "-name", "explorer_r2",
                 "-file", model_sdf,
                 "-x", sx, "-y", sy, "-z", sz, "-Y", syaw,
+                # Cold-boot, gz sim can take >10s to come up while it
+                # downloads Fuel tiles. Default create-node timeout (~5s)
+                # then loses the race and the rover never spawns. 120s
+                # covers every world preset we use.
+                "--timeout", "120000",
             ],
             output="screen",
         )]

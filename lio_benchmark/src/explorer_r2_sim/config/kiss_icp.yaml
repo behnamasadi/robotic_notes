@@ -1,0 +1,29 @@
+# Sim overrides for KISS-ICP. Defaults that KISS-ICP ships are tuned for
+# Velodyne HDL-32 / VLP-16 on outdoor datasets (KITTI etc.); for our
+# 16-beam gz_lidar in cave/tunnel worlds the only knobs worth tweaking
+# are max_range (cap to the gz sensor's range) and min_range (cull the
+# rover's own body returns).
+kiss_icp_node:
+    ros__parameters:
+        # Don't publish a TF — our dlio.launch/lio.launch already provide
+        # static glue from explorer_r2/odom to each estimator's odom
+        # frame. KISS-ICP only needs to publish its /kiss/odometry topic;
+        # RViz reads it via the explorer_r2/odom → kiss_icp/odom static.
+        publish_odom_tf: false
+
+        data:
+            deskew: true        # use point timestamps for motion correction
+            max_range: 100.0    # gz_lidar in models/explorer_r2/model.sdf
+            min_range: 0.5      # match FAST-LIO's `blind: 0.5` — drop returns inside the rover body
+
+        mapping:
+            max_points_per_voxel: 20
+
+        adaptive_threshold:
+            initial_threshold: 2.0
+            min_motion_th: 0.1
+
+        registration:
+            max_num_iterations: 500
+            convergence_criterion: 0.0001
+            max_num_threads: 0  # 0 → use all available

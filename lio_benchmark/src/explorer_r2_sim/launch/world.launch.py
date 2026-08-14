@@ -152,12 +152,48 @@ def generate_launch_description():
     # RViz can draw the GT trail and arrow alongside VIO / LIO / wheel-odom
     # in the same view. Subtracts the first sample so the trail starts at
     # the same origin as wheel-odom.
+    #
+    # When rover_tf:=ground_truth (default), gt_to_path also broadcasts the
+    # explorer_r2/odom → explorer_r2/base_link TF — this anchors the rover
+    # mesh in RViz at the true pose so LIO drift shows up as offset arrows
+    # rather than the rover itself moving wrong.
+    # When rover_tf:=wheel, the broadcaster is disabled and DiffDrive's
+    # wheel-odometry TF is bridged from gz instead (see wheel_odo_tf_bridge
+    # below). That matches what most ROS stacks do on real robots — the
+    # rover mesh drifts as wheel encoders accumulate error.
+    rover_tf_is_gt    = PythonExpression(["'", LaunchConfiguration("rover_tf"), "' == 'ground_truth'"])
+    rover_tf_is_wheel = PythonExpression(["'", LaunchConfiguration("rover_tf"), "' == 'wheel'"])
+
     gt_to_path = Node(
         package="explorer_r2_sim",
         executable="gt_to_path.py",
         name="gt_to_path",
         output="screen",
+        parameters=[{
+            "use_sim_time": True,
+            "publish_tf":   rover_tf_is_gt,
+        }],
+    )
+
+    # LIO-SAM static TFs were here, but LIO-SAM is opt-in only via the
+    # `lio_sam` compose profile (see docker-compose.yml). If you start
+    # the LIO-SAM service, you'll need to re-add these — see the README
+    # "LIO-SAM (experimental)" section for the lio_sam/* TF chain and
+    # why it currently doesn't visualise cross-container.
+
+    # Bridge DiffDrive's wheel-odo TF (/model/explorer_r2/tf) to /tf so it
+    # drives explorer_r2/odom → explorer_r2/base_link. Only launched when
+    # rover_tf:=wheel; with the default rover_tf:=ground_truth this bridge
+    # is absent and the gt_to_path broadcaster owns base_link instead.
+    wheel_odo_tf_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="wheel_odo_tf_bridge",
+        arguments=["/model/explorer_r2/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V"],
+        remappings=[("/model/explorer_r2/tf", "/tf")],
         parameters=[{"use_sim_time": True}],
+        output="screen",
+        condition=IfCondition(rover_tf_is_wheel),
     )
 
     return LaunchDescription([
@@ -172,6 +208,13 @@ def generate_launch_description():
                          + ", ".join(WORLD_PRESETS.keys())
                          + ". Or a local .sdf path or a Fuel world URL.")),
         DeclareLaunchArgument("verbose", default_value="3"),
+        DeclareLaunchArgument(
+            "rover_tf", default_value="ground_truth",
+            description=("Source of the explorer_r2/odom→base_link TF in "
+                         "RViz. 'ground_truth' (default) anchors the rover "
+                         "mesh to truth so LIO drift shows as offset arrows. "
+                         "'wheel' uses DiffDrive's wheel odometry, like a "
+                         "real ROS stack — rover mesh drifts with encoder error.")),
 
         SetEnvironmentVariable(
             "GZ_SIM_RESOURCE_PATH",
@@ -192,4 +235,5 @@ def generate_launch_description():
         joy_teleop_node,
         rqt_steering,
         gt_to_path,
+        wheel_odo_tf_bridge,
     ])

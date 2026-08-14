@@ -14,6 +14,7 @@ install(DIRECTORY launch config rviz worlds models scenarios
 # `ros2 run explorer_r2_sim <script>`.
 install(PROGRAMS
   scripts/gt_to_path.py
+  scripts/odom_to_path.py
   scripts/lidar_field_adapter.py
   scripts/record_run.sh
   scripts/eval.sh

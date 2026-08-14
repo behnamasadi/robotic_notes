@@ -1,0 +1,34 @@
+/**:
+    ros__parameters:
+        use_sim_time: true
+
+        # DLIO's internal TF tree is rooted at frames/odom. We isolate it
+        # from the sim's `explorer_r2/odom` so DLIO and FAST-LIO can run
+        # side-by-side without clobbering each other's transforms — a
+        # static TF in dlio.launch.py glues `explorer_r2/odom` →
+        # `dlio/odom` so RViz can render DLIO's outputs in the sim frame.
+        frames/odom:     dlio/odom
+        frames/baselink: dlio/baselink
+        frames/lidar:    dlio/lidar
+        frames/imu:      dlio/imu
+
+        # Extrinsics: match the rover SDF (LiDAR 1.05 m above base_link,
+        # IMU effectively at base_link, identity rotation throughout).
+        # FAST-LIO uses the same numbers — see config/lio.yaml.
+        extrinsics/baselink2imu/t: [0.0, 0.0, 0.0]
+        extrinsics/baselink2imu/R: [1.0, 0.0, 0.0,
+                                    0.0, 1.0, 0.0,
+                                    0.0, 0.0, 1.0]
+        extrinsics/baselink2lidar/t: [0.0, 0.0, 1.05]
+        extrinsics/baselink2lidar/R: [1.0, 0.0, 0.0,
+                                      0.0, 1.0, 0.0,
+                                      0.0, 0.0, 1.0]
+
+        # Sim IMU is noise-free — skip the 3 s standstill calibration that
+        # DLIO normally runs to estimate accel/gyro biases.
+        imu/calibration: false
+        imu/intrinsics/accel/bias: [0.0, 0.0, 0.0]
+        imu/intrinsics/gyro/bias:  [0.0, 0.0, 0.0]
+        imu/intrinsics/accel/sm:   [1.0, 0.0, 0.0,
+                                    0.0, 1.0, 0.0,
+                                    0.0, 0.0, 1.0]

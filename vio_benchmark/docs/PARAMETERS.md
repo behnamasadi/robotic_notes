@@ -277,8 +277,8 @@ occluded. With `use_klt: false`, OpenVINS switches to FAST + ORB
 descriptors + brute-force kNN matching with a Lowe's-ratio filter
 (`knn_ratio: 0.70`) — ambiguous matches are rejected automatically,
 which helps in self-similar scenes specifically. Cost is some extra
-CPU per frame. See [`ANALYSIS.md` "Tracker choice: KLT vs descriptor
-matching"](ANALYSIS.md#tracker-choice-klt-vs-descriptor-matching)
+CPU per frame. See [`trajectory_analysis.ipynb` §11 "Tracker choice: KLT vs descriptor
+matching"](../../docs/visual_odometry/trajectory_analysis.ipynb)
 for the longer discussion.
 
 **Conservative defaults — and a hard lesson.** Tuning a clean
@@ -417,7 +417,7 @@ recordings — competitive with what FAST-LIO reports on KITTI.
 
 ## Related
 
-- [`ANALYSIS.md`](ANALYSIS.md) — methodology + concepts (parallax,
+- [`trajectory_analysis.ipynb`](../../docs/visual_odometry/trajectory_analysis.ipynb) — methodology + concepts (parallax,
   KLT vs descriptor, mono unobservable yaw, APE/RPE/Umeyama).
 - [`COMPARISON.md`](COMPARISON.md) — head-to-head numbers from
   EuRoC.

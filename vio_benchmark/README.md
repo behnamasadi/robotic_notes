@@ -66,24 +66,118 @@ for download links and conversion recipe.
 
 ## Usage
 
-After downloading a sequence into `~/datasets/euroc/<seq>_ros2/`:
+Worked example on **EuRoC MH_01_easy** (the sequence the headline numbers
+above came from). Download recipe is in [`docs/DATASETS.md`](docs/DATASETS.md);
+the bag should land at `~/datasets/euroc/MH_01_easy_ros2/`.
+
+Everything below runs inside the `lio_benchmark` sim container — it
+already has ROS 2 Jazzy + an entrypoint that auto-builds anything under
+`lio_benchmark/third_party/*` (including OpenVINS and VINS-Fusion).
+`~/datasets/` is mounted read-only at `/datasets/` inside the container.
+
+### 0. One-time setup
+
+Expose the estimators to the container by symlinking them from
+`vio_benchmark/third_party/` into `lio_benchmark/third_party/` (where
+the entrypoint looks):
 
 ```bash
-# Analyse a recording (writes summary.md + plots)
-python3 scripts/analyze_bag.py runs/<run-dir>
-
-# Interactive comparison in rerun.io
-python3 scripts/visualize_rerun.py <run1> <run2> ... \
-    --estimator-topic <topic1> <topic2> ... \
-    --label <name1> <name2> ... \
-    --source-bag ~/datasets/euroc/<seq>_ros2 \
-    --output compare.rrd
-rerun compare.rrd
+cd ~/workspace/robotic_notes/lio_benchmark/third_party
+ln -s ../../vio_benchmark/third_party/open_vins         open_vins
+ln -s ../../vio_benchmark/third_party/VINS-Fusion-ROS2  VINS-Fusion-ROS2
 ```
 
-For the end-to-end recipe (launching estimators, recording outputs,
-running APE), see [`docs/COMPARISON.md`](docs/COMPARISON.md) and
-[`docs/DATASETS.md`](docs/DATASETS.md).
+Then build:
+
+```bash
+cd ~/workspace/robotic_notes/lio_benchmark/src/explorer_r2_sim
+BUILD=force docker compose build
+```
+
+### 1. Run OpenVINS on MH_01_easy
+
+Open an interactive shell in the container (overrides the default
+`cave.launch.py` so gz-sim doesn't start — we just want the ROS 2
+environment for bag replay):
+
+```bash
+docker compose run --rm sim bash
+```
+
+Inside the container, three panes (use `tmux` or three separate
+`docker compose exec sim bash` shells):
+
+```bash
+# Pane 1 — estimator
+ros2 launch ov_msckf subscribe.launch.py config:=euroc_mav
+
+# Pane 2 — record estimator output + GT
+ros2 bag record -o /ws/vio_benchmark/runs/euroc_mh01_ov_solo \
+    /ov_msckf/odomimu /leica/position
+
+# Pane 3 — play the EuRoC bag with sim time
+ros2 bag play /datasets/euroc/MH_01_easy_ros2 --clock
+```
+
+When the bag finishes, SIGINT pane 2's Python child (`pkill -f
+ros2_bag_record_python`, **not** the wrapper bash) so it flushes
+`metadata.yaml`. The bag lands under
+`vio_benchmark/runs/euroc_mh01_ov_solo/` on the host (the workspace is
+bind-mounted, so the recording persists outside the container).
+
+For VINS-Fusion: substitute the launch with `ros2 run vins vins_node
+/ws/vio_benchmark/configs/vins/euroc_stereo_imu_config.yaml` and record
+`/vins_estimator/odometry` into
+`/ws/vio_benchmark/runs/euroc_mh01_vins_solo`.
+
+### 2. Analyse the recording
+
+Still inside the container:
+
+```bash
+python3 /ws/vio_benchmark/scripts/analyze_bag.py \
+    /ws/vio_benchmark/runs/euroc_mh01_ov_solo
+```
+
+Writes `vio_benchmark/runs/euroc_mh01_ov_solo/summary.md` with:
+- topic rates (e.g. `/ov_msckf/odomimu` ~200 Hz, `/leica/position` ~50 Hz)
+- estimator vs GT path lengths
+- end-point error
+- IMU sanity stats (mean accel, gyro variance, drop count)
+
+### 3. Compare two estimators visually
+
+```bash
+python3 /ws/vio_benchmark/scripts/visualize_rerun.py \
+    /ws/vio_benchmark/runs/euroc_mh01_ov_solo \
+    /ws/vio_benchmark/runs/euroc_mh01_vins_solo \
+    --estimator-topic /ov_msckf/odomimu /vins_estimator/odometry \
+    --label OpenVINS VINS-Fusion \
+    --source-bag /datasets/euroc/MH_01_easy_ros2 \
+    --output /ws/vio_benchmark/runs/compare.rrd
+```
+
+Open `vio_benchmark/runs/compare.rrd` with `rerun` on the host (rerun
+viewer is host-side; the `.rrd` file is portable). Shows both
+estimator trajectories + the Leica GT, frustums for the stereo
+cameras, and a per-axis drift plot.
+
+### Expected result on MH_01_easy
+
+| estimator   | APE RMSE | matched samples | output topic             |
+|-------------|----------|------------------|--------------------------|
+| OpenVINS    | 0.295 m  | ~36 000 (200 Hz) | `/ov_msckf/odomimu`      |
+| VINS-Fusion | 0.248 m  | ~1 800 (10 Hz)   | `/vins_estimator/odometry` |
+
+Trajectory + APE plots already committed:
+[`docs/euroc_mh01_trajectory.png`](docs/euroc_mh01_trajectory.png),
+[`docs/euroc_mh01_compare.png`](docs/euroc_mh01_compare.png).
+
+For interpreting the numbers (what APE/RPE/Umeyama mean), see
+[`../docs/visual_odometry/trajectory_analysis.ipynb`](../docs/visual_odometry/trajectory_analysis.ipynb).
+For deeper end-to-end notes (alternative launch flags, more EuRoC
+sequences, common failure modes), see
+[`docs/COMPARISON.md`](docs/COMPARISON.md).
 
 ## Roadmap
 
