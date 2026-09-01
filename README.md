@@ -142,6 +142,7 @@ pip install jupyterlab
   * [22. Worked examples: what the calls actually look like](docs/geometry_library_design.md#22-worked-examples-what-the-calls-actually-look-like)
   * [23. Anti-patterns: the mistakes people actually make](docs/geometry_library_design.md#23-anti-patterns-the-mistakes-people-actually-make)
   * [24. Do / Don't](docs/geometry_library_design.md#24-do--dont)
+  * companion code: [`src/geometry_library_design/`](src/geometry_library_design/) — `tiny_geometry.hpp` + `demo.cpp`, dependency-free, build with `g++ -std=c++17 -O2 demo.cpp -o demo` or the CMake target `tiny_geometry_demo`
 
 
 # [Lie Group and Lie Algebra](#)
