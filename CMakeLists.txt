@@ -128,6 +128,9 @@ target_link_libraries(sophus_examples PRIVATE Sophus::Sophus)
 
 # Camera examples
 # Conceptual zero-copy demo (portable, no kernel APIs)
+add_executable(tiny_geometry_demo src/geometry_library_design/demo.cpp)
+target_compile_features(tiny_geometry_demo PRIVATE cxx_std_17)
+
 add_executable(zero_copy_concept src/camera_examples/zero_copy_concept.cpp)
 target_compile_features(zero_copy_concept PRIVATE cxx_std_20)
 target_link_libraries(zero_copy_concept PRIVATE Threads::Threads)
