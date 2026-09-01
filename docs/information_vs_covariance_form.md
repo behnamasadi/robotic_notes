@@ -371,6 +371,14 @@ complement, after which nodes 1 and 3 — previously unconnected, $\Lambda_{13}=
 acquire a coupling of $-0.144$. One elimination, one new edge; that is fill-in, and it is
 the entire cost story of §7.
 
+For the same thing on a real pose graph rather than a toy chain, the runnable cell in
+[factor_graph §5](factor_graph.ipynb#5-marginalization-and-the-schur-complement) marginalizes
+a pose out of the 5-pose example: $\Lambda_{13}$ goes from exactly zero to a block carrying
+$\approx 25$ per translation axis and $\approx 50$ on $\theta$ — half of each edge's
+information, because two odometry constraints in series compose like resistors — and it
+confirms that inverting the Schur complement reproduces the corresponding sub-block of
+$\Sigma$ to $2\times10^{-17}$.
+
 ---
 
 ## See also
