@@ -1,6 +1,5 @@
 lio_benchmark/src/**/textures/*.png filter=lfs diff=lfs merge=lfs -text
 vio_benchmark/configs/euroc_groundtruth/*.txt filter=lfs diff=lfs merge=lfs -text
-*.g2o filter=lfs diff=lfs merge=lfs -text
 *.dae filter=lfs diff=lfs merge=lfs -text
 *.gif filter=lfs diff=lfs merge=lfs -text
 *.dmap filter=lfs diff=lfs merge=lfs -text
