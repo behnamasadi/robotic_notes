@@ -39,3 +39,7 @@ docs/visual_odometry/output/
 
 # Large SLAM datasets (Newer College rosbags, ~44 GB)
 data/slam/collection 1 - newer college/
+
+# Third-party reference books -- see ASSETS.md for download links
+pdf/
+docs/ebooks/
