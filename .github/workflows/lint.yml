@@ -1,0 +1,19 @@
+name: Lint
+
+# Ruff over the Python scripts and notebooks; rules in ruff.toml.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ruff:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/ruff-action@v4

@@ -1,0 +1,4 @@
+# Analyse this repository only, not vendored code.
+paths-ignore:
+  - vcpkg
+  - "**/third_party"

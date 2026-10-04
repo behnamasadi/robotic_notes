@@ -1,0 +1,11 @@
+# Lint gate for the Python scripts and notebooks (CI: .github/workflows/lint.yml).
+# Only the rules that catch code which cannot run: syntax errors and undefined names.
+extend-exclude = [
+    "vcpkg",
+    "**/third_party",
+    # Unfinished draft: still wired to a segmentation dataset class that does not exist here.
+    "docs/visual_odometry/train.py",
+]
+
+[lint]
+select = ["E9", "F63", "F7", "F82"]
