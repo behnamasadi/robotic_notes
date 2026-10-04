@@ -16,4 +16,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+
+      # The notebooks live in Git LFS; fetch only those, not the other assets.
+      - name: Fetch notebooks from LFS
+        run: git lfs pull --include="docs/**/*.ipynb"
+
       - uses: astral-sh/ruff-action@v4.1.0
