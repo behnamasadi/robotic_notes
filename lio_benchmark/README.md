@@ -1039,10 +1039,10 @@ errors, IMU sanity, per-axis plots.
 - DLIO sim overrides (frames + extrinsics): `src/explorer_r2_sim/config/dlio.yaml`.
   Algorithm gains live in DLIO's own `params.yaml` (keyframe thresholds,
   GICP iteration counts, observer $K_p / K_v / K_q$, etc.) — see
-  [DLIO README](third_party/DLIO/README.md).
+  [DLIO README](https://github.com/vectr-ucla/direct_lidar_inertial_odometry/blob/feature/ros2/README.md).
 - KISS-ICP sim overrides (max/min range + topic): `src/explorer_r2_sim/config/kiss_icp.yaml`.
   The full parameter set is tiny by design — see
-  [KISS-ICP README](third_party/kiss-icp/README.md).
+  [KISS-ICP README](https://github.com/PRBonn/kiss-icp/blob/main/README.md).
 - Simulator GPU / rendering performance:
   [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md)
 

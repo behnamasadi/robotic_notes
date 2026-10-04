@@ -100,7 +100,7 @@ ros2 run ros2_qos_examples_py latest_frame_subscriber
 
 ## Changing QoS
 
-See [`docs/ros2_qos.md` §8](../../../robotic_notes/docs/ros2_qos.md#8-changing-qos--three-options) for the three approaches (edit + rebuild, runtime parameters, QoS overrides) and the runtime inspection commands.
+See [`docs/ros2_qos.md` §8](../../docs/ros2_qos.md#8-changing-qos--three-options) for the three approaches (edit + rebuild, runtime parameters, QoS overrides) and the runtime inspection commands.
 
 The QoS line in each demo is a single statement near the top of the constructor — easy to edit:
 
