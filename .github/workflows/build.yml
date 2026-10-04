@@ -2,10 +2,17 @@ name: Build and Test
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ master ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ master ]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -14,7 +21,7 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         submodules: recursive
 
@@ -48,7 +55,7 @@ jobs:
         sudo apt-get clean
 
     - name: Cache vcpkg
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: |
           ${{ github.workspace }}/vcpkg
@@ -86,7 +93,7 @@ jobs:
         find build -type f -executable -name "ceres_*" -o -name "manif_*" -o -name "sophus_*" -o -name "rerun" -o -name "*SfM" -o -name "bundle_adjuster" -o -name "pose_graph_2d" | sort
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: success()
       with:
         name: robotic-notes-executables
