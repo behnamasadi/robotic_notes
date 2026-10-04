@@ -1,16 +1,37 @@
 # Installation and Requirement 
 
 
-![Ubuntu](https://github.com/behnamasadi/robotic_notes/actions/workflows/build.yml/badge.svg)
-![alt text](https://img.shields.io/badge/license-BSD-blue.svg)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/behnamasadi/robotic_notes)
-<!-- 
-![GitHub Release](https://img.shields.io/github/v/release/behnamasadi/robotic_notes)
--->
-![GitHub Repo stars](https://img.shields.io/github/stars/behnamasadi/robotic_notes)
-![GitHub forks](https://img.shields.io/github/forks/behnamasadi/robotic_notes)
+**CI**  
+[![Build (Ubuntu)](https://github.com/behnamasadi/robotic_notes/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/behnamasadi/robotic_notes/actions/workflows/build.yml)
+[![Lint (Ruff)](https://github.com/behnamasadi/robotic_notes/actions/workflows/lint.yml/badge.svg?branch=master)](https://github.com/behnamasadi/robotic_notes/actions/workflows/lint.yml)
+[![Links](https://github.com/behnamasadi/robotic_notes/actions/workflows/links.yml/badge.svg?branch=master)](https://github.com/behnamasadi/robotic_notes/actions/workflows/links.yml)
+[![CodeQL](https://github.com/behnamasadi/robotic_notes/actions/workflows/codeql.yml/badge.svg?branch=master)](https://github.com/behnamasadi/robotic_notes/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/behnamasadi/robotic_notes/badge)](https://scorecard.dev/viewer/?uri=github.com/behnamasadi/robotic_notes)
 
+**Stack**  
+![C++17/20](https://img.shields.io/badge/C%2B%2B-17%20%7C%2020-00599C?logo=cplusplus&logoColor=white)
+![Python 3](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
+![Jupyter](https://img.shields.io/badge/Jupyter-notebooks-F37626?logo=jupyter&logoColor=white)
+![CMake](https://img.shields.io/badge/CMake-064F8C?logo=cmake&logoColor=white)
+[![vcpkg](https://img.shields.io/badge/deps-vcpkg-5C2D91)](vcpkg.json)
+![ROS 1 | ROS 2](https://img.shields.io/badge/ROS-1%20%7C%202%20(Humble%2C%20Jazzy)-22314E?logo=ros&logoColor=white)
+[![Docker](https://img.shields.io/badge/Docker-osrf%2Fros-2496ED?logo=docker&logoColor=white)](Dockerfile)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
+**Repository**  
+[![License](https://img.shields.io/github/license/behnamasadi/robotic_notes)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/behnamasadi/robotic_notes)](https://github.com/behnamasadi/robotic_notes/commits/master)
+[![Commit activity](https://img.shields.io/github/commit-activity/y/behnamasadi/robotic_notes)](https://github.com/behnamasadi/robotic_notes/graphs/commit-activity)
+[![Contributors](https://img.shields.io/github/contributors/behnamasadi/robotic_notes)](https://github.com/behnamasadi/robotic_notes/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/behnamasadi/robotic_notes)](https://github.com/behnamasadi/robotic_notes/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/behnamasadi/robotic_notes)](https://github.com/behnamasadi/robotic_notes/pulls)
+![Top language](https://img.shields.io/github/languages/top/behnamasadi/robotic_notes)
+![Languages](https://img.shields.io/github/languages/count/behnamasadi/robotic_notes)
+![Code size](https://img.shields.io/github/languages/code-size/behnamasadi/robotic_notes)
+[![Stars](https://img.shields.io/github/stars/behnamasadi/robotic_notes?style=social)](https://github.com/behnamasadi/robotic_notes/stargazers)
+[![Forks](https://img.shields.io/github/forks/behnamasadi/robotic_notes?style=social)](https://github.com/behnamasadi/robotic_notes/network/members)
+
+Code in this repository is BSD-3-Clause ([LICENSE](LICENSE)); git submodules and `third_party/` directories keep their own licences.
 
 
 ### C++ Dependencies
@@ -732,12 +753,10 @@ the [VIO diagnostic guide §3](vio_benchmark/docs/VIO_DIAGNOSTIC_GUIDE.md#3--why
 
 # [E-Books and Refs](#)
 
-- [Modern Robotics Mechanics, Planning, and Control (Kevin M. Lynch, Frank C. Park)](docs/ebooks/Modern%20Robotics%20Mechanics%2C%20Planning%2C%20and%20Control%20%28Kevin%20M.%20Lynch%20and%20Frank%20C.%20Park%29.pdf)  
-- [Modern Robotics Mechanics, Planning, and Control (Instructor Solution Manual, Solutions )](docs/ebooks/Modern%20Robotics%20Mechanics%2C%20Planning%2C%20and%20Control%20%28Kevin%20M.%20Lynch%2C%20Frank%20C.%20Park%29%20Exercise%20Solutions.pdf)  
-- [MODERN ROBOTICS MECHANICS, PLANNING, AND CONTROL (Practice Exercises)](docs/ebooks/MODERN%20ROBOTICS%20MECHANICS%2C%20PLANNING%2C%20AND%20CONTROL%20%28Practice%20Exercises%29.pdf)  
-- [Basic Knowledge on Visual SLAM: From Theory to Practice, by Xiang Gao, Tao Zhang, Qinrui Yan and Yi Liu](docs/ebooks/slambook-en.pdf)  
-- [STATE ESTIMATION FOR ROBOTICS (Timothy D. Barfoot)](docs/ebooks/STATE%20ESTIMATION%20FOR%20ROBOTICS%20%28Timothy%20D.%20Barfoot%29.pdf)  
-- [SLAM for Dummies](docs/ebooks/SLAM%20for%20Dummies.pdf)  
+- [Modern Robotics: Mechanics, Planning, and Control (Kevin M. Lynch, Frank C. Park)](https://hades.mech.northwestern.edu/index.php/Modern_Robotics) — free preprint, practice exercises and videos from the authors  
+- [Basic Knowledge on Visual SLAM: From Theory to Practice, by Xiang Gao, Tao Zhang, Qinrui Yan and Yi Liu](https://github.com/gaoxiang12/slambook-en)  
+- [State Estimation for Robotics (Timothy D. Barfoot)](https://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser24.pdf) — free PDF from the author  
+- [SLAM for Dummies (Søren Riisgaard, Morten Rufus Blas)](https://web.archive.org/web/20171114013818/https://ocw.mit.edu/courses/aeronautics-and-astronautics/16-412j-cognitive-robotics-spring-2005/projects/1aslam_blas_repo.pdf) — MIT OCW, archived copy  
 - [VSLAM Handbook](https://github.com/tussedrotten/vslam-handbook)  
 - [SLAM Handbook](https://github.com/SLAM-Handbook-contributors/slam-handbook-public-release)
 - [Matrix Calculus (for Machine Learning and Beyond)](https://arxiv.org/pdf/2501.14787)
