@@ -43,3 +43,6 @@ data/slam/collection 1 - newer college/
 # Third-party reference books -- see ASSETS.md for download links
 pdf/
 docs/ebooks/
+
+# JupyterLab LSP scratch files
+.virtual_documents/
