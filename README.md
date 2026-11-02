@@ -472,6 +472,7 @@ EuRoC MH_01_easy.
 - [Visual-Inertial Navigation Systems: An Introduction](https://www.youtube.com/watch?v=dXN2E38jvQM)
 - [IMU Propagation Derivations (OpenVINS)](https://docs.openvins.com/propagation.html)
 - [Error State Kalman Filter VIO (ESKF-VIO)](docs/error_state_extended_kalman_filter_vio.ipynb)
+- [IMU Preintegration (optimization-based VIO)](docs/imu_preintegration.ipynb)
 
 ### Estimators
 - [OpenVINS](docs/open_vins.md)
